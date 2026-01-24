@@ -12,8 +12,9 @@
             --danger: rgba(255, 71, 87, 1);
             --glass: rgba(255, 255, 255, 0.2);
         }
-        body { 
+        html, body { 
             margin: 0; 
+            padding: 0;
             overflow: hidden; 
             font-family: sans-serif; 
             background: linear-gradient(to bottom, rgb(112, 161, 255), rgb(145, 204, 255)); 
@@ -203,7 +204,7 @@
         .screen-overlay {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle, rgb(69, 104, 220), rgb(176, 106, 179));
+            background: radial-gradient(circle, #4568dc, #b06ab3);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -212,12 +213,6 @@
             z-index: 1000;
             text-align: center;
             padding: 20px;
-        }
-
-        .title-container {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 2vmin;
         }
 
         h1 {
@@ -237,7 +232,7 @@
             border-radius: 1.2vmin;
             box-shadow: 0 0.5vmin 1vmin rgba(0,0,0,0.3);
             z-index: 10;
-            left: 2.8vmin; 
+            left: 3.8vmin; 
             top: -150vh;
             animation: introHeroSequence 18s linear infinite;
             transform-origin: bottom center;
@@ -268,20 +263,6 @@
             transform: translateX(-50%);
         }
 
-        .landing-dust {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 100;
-            animation: dustBurstFade 0.6s ease-out forwards;
-        }
-
-        @keyframes dustBurstFade {
-            0% { transform: scale(1) translate(0, 0); opacity: 0.8; }
-            100% { transform: scale(2.5) translate(var(--tx), var(--ty)); opacity: 0; }
-        }
-
         @keyframes eyeBlink {
             0%, 25% { transform: scaleY(1); }
             27% { transform: scaleY(0.1); }
@@ -293,38 +274,35 @@
         }
 
         @keyframes introHeroSequence {
-            0%, 16.66% { top: -150vh; transform: scale(1) rotate(0deg); left: 2.8vmin; opacity: 0; filter: blur(0px); }
-            18% { opacity: 1; }
-            19% { top: -6.9vmin; transform: scale(1.4, 0.6) rotate(-90deg); left: 2.8vmin; filter: blur(0px); }
-            20%, 34% { top: -6.9vmin; transform: scale(1, 1) rotate(-90deg); left: 2.8vmin; filter: blur(0px); } 
-            36% { top: -6.9vmin; transform: rotate(-45deg) scale(0.9, 1.1); left: 2.8vmin; } 
-            38% { top: -6.9vmin; transform: rotate(0deg) scale(1, 1); left: 2.8vmin; }
-            41% { top: -6.9vmin; transform: rotate(0deg) scale(1, 1); left: 2.8vmin; filter: blur(0px); }
-            42% { transform: scale(0.7, 1.4); left: 2.8vmin; filter: blur(0px); } 
-            43.5% { top: -21vmin; left: 12.8vmin; transform: scale(1); filter: blur(0px); }
-            45% { top: -6.9vmin; left: 22.8vmin; transform: scale(1.4, 0.6); filter: blur(0px); }
-            46.5% { top: -6.9vmin; left: 22.8vmin; transform: scale(1, 1); }
-            47.5% { transform: scale(0.7, 1.4); left: 22.8vmin; filter: blur(0px); } 
-            49% { top: -21vmin; left: 32.6vmin; transform: scale(1); filter: blur(0px); }
-            50.5% { top: -6.9vmin; left: 42.4vmin; transform: scale(1.4, 0.6); filter: blur(0px); }
-            52% { top: -6.9vmin; left: 42.4vmin; transform: scale(1, 1); }
-            53% { transform: scale(0.7, 1.4); left: 42.4vmin; filter: blur(0px); }
-            54.5% { top: -21vmin; left: 52.2vmin; transform: scale(1); filter: blur(0px); }
-            56% { top: -6.9vmin; left: 62.0vmin; transform: scale(1.4, 0.6); filter: blur(0px); }
-            57.5% { top: -6.9vmin; left: 62.0vmin; transform: scale(1, 1); }
-            58.5% { transform: scale(0.7, 1.4); left: 62.0vmin; filter: blur(0px); }
-            60% { top: -21vmin; left: 71.8vmin; transform: scale(1); filter: blur(0px); }
-            61.5% { top: -6.9vmin; left: 79.6vmin; transform: scale(1.4, 0.6); filter: blur(0px); }
-            63% { top: -6.9vmin; left: 79.6vmin; transform: scale(1, 1); }
-            64% { transform: scale(0.7, 1.4); left: 79.6vmin; filter: blur(0px); }
-            65.5% { top: -21vmin; left: 89.3vmin; transform: scale(1); filter: blur(0px); }
-            67% { top: -6.9vmin; left: 99.2vmin; transform: scale(1.4, 0.6); filter: blur(0px); }
-            68.5% { top: -6.9vmin; left: 99.2vmin; transform: scale(1, 1); }
-            73% { transform: scale(1.4, 0.6); left: 99.2vmin; top: -6.9vmin; filter: blur(0px); } 
-            76% { transform: scale(1.9, 0.25); left: 99.2vmin; top: -6.9vmin; filter: blur(0px); } 
-            77% { transform: scale(0.3, 3.2); left: 99.2vmin; top: -15vmin; filter: blur(1.5vmin); } 
-            88% { transform: scale(0.25, 4.0); left: 99.2vmin; top: -250vh; filter: blur(3vmin); } 
-            100% { top: -300vh; left: 99.2vmin; transform: scale(0.25, 4.0); filter: blur(4vmin); }
+            0%, 15% { top: -150vh; transform: scale(1) rotate(0deg); left: 3.8vmin; opacity: 0; }
+            17% { opacity: 1; }
+            18.5% { top: -9.2vmin; transform: scale(1.6, 0.4) rotate(-90deg); left: 3.8vmin; }
+            20%, 32% { top: -9.2vmin; transform: scale(1, 1) rotate(-90deg); left: 3.8vmin; } 
+            34% { top: -9.2vmin; transform: rotate(-45deg) scale(0.9, 1.1); left: 3.8vmin; } 
+            36% { top: -9.2vmin; transform: rotate(0deg) scale(1, 1); left: 3.8vmin; }
+            38% { transform: scale(0.7, 1.4); left: 3.8vmin; }
+            40% { top: -28vmin; left: 8.8vmin; transform: scale(1, 1); }
+            42% { top: -9.2vmin; left: 13.8vmin; transform: scale(1.6, 0.4); }
+            43% { transform: scale(1, 1); }
+            45% { transform: scale(0.7, 1.4); }
+            47% { top: -28vmin; left: 18.8vmin; transform: scale(1, 1); }
+            49% { top: -9.2vmin; left: 23.8vmin; transform: scale(1.6, 0.4); }
+            50% { transform: scale(1, 1); }
+            52% { transform: scale(0.7, 1.4); }
+            54% { top: -28vmin; left: 28.8vmin; transform: scale(1, 1); }
+            56% { top: -9.2vmin; left: 33.8vmin; transform: scale(1.6, 0.4); }
+            57% { transform: scale(1, 1); }
+            59% { transform: scale(0.7, 1.4); }
+            61% { top: -28vmin; left: 38.8vmin; transform: scale(1, 1); }
+            63% { top: -9.2vmin; left: 43.8vmin; transform: scale(1.6, 0.4); }
+            64% { transform: scale(1, 1); }
+            66% { transform: scale(0.7, 1.4); }
+            68% { top: -28vmin; left: 70.8vmin; transform: scale(1, 1); }
+            70% { top: -9.2vmin; left: 96.2vmin; transform: scale(1.6, 0.4); }
+            71%, 78% { transform: scale(1, 1); }
+            80% { transform: scale(1.8, 0.2); top: -9.2vmin; filter: blur(0px); }
+            82% { transform: scale(0.3, 3.5); top: -20vmin; filter: blur(2px); }
+            100% { top: -350vh; transform: scale(0.2, 4); filter: blur(4px); }
         }
 
         .instruction-box {
@@ -350,22 +328,36 @@
             color: white;
             border: none;
             padding: 18px 50px;
-            font-size: 5vmin;
+            font-size: 28px;
             font-weight: bold;
-            border-radius: 8vmin;
+            border-radius: 60px;
             cursor: pointer;
-            box-shadow: 0 1vmin 0 rgb(33, 157, 82);
+            box-shadow: 0 10px 0 rgb(33, 157, 82);
             margin-top: 20px;
             transition: transform 0.1s;
         }
         .action-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 rgb(33, 157, 82); }
+
+        .landing-dust {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+            animation: dustBurstFade 0.6s ease-out forwards;
+        }
+
+        @keyframes dustBurstFade {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.8; }
+            100% { transform: scale(2.5) translate(var(--tx), var(--ty)); opacity: 0; }
+        }
     </style>
 </head>
 <body>
 
-<div id="start-screen" class="screen-overlay">
-    <div class="title-container" id="intro-title-container">
-        <div class="mini-hero" id="intro-mini-hero">
+<div class="start-screen screen-overlay">
+    <div class="title-container">
+        <div class="mini-hero">
             <div class="mini-eye left"></div>
             <div class="mini-eye right"></div>
             <div class="mini-mouth"></div>
@@ -379,13 +371,13 @@
         <div class="instruction-item">❤️ Warning: 3 lives to beat level 10</div>
     </div>
 
-    <button id="start-btn" class="action-btn">PLAY NOW</button>
+    <button class="start-btn action-btn">PLAY NOW</button>
 </div>
 
-<div id="game-over-screen" class="screen-overlay" style="display: none;">
+<div class="game-over-screen screen-overlay" style="display: none;">
     <h1 class="over-title">GAME OVER</h1>
     <p class="final-stats" style="font-size: 3.5vmin;"></p>
-    <button id="restart-btn" class="action-btn">RESTART</button>
+    <button class="restart-btn action-btn">RESTART</button>
 </div>
 
 <div class="level-popup">
@@ -394,10 +386,10 @@
 
 <div class="ui-container">
     <div class="util-row">
-        <div class="icon-btn" id="home-btn">
+        <div class="icon-btn home-btn">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </div>
-        <div class="icon-btn" id="fullscreen-btn">
+        <div class="icon-btn fullscreen-btn">
             <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
         </div>
     </div>
@@ -406,8 +398,8 @@
         <div class="hud-card">LVL: <span id="lvl-val">1</span></div>
         <div class="score-wrapper">
             <div class="hud-card score-card">PTS: <span id="score-val">0</span></div>
-            <div id="message-box" class="message-box"></div>
-            <div id="notification-alert" class="notification-alert">LAST LIFE: STAY BRAVE! ❤️</div>
+            <div class="message-box"></div>
+            <div class="notification-alert">LAST LIFE: STAY BRAVE! ❤️</div>
         </div>
         <div class="hud-card">LIVES: <span id="lives-val">3</span></div>
     </div>
@@ -415,11 +407,11 @@
 
 <div class="controls">
     <div class="ctrl-group">
-        <div class="btn" id="btn-left">◀</div>
-        <div class="btn" id="btn-right">▶</div>
+        <div class="btn btn-left">◀</div>
+        <div class="btn btn-right">▶</div>
     </div>
     <div class="ctrl-group">
-        <div class="btn jump-btn" id="btn-jump">JUMP</div>
+        <div class="btn jump-btn btn-jump">JUMP</div>
     </div>
 </div>
 
@@ -428,25 +420,23 @@
     let platforms = [], items = [], enemies = [], clouds = [], particles = [];
     let score = 0, lives = 3, level = 1;
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
-    let isIntroAnimating = false;
-    let introProgress = 0;
-    let camStart = new THREE.Vector3();
-    let camEnd = new THREE.Vector3();
+    let isIntroAnimating = false, introProgress = 0;
+    let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
     let lastTime = performance.now();
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
 
     let hasDustTriggeredH = false;
     function monitorIntroLanding() {
-        const hero = document.getElementById('intro-mini-hero');
+        const hero = document.querySelector('.mini-hero');
         if (!hero || gameActive) return;
         const style = window.getComputedStyle(hero);
         const top = parseFloat(style.top);
         const left = parseFloat(style.left);
         const vmin = Math.min(window.innerWidth, window.innerHeight) / 100;
-        if (top > -7.5 * vmin && top < -6.0 * vmin && left < 3.5 * vmin) {
+        if (top > -10.5 * vmin && top < -8.0 * vmin && left < 5.0 * vmin) {
             if (!hasDustTriggeredH) { spawnIntroDust(hero); hasDustTriggeredH = true; }
-        } else { if (top < -10 * vmin || left > 5 * vmin) hasDustTriggeredH = false; }
+        } else { if (top < -15 * vmin || left > 6 * vmin) hasDustTriggeredH = false; }
     }
 
     function spawnIntroDust(target) {
@@ -530,7 +520,9 @@
         const gap = 16 + (lvl * 1.8);
         addPlatform(0, -1, 30, 0x2ed573);
         let lastY = -1;
-        const goodEmotions = ["BRAVERY", "JOY", "LOVE", "HOPE", "PEACE", "KINDNESS", "CALM", "PRIDE", "GENTLENESS", "TRUST", "CONTENTMENT"];
+        
+        // Updated good emotions list
+        const goodEmotions = ["BRAVERY", "JOY", "LOVE", "HOPE", "PEACE", "KINDNESS", "CALM", "PRIDE", "GENTLENESS", "TRUST", "HAPPINESS"];
         const badEmotions = ["SADNESS", "FEAR", "ANGER", "LONELINESS", "GREED", "JEALOUSY", "RUDENESS", "CRUELTY", "GUILT", "ENVY", "HATE", "PANIC", "DESPAIR"];
 
         for (let i = 1; i < segments; i++) {
@@ -539,8 +531,12 @@
             if (Math.abs(currentY - lastY) < 2.5) currentY += 3.0;
             lastY = currentY;
             const p = addPlatform(x, currentY, 12, 0x7bed9f);
-            if (Math.random() > 0.4) spawnGoodDeed(x, currentY + 3.5, goodEmotions);
-            else if (Math.random() > 0.3) spawnEnemy(p, badEmotions, 0.04 + (lvl * 0.015));
+            const chance = Math.random();
+            if (chance > 0.6) {
+                spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
+            } else if (chance > 0.2) {
+                spawnEnemy(p, badEmotions, 0.04 + (lvl * 0.015));
+            }
         }
         const finalX = segments * gap;
         addPlatform(finalX, verticalClimb + 2, 20, 0x2ed573);
@@ -551,6 +547,11 @@
 
     function startLevelSequence(lvl) {
         gameActive = false;
+        if (player) {
+            player.visible = false;
+            player.position.set(0, 2, 0);
+        }
+        velocityX = 0; velocityY = 0;
         level = lvl;
         document.getElementById('lvl-val').innerText = level;
         const popup = document.querySelector('.level-popup');
@@ -558,11 +559,10 @@
         popup.classList.add('active');
         setTimeout(() => {
             popup.classList.remove('active');
-            player.position.set(0, 2, 0);
             player.visible = true;
-            velocityY = 0; velocityX = 0;
             spawnLevel(level);
-            isIntroAnimating = true; introProgress = 0;
+            isIntroAnimating = true;
+            introProgress = 0;
         }, 2200);
     }
 
@@ -577,16 +577,17 @@
         const tex = createTextCanvas(text, 'rgb(61, 61, 61)', 'rgb(255, 250, 101)');
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.2, 1.5), new THREE.MeshStandardMaterial({ map: tex }));
         mesh.position.set(x, y, 0); mesh.castShadow = true; scene.add(mesh);
-        items.push({ mesh, text });
+        items.push({ mesh, text, baseY: y });
     }
 
     function spawnEnemy(platform, list, speed) {
         const text = list[Math.floor(Math.random() * list.length)];
         const tex = createTextCanvas(text, 'white', 'rgb(255, 77, 77)');
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.2, 2.5), new THREE.MeshStandardMaterial({ map: tex }));
-        mesh.position.set(platform.position.x, platform.position.y + 1.8, 0);
+        const platformSurfaceY = platform.position.y + 0.75;
+        mesh.position.set(platform.position.x, platformSurfaceY + 1.1, 0);
         mesh.castShadow = true; scene.add(mesh);
-        enemies.push({ mesh, platform, dir: 1, speed: speed });
+        enemies.push({ mesh, platform, dir: 1, speed: speed, surfaceY: platformSurfaceY });
     }
 
     function spawnCloud() {
@@ -605,7 +606,7 @@
         const ctx = canvas.getContext('2d');
         canvas.width = 512; canvas.height = 256; 
         ctx.fillStyle = backColor; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = 'bold 80px Arial'; ctx.fillStyle = color; ctx.textAlign = 'center';
+        ctx.font = 'bold 70px Arial'; ctx.fillStyle = color; ctx.textAlign = 'center';
         ctx.fillText(text, 256, 150);
         return new THREE.CanvasTexture(canvas);
     }
@@ -631,7 +632,7 @@
     }
 
     function showNotificationAlert() {
-        const alert = document.getElementById('notification-alert');
+        const alert = document.querySelector('.notification-alert');
         alert.style.display = 'block'; setTimeout(() => alert.style.display = 'none', 3500);
     }
 
@@ -646,7 +647,7 @@
         }
     }
 
-    function goHome() { gameActive = false; isIntroAnimating = false; document.getElementById('start-screen').style.display = 'flex'; document.getElementById('game-over-screen').style.display = 'none'; }
+    function goHome() { gameActive = false; isIntroAnimating = false; document.querySelector('.start-screen').style.display = 'flex'; document.querySelector('.game-over-screen').style.display = 'none'; }
     function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); else document.exitFullscreen(); }
 
     let keys = { left: false, right: false, up: false };
@@ -670,11 +671,17 @@
 
         if (!gameActive || isDying) { monitorIntroLanding(); return; }
         
-        // Manual control strictly: Reset velocity to 0 if no keys pressed
-        if (keys.left) velocityX = -0.3; else if (keys.right) velocityX = 0.3; else velocityX = 0;
-        
+        if (keys.left) {
+            velocityX = -0.3;
+        } else if (keys.right) {
+            velocityX = 0.3;
+        } else {
+            velocityX = 0;
+        }
+
         player.position.x += velocityX * dt;
-        velocityY -= 0.02 * dt; player.position.y += velocityY * dt;
+        velocityY -= 0.02 * dt; 
+        player.position.y += velocityY * dt;
         
         const targetScaleY = 1 + velocityY * 0.3;
         player.scale.y = THREE.MathUtils.lerp(player.scale.y, Math.max(0.9, Math.min(1.15, targetScaleY)), 0.15 * dt);
@@ -687,29 +694,30 @@
         });
         if (door && player.position.distanceTo(door.position) < 4.5) { if (level >= 10) showGameOver(true); else startLevelSequence(level + 1); }
         if (keys.up && !isJumping) { velocityY = 0.5; isJumping = true; }
+        
         items.forEach((it, idx) => {
-            it.mesh.position.y += Math.sin(Date.now() * 0.005) * 0.015;
-            if (player.position.distanceTo(it.mesh.position) < 3) { scene.remove(it.mesh); items.splice(idx, 1); score += 10; document.getElementById('score-val').innerText = score; }
+            it.mesh.position.y = it.baseY + Math.sin(Date.now() * 0.005) * 0.5;
+            if (player.position.distanceTo(it.mesh.position) < 3.0) { scene.remove(it.mesh); items.splice(idx, 1); score += 10; document.getElementById('score-val').innerText = score; popMessage(it.text + "! ✨"); }
         });
         
-        // Red block boundary logic: back and forth strictly on the green platform
         enemies.forEach((en, idx) => {
             en.mesh.position.x += en.dir * en.speed * dt;
-            
+            en.mesh.position.y = en.surfaceY + 1.1; 
             const halfPlatformWidth = en.platform.geometry.parameters.width / 2;
-            const halfEnemyWidth = 2.5; // Half of enemy width (5.0)
-            const margin = 0.2; 
-            const limit = halfPlatformWidth - halfEnemyWidth - margin;
+            const halfEnemyWidth = 2.5; 
+            const margin = 0.1;
             
             const relativeX = en.mesh.position.x - en.platform.position.x;
+            const limit = halfPlatformWidth - halfEnemyWidth - margin;
+            
             if (Math.abs(relativeX) > limit) {
                 en.dir *= -1;
                 en.mesh.position.x = en.platform.position.x + Math.sign(relativeX) * limit;
             }
-
+            
             if (new THREE.Box3().setFromObject(player).intersectsBox(new THREE.Box3().setFromObject(en.mesh))) { 
                 if (velocityY < -0.05 && player.position.y > en.mesh.position.y + 0.5) { 
-                    scene.remove(en.mesh); enemies.splice(idx, 1); velocityY = 0.42; 
+                    scene.remove(en.mesh); enemies.splice(idx, 1); velocityY = 0.42; popMessage("OVERCOME!");
                 } else handleDeath(); 
             }
         });
@@ -719,8 +727,8 @@
         camera.lookAt(player.position.x, player.position.y + 1, 0);
     }
 
-    function showGameOver(win) { gameActive = false; const screen = document.getElementById('game-over-screen'); screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; screen.style.display = 'flex'; }
-    function restartGame() { score = 0; lives = 3; level = 1; document.getElementById('score-val').innerText = score; document.getElementById('lives-val').innerText = lives; document.getElementById('lvl-val').innerText = level; document.getElementById('game-over-screen').style.display = 'none'; startLevelSequence(1); }
+    function showGameOver(win) { gameActive = false; const screen = document.querySelector('.game-over-screen'); screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; screen.style.display = 'flex'; }
+    function restartGame() { score = 0; lives = 3; level = 1; document.getElementById('score-val').innerText = score; document.getElementById('lives-val').innerText = lives; document.getElementById('lvl-val').innerText = level; document.querySelector('.game-over-screen').style.display = 'none'; startLevelSequence(1); }
 
     function animate(currentTime) { 
         requestAnimationFrame(animate); 
@@ -728,22 +736,23 @@
         update(dt); if (renderer && scene && camera) renderer.render(scene, camera); 
     }
 
-    const bind = (id, k) => {
-        const el = document.getElementById(id);
+    const bind = (sel, k) => {
+        const el = document.querySelector(sel);
         el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false});
         el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false});
         el.addEventListener('mousedown', () => { keys[k] = true; });
         el.addEventListener('mouseup', () => { keys[k] = false; });
     };
-    bind('btn-left', 'left'); bind('btn-right', 'right'); bind('btn-jump', 'up');
+    bind('.btn-left', 'left'); bind('.btn-right', 'right'); bind('.btn-jump', 'up');
     window.addEventListener('keydown', (e) => { if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } });
     window.addEventListener('keyup', (e) => { if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = false; if(e.code === 'ArrowRight' || e.key === 'd') keys.right = false; if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') keys.up = false; });
-    document.getElementById('start-btn').onclick = () => { document.getElementById('start-screen').style.display = 'none'; init(); restartGame(); };
-    document.getElementById('restart-btn').onclick = restartGame;
-    document.getElementById('home-btn').onclick = goHome;
-    document.getElementById('fullscreen-btn').onclick = toggleFullScreen;
-    function popMessage(txt) { const msg = document.getElementById('message-box'); if(msg) { msg.innerText = txt; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 1500); } }
+    document.querySelector('.start-btn').onclick = () => { document.querySelector('.start-screen').style.display = 'none'; init(); restartGame(); };
+    document.querySelector('.restart-btn').onclick = restartGame;
+    document.querySelector('.home-btn').onclick = goHome;
+    document.querySelector('.fullscreen-btn').onclick = toggleFullScreen;
+    function popMessage(txt) { const msg = document.querySelector('.message-box'); if(msg) { msg.innerText = txt; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 1500); } }
     window.addEventListener('resize', () => { if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); } });
+    window.onload = function() { animate(performance.now()); }
 </script>
 </body>
 </html>
