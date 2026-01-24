@@ -539,12 +539,8 @@
             if (Math.abs(currentY - lastY) < 2.5) currentY += 3.0;
             lastY = currentY;
             const p = addPlatform(x, currentY, 12, 0x7bed9f);
-            const chance = Math.random();
-            if (chance > 0.6) {
-                spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
-            } else if (chance > 0.2) {
-                spawnEnemy(p, badEmotions, 0.04 + (lvl * 0.015));
-            }
+            if (Math.random() > 0.4) spawnGoodDeed(x, currentY + 3.5, goodEmotions);
+            else if (Math.random() > 0.3) spawnEnemy(p, badEmotions, 0.04 + (lvl * 0.015));
         }
         const finalX = segments * gap;
         addPlatform(finalX, verticalClimb + 2, 20, 0x2ed573);
@@ -555,7 +551,6 @@
 
     function startLevelSequence(lvl) {
         gameActive = false;
-        if (player) player.visible = false; // Hide player during level announcement
         level = lvl;
         document.getElementById('lvl-val').innerText = level;
         const popup = document.querySelector('.level-popup');
@@ -564,11 +559,10 @@
         setTimeout(() => {
             popup.classList.remove('active');
             player.position.set(0, 2, 0);
-            player.visible = true; // Show player after announcement
+            player.visible = true;
             velocityY = 0; velocityX = 0;
             spawnLevel(level);
-            isIntroAnimating = true;
-            introProgress = 0;
+            isIntroAnimating = true; introProgress = 0;
         }, 2200);
     }
 
@@ -583,17 +577,16 @@
         const tex = createTextCanvas(text, 'rgb(61, 61, 61)', 'rgb(255, 250, 101)');
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.2, 1.5), new THREE.MeshStandardMaterial({ map: tex }));
         mesh.position.set(x, y, 0); mesh.castShadow = true; scene.add(mesh);
-        items.push({ mesh, text, baseY: y });
+        items.push({ mesh, text });
     }
 
     function spawnEnemy(platform, list, speed) {
         const text = list[Math.floor(Math.random() * list.length)];
         const tex = createTextCanvas(text, 'white', 'rgb(255, 77, 77)');
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.2, 2.5), new THREE.MeshStandardMaterial({ map: tex }));
-        const platformSurfaceY = platform.position.y + 0.75;
-        mesh.position.set(platform.position.x, platformSurfaceY + 1.1, 0);
+        mesh.position.set(platform.position.x, platform.position.y + 1.8, 0);
         mesh.castShadow = true; scene.add(mesh);
-        enemies.push({ mesh, platform, dir: 1, speed: speed, surfaceY: platformSurfaceY });
+        enemies.push({ mesh, platform, dir: 1, speed: speed });
     }
 
     function spawnCloud() {
@@ -612,7 +605,7 @@
         const ctx = canvas.getContext('2d');
         canvas.width = 512; canvas.height = 256; 
         ctx.fillStyle = backColor; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = 'bold 70px Arial'; ctx.fillStyle = color; ctx.textAlign = 'center';
+        ctx.font = 'bold 80px Arial'; ctx.fillStyle = color; ctx.textAlign = 'center';
         ctx.fillText(text, 256, 150);
         return new THREE.CanvasTexture(canvas);
     }
@@ -677,7 +670,9 @@
 
         if (!gameActive || isDying) { monitorIntroLanding(); return; }
         
+        // Manual control strictly: Reset velocity to 0 if no keys pressed
         if (keys.left) velocityX = -0.3; else if (keys.right) velocityX = 0.3; else velocityX = 0;
+        
         player.position.x += velocityX * dt;
         velocityY -= 0.02 * dt; player.position.y += velocityY * dt;
         
@@ -692,20 +687,29 @@
         });
         if (door && player.position.distanceTo(door.position) < 4.5) { if (level >= 10) showGameOver(true); else startLevelSequence(level + 1); }
         if (keys.up && !isJumping) { velocityY = 0.5; isJumping = true; }
-        
         items.forEach((it, idx) => {
-            it.mesh.position.y = it.baseY + Math.sin(Date.now() * 0.005) * 0.5;
-            if (player.position.distanceTo(it.mesh.position) < 3.0) { scene.remove(it.mesh); items.splice(idx, 1); score += 10; document.getElementById('score-val').innerText = score; popMessage(it.text + "! ✨"); }
+            it.mesh.position.y += Math.sin(Date.now() * 0.005) * 0.015;
+            if (player.position.distanceTo(it.mesh.position) < 3) { scene.remove(it.mesh); items.splice(idx, 1); score += 10; document.getElementById('score-val').innerText = score; }
         });
         
+        // Red block boundary logic: back and forth strictly on the green platform
         enemies.forEach((en, idx) => {
             en.mesh.position.x += en.dir * en.speed * dt;
-            en.mesh.position.y = en.surfaceY + 1.1; 
-            const pW = en.platform.geometry.parameters.width / 2;
-            if (Math.abs(en.mesh.position.x - en.platform.position.x) > pW - 2.5) en.dir *= -1;
+            
+            const halfPlatformWidth = en.platform.geometry.parameters.width / 2;
+            const halfEnemyWidth = 2.5; // Half of enemy width (5.0)
+            const margin = 0.2; 
+            const limit = halfPlatformWidth - halfEnemyWidth - margin;
+            
+            const relativeX = en.mesh.position.x - en.platform.position.x;
+            if (Math.abs(relativeX) > limit) {
+                en.dir *= -1;
+                en.mesh.position.x = en.platform.position.x + Math.sign(relativeX) * limit;
+            }
+
             if (new THREE.Box3().setFromObject(player).intersectsBox(new THREE.Box3().setFromObject(en.mesh))) { 
                 if (velocityY < -0.05 && player.position.y > en.mesh.position.y + 0.5) { 
-                    scene.remove(en.mesh); enemies.splice(idx, 1); velocityY = 0.42; popMessage("OVERCOME!");
+                    scene.remove(en.mesh); enemies.splice(idx, 1); velocityY = 0.42; 
                 } else handleDeath(); 
             }
         });
@@ -740,7 +744,6 @@
     document.getElementById('fullscreen-btn').onclick = toggleFullScreen;
     function popMessage(txt) { const msg = document.getElementById('message-box'); if(msg) { msg.innerText = txt; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 1500); } }
     window.addEventListener('resize', () => { if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); } });
-    window.onload = function() { animate(performance.now()); }
 </script>
 </body>
 </html>
