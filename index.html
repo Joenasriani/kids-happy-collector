@@ -278,49 +278,31 @@
         }
 
         @keyframes introHeroSequence {
-            /* 1. DROP & IMPACT ON 'H' */
             0%, 15% { top: -150vh; transform: scale(1) rotate(0deg); left: 2.8vmin; opacity: 0; filter: none; }
             17% { opacity: 1; }
             18.5% { top: -6.9vmin; transform: scale(1.1, 0.9) rotate(-90deg); left: 2.8vmin; filter: none; }
             20%, 34% { top: -6.9vmin; transform: scale(1, 1) rotate(-90deg); left: 2.8vmin; filter: none; } 
-            
-            /* 2. STAND UP */
             36% { top: -6.9vmin; transform: rotate(-45deg) scale(0.98, 1.02); left: 2.8vmin; filter: none; } 
             38% { top: -6.9vmin; transform: rotate(0deg) scale(1, 1); left: 2.8vmin; filter: none; }
-
-            /* 3. HOPPING LOOP - EQUIDISTANT & PERFECT CURVES - NO BLUR */
-            /* Hop 1: H(2.8) -> A(22.08) */
-            40% { top: -6.9vmin; left: 2.8vmin; transform: scale(0.95, 1.05); filter: none; }
-            43.2% { top: -21vmin; left: 12.44vmin; transform: scale(1, 1); filter: none; }
-            46.4% { top: -6.9vmin; left: 22.08vmin; transform: scale(1.1, 0.9); filter: none; }
-
-            /* Hop 2: A(22.08) -> P(41.36) */
-            46.6% { transform: scale(0.95, 1.05); filter: none; }
-            49.6% { top: -21vmin; left: 31.72vmin; transform: scale(1, 1); filter: none; }
-            52.8% { top: -6.9vmin; left: 41.36vmin; transform: scale(1.1, 0.9); filter: none; }
-
-            /* Hop 3: P(41.36) -> P(60.64) */
-            53% { transform: scale(0.95, 1.05); filter: none; }
-            56% { top: -21vmin; left: 51vmin; transform: scale(1, 1); filter: none; }
-            59.2% { top: -6.9vmin; left: 60.64vmin; transform: scale(1.1, 0.9); filter: none; }
-
-            /* Hop 4: P(60.64) -> Y(79.92) */
-            59.4% { transform: scale(0.95, 1.05); filter: none; }
-            62.4% { top: -21vmin; left: 70.28vmin; transform: scale(1, 1); filter: none; }
-            65.6% { top: -6.9vmin; left: 79.92vmin; transform: scale(1.1, 0.9); filter: none; }
-
-            /* Hop 5: Y(79.92) -> R(99.2) */
-            65.8% { transform: scale(0.95, 1.05); filter: none; }
-            68.8% { top: -21vmin; left: 89.56vmin; transform: scale(1, 1); filter: none; }
-            72% { top: -6.9vmin; left: 99.2vmin; transform: scale(1.1, 0.9); filter: none; }
-
-            /* 4. REACH 'R' & SNAPPY BOUNCE SEQUENCE */
-            73.5%, 75% { top: -14vmin; left: 99.2vmin; transform: scale(0.98, 1.02); filter: none; } 
-            77% { top: -6.9vmin; left: 99.2vmin; transform: scale(1.15, 0.85); filter: none; } 
-            
-            /* 5. FINAL STRAIGHT-UP SNAP LAUNCH - MOTION BLUR ONLY HERE */
-            81% { transform: scale(0.3, 3.5); top: -20vmin; filter: blur(2vmin); left: 99.2vmin; }
-            100% { top: -350vh; transform: scale(0.2, 4); filter: blur(4vmin); left: 99.2vmin; }
+            40% { top: -6.9vmin; left: 2.8vmin; transform: scale(0.95, 1.05); }
+            43.2% { top: -21vmin; left: 12.44vmin; transform: scale(1, 1); }
+            46.4% { top: -6.9vmin; left: 22.08vmin; transform: scale(1.1, 0.9); }
+            46.6% { transform: scale(0.95, 1.05); }
+            49.6% { top: -21vmin; left: 31.72vmin; transform: scale(1, 1); }
+            52.8% { top: -6.9vmin; left: 41.36vmin; transform: scale(1.1, 0.9); }
+            53% { transform: scale(0.95, 1.05); }
+            56% { top: -21vmin; left: 51vmin; transform: scale(1, 1); }
+            59.2% { top: -6.9vmin; left: 60.64vmin; transform: scale(1.1, 0.9); }
+            59.4% { transform: scale(0.95, 1.05); }
+            62.4% { top: -21vmin; left: 70.28vmin; transform: scale(1, 1); }
+            65.6% { top: -6.9vmin; left: 79.92vmin; transform: scale(1.1, 0.9); }
+            65.8% { transform: scale(0.95, 1.05); }
+            68.8% { top: -21vmin; left: 89.56vmin; transform: scale(1, 1); }
+            72% { top: -6.9vmin; left: 99.2vmin; transform: scale(1.1, 0.9); }
+            73.5%, 75% { top: -14vmin; left: 99.2vmin; transform: scale(0.98, 1.02); } 
+            77% { top: -6.9vmin; left: 99.2vmin; transform: scale(1.15, 0.85); } 
+            81% { transform: scale(0.3, 3.5); top: -20vmin; filter: none; left: 99.2vmin; }
+            100% { top: -350vh; transform: scale(0.2, 4); filter: none; left: 99.2vmin; }
         }
 
         .landing-dust {
@@ -452,6 +434,7 @@
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
     let isIntroAnimating = false, introProgress = 0;
     let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
+    let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
@@ -506,7 +489,7 @@
         sun.castShadow = true;
         scene.add(sun);
         createPlayer();
-        startLevelSequence(1, true);
+        startLevelSequence(1, true, true);
         for(let i=0; i<30; i++) spawnCloud();
         animate(performance.now());
     }
@@ -546,55 +529,79 @@
         enemies.forEach(en => scene.remove(en.mesh));
         if (door) scene.remove(door);
         platforms = []; items = []; enemies = [];
-
         const segments = 5 + (lvl * 5);
         const verticalClimb = lvl * 4.5;
-        const gap = 12 + (lvl * 2.8);
-        const platformWidth = Math.max(6, 12 - (lvl * 0.6));
-        const enemyChance = Math.min(0.7, 0.15 + (lvl * 0.06));
+        
+        const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
+        const spacing = platformWidth + 8 + (lvl * 1.5); 
+        
+        /* Updated Enemy Logic: Deterministic numbers for Level 1 and 2, scaling for the rest */
+        let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : lvl + 2;
         const enemySpeed = 0.03 + (lvl * 0.012);
+        
+        // Randomly pick indices for the enemies among all segments except the first (start) and last (door)
+        const possibleIndices = [];
+        for (let j = 1; j < segments - 1; j++) possibleIndices.push(j);
+        const selectedEnemyIndices = possibleIndices.sort(() => Math.random() - 0.5).slice(0, enemyCount);
 
-        addPlatform(0, -1, 30, 0x2ed573);
+        addPlatform(0, -1, 35, 0x2ed573);
         let lastY = -1;
         const goodEmotions = ["BRAVERY", "JOY", "LOVE", "HOPE", "PEACE", "KINDNESS", "CALM", "PRIDE", "GENTLENESS", "TRUST", "HAPPINESS"];
         const badEmotions = ["SADNESS", "FEAR", "ANGER", "LONELINESS", "GREED", "JEALOUSY", "RUDENESS", "CRUELTY", "GUILT", "ENVY", "HATE", "PANIC", "DESPAIR"];
-
+        
         for (let i = 1; i < segments; i++) {
-            const x = i * gap;
+            const x = i * spacing;
             let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.8));
             if (Math.abs(currentY - lastY) < 2.2) currentY += 2.8;
             lastY = currentY;
             const p = addPlatform(x, currentY, platformWidth, 0x7bed9f);
             
-            const roll = Math.random();
-            if (roll < enemyChance) {
+            if (selectedEnemyIndices.includes(i)) {
                 spawnEnemy(p, badEmotions, enemySpeed);
-            } else if (roll > 0.6) {
+            } else if (Math.random() > 0.6) {
                 spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
             }
         }
-        const finalX = segments * gap;
+        const finalX = segments * spacing;
         addPlatform(finalX, verticalClimb + 2, 20, 0x2ed573);
         door = createDoorMesh(); door.position.set(finalX, verticalClimb + 6, 0); scene.add(door);
+        cinematicDoorPos.copy(door.position);
         camStart.set(door.position.x + 30, door.position.y + 15, 60); 
-        camEnd.set(player.position.x, player.position.y + 6, 22);
+        camEnd.set(0, 2 + 6, 22);
     }
 
-    function startLevelSequence(lvl, withCinematic = true) {
+    function startLevelSequence(lvl, withCinematic = true, showPopup = true) {
         gameActive = false; isIntroAnimating = false;
         if (player) player.visible = false; 
         level = lvl; document.getElementById('lvl-val').innerText = level;
-        const popup = document.querySelector('.level-popup');
-        document.getElementById('popup-text').innerText = "LEVEL " + level;
-        popup.classList.add('active');
-        setTimeout(() => {
-            popup.classList.remove('active');
+        const applySetup = () => {
             spawnLevel(level);
             if (player) { player.visible = true; player.position.set(0, 2, 0); }
             velocityY = 0; velocityX = 0;
-            if (withCinematic) { isIntroAnimating = true; introProgress = 0; } 
-            else { isIntroAnimating = false; gameActive = true; camera.position.copy(camEnd); camera.lookAt(player.position.x, player.position.y + 1, 0); }
-        }, 2200);
+            if (withCinematic) { 
+                isIntroAnimating = true; 
+                introProgress = 0;
+                camera.position.copy(camStart);
+                camera.lookAt(cinematicDoorPos.x, cinematicDoorPos.y, cinematicDoorPos.z);
+            } 
+            else { 
+                isIntroAnimating = false; 
+                gameActive = true; 
+                camera.position.copy(camEnd); 
+                camera.lookAt(player.position.x, player.position.y + 1, 0); 
+            }
+        };
+        if (showPopup) {
+            const popup = document.querySelector('.level-popup');
+            document.getElementById('popup-text').innerText = "LEVEL " + level;
+            popup.classList.add('active');
+            setTimeout(() => {
+                popup.classList.remove('active');
+                applySetup();
+            }, 2200);
+        } else {
+            applySetup();
+        }
     }
 
     function addPlatform(x, y, w, color) {
@@ -645,9 +652,27 @@
         return new THREE.CanvasTexture(canvas);
     }
 
+    function createExplosion(pos) {
+        const particleCount = 15;
+        const geometry = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+        const material = new THREE.MeshStandardMaterial({ color: 0xffe600, transparent: true });
+        for (let i = 0; i < particleCount; i++) {
+            const p = new THREE.Mesh(geometry, material.clone());
+            p.position.copy(pos);
+            p.userData = {
+                velocity: new THREE.Vector3((Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6 + 0.3, (Math.random() - 0.5) * 0.6),
+                life: 1.0
+            };
+            scene.add(p);
+            particles.push(p);
+        }
+    }
+
     function handleDeath() {
         if (isDying) return;
-        isDying = true; gameActive = false; lives--;
+        isDying = true; gameActive = false; 
+        createExplosion(player.position);
+        lives--;
         document.getElementById('lives-val').innerText = lives;
         if (lives === 1) showNotificationAlert();
         else if (lives > 0) popMessage(oopsies[Math.floor(Math.random() * oopsies.length)]);
@@ -663,7 +688,7 @@
     function finalizeDeath() {
         isDying = false;
         if (lives <= 0) showGameOver(false);
-        else { startLevelSequence(level, false); }
+        else { startLevelSequence(level, false, false); }
     }
 
     function goHome() { 
@@ -681,45 +706,47 @@
         for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
             p.position.addScaledVector(p.userData.velocity, dt);
-            p.userData.velocity.y -= 0.01 * dt; p.userData.life -= 0.02 * dt;
-            p.material.opacity = p.userData.life;
+            p.userData.velocity.y -= 0.015 * dt; p.userData.life -= 0.025 * dt;
+            p.material.opacity = Math.max(0, p.userData.life);
             if (p.userData.life <= 0) { scene.remove(p); particles.splice(i, 1); }
         }
-
         if (isIntroAnimating) {
             introProgress += 0.0035 * dt; 
             const easing = introProgress < 0.5 ? 4 * introProgress * introProgress * introProgress : 1 - Math.pow(-2 * introProgress + 2, 3) / 2;
-            if (introProgress >= 1) { isIntroAnimating = false; gameActive = true; camera.position.copy(camEnd); }
-            else { camera.position.lerpVectors(camStart, camEnd, easing); camera.lookAt(THREE.MathUtils.lerp(door.position.x, player.position.x, easing), THREE.MathUtils.lerp(door.position.y, player.position.y, easing), 0); }
+            if (introProgress >= 1) { 
+                isIntroAnimating = false; 
+                gameActive = true; 
+                camera.position.copy(camEnd); 
+                camera.lookAt(player.position.x, player.position.y + 1, 0);
+            }
+            else { 
+                camera.position.lerpVectors(camStart, camEnd, easing); 
+                const lx = THREE.MathUtils.lerp(cinematicDoorPos.x, player.position.x, easing);
+                const ly = THREE.MathUtils.lerp(cinematicDoorPos.y, player.position.y + 1, easing);
+                camera.lookAt(lx, ly, 0); 
+            }
             return;
         }
-
         if (!gameActive || isDying) { monitorIntroLanding(); return; }
-        
         if (keys.left) velocityX = -0.3; else if (keys.right) velocityX = 0.3; else velocityX = 0;
         player.position.x += velocityX * dt;
-        
         let gravityScale = 0.022; 
         velocityY -= gravityScale * dt;
         player.position.y += velocityY * dt;
-        
         const targetScaleY = 1 + velocityY * 0.15;
         player.scale.y = THREE.MathUtils.lerp(player.scale.y, Math.max(0.95, Math.min(1.05, targetScaleY)), 0.15 * dt);
         player.scale.x = player.scale.z = 1 / Math.sqrt(player.scale.y);
-
         platforms.forEach(p => {
             const pBox = new THREE.Box3().setFromObject(p);
             const playerBox = new THREE.Box3().setFromObject(player);
             if (playerBox.intersectsBox(pBox)) { if (velocityY <= 0 && player.position.y > p.position.y) { player.position.y = p.position.y + 1.35; velocityY = 0; isJumping = false; } }
         });
-        if (door && player.position.distanceTo(door.position) < 4.5) { if (level >= 10) showGameOver(true); else startLevelSequence(level + 1, true); }
+        if (door && player.position.distanceTo(door.position) < 4.5) { if (level >= 10) showGameOver(true); else startLevelSequence(level + 1, true, true); }
         if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; }
-        
         items.forEach((it, idx) => {
             it.mesh.position.y = it.baseY + Math.sin(Date.now() * 0.005) * 0.5;
             if (player.position.distanceTo(it.mesh.position) < 3.0) { scene.remove(it.mesh); items.splice(idx, 1); score += 10; document.getElementById('score-val').innerText = score; popMessage(it.text + "! ✨"); }
         });
-        
         enemies.forEach((en, idx) => {
             en.mesh.position.x += en.dir * en.speed * dt;
             en.mesh.position.y = en.surfaceY + 1.1; 
@@ -740,27 +767,15 @@
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, player.position.y + 6, 0.1 * dt);
         camera.lookAt(player.position.x, player.position.y + 1, 0);
     }
-
     function showGameOver(win) { gameActive = false; const screen = document.querySelector('.game-over-screen'); screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; screen.style.display = 'flex'; }
-    function restartGame() { score = 0; lives = 3; level = 1; document.getElementById('score-val').innerText = score; document.getElementById('lives-val').innerText = lives; document.getElementById('lvl-val').innerText = level; document.querySelector('.game-over-screen').style.display = 'none'; startLevelSequence(1, false); }
-
-    function animate(currentTime) { 
-        requestAnimationFrame(animate); 
-        const dt = Math.min(currentTime - lastTime, 100) / 16.66; lastTime = currentTime;
-        update(dt); if (renderer && scene && camera) renderer.render(scene, camera); 
-    }
-
-    const bind = (sel, k) => {
-        const el = document.querySelector(sel);
-        el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false});
-        el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false});
-        el.addEventListener('mousedown', () => { keys[k] = true; });
-        el.addEventListener('mouseup', () => { keys[k] = false; });
-    };
+    function restartGame() { score = 0; lives = 3; level = 1; document.getElementById('score-val').innerText = score; document.getElementById('lives-val').innerText = lives; document.getElementById('lvl-val').innerText = level; document.querySelector('.game-over-screen').style.display = 'none'; document.querySelector('.start-screen').style.display = 'flex'; gameActive = false; if(player) player.visible = false; }
+    function animate(currentTime) { requestAnimationFrame(animate); const dt = Math.min(currentTime - lastTime, 100) / 16.66; lastTime = currentTime; update(dt); if (renderer && scene && camera) renderer.render(scene, camera); }
+    const bind = (sel, k) => { const el = document.querySelector(sel); el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); el.addEventListener('mousedown', () => { keys[k] = true; }); el.addEventListener('mouseup', () => { keys[k] = false; }); };
     bind('.btn-left', 'left'); bind('.btn-right', 'right'); bind('.btn-jump', 'up');
     window.addEventListener('keydown', (e) => { if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } });
     window.addEventListener('keyup', (e) => { if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = false; if(e.code === 'ArrowRight' || e.key === 'd') keys.right = false; if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') keys.up = false; });
-    document.querySelector('.start-btn').onclick = () => { document.querySelector('.start-screen').style.display = 'none'; init(); restartGame(); };
+    document.querySelector('.start-btn').onclick = () => { document.querySelector('.start-screen').style.display = 'none'; init(); restartGameOnlyStats(); };
+    function restartGameOnlyStats() { score = 0; lives = 3; level = 1; document.getElementById('score-val').innerText = score; document.getElementById('lives-val').innerText = lives; document.getElementById('lvl-val').innerText = level; startLevelSequence(1, true, true); }
     document.querySelector('.restart-btn').onclick = restartGame;
     document.querySelector('.home-btn').onclick = goHome;
     document.querySelector('.fullscreen-btn').onclick = toggleFullScreen;
