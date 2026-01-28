@@ -300,9 +300,9 @@
             68.8% { top: -21vmin; left: 89.56vmin; transform: scale(1, 1); }
             72% { top: -6.9vmin; left: 99.2vmin; transform: scale(1.1, 0.9); }
             73.5%, 75% { top: -14vmin; left: 99.2vmin; transform: scale(0.98, 1.02); } 
-            77% { top: -6.9vmin; left: 99.2vmin; transform: scale(1.15, 0.85); } 
-            81% { transform: scale(0.3, 3.5); top: -20vmin; filter: none; left: 99.2vmin; }
-            100% { top: -350vh; transform: scale(0.2, 4); filter: none; left: 99.2vmin; }
+            77% { top: -6.9vmin; left: 99.2vmin; transform: scale(1.15, 0.85); filter: none; } 
+            81% { transform: scale(0.3, 3.5); top: -20vmin; filter: blur(8px); left: 99.2vmin; }
+            100% { top: -350vh; transform: scale(0.2, 4); filter: blur(60px); left: 99.2vmin; }
         }
 
         .landing-dust {
@@ -533,13 +533,12 @@
         const verticalClimb = lvl * 4.5;
         
         const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
-        const spacing = platformWidth + 8 + (lvl * 1.5); 
+        // Increased spacing slightly more while maintaining reachability
+        const spacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92; 
         
-        /* Updated Enemy Logic: Deterministic numbers for Level 1 and 2, scaling for the rest */
         let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : lvl + 2;
         const enemySpeed = 0.03 + (lvl * 0.012);
         
-        // Randomly pick indices for the enemies among all segments except the first (start) and last (door)
         const possibleIndices = [];
         for (let j = 1; j < segments - 1; j++) possibleIndices.push(j);
         const selectedEnemyIndices = possibleIndices.sort(() => Math.random() - 0.5).slice(0, enemyCount);
