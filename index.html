@@ -508,6 +508,9 @@
         const mouth = new THREE.Mesh(mouthGeo, eyeMat);
         mouth.position.set(0.6, -0.1, 0); mouth.rotation.y = Math.PI / 2; mouth.rotation.x = Math.PI;
         group.add(mouth);
+        
+        group.userData = { eyes: [lEye, rEye] };
+        
         player = group; player.position.set(0, 2, 0); player.visible = false;
         scene.add(player);
     }
@@ -535,7 +538,6 @@
         const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
         const spacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92; 
         
-        // Balanced enemy count - always much fewer than yellow deeds
         let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.2) + 1;
         const enemySpeed = 0.03 + (lvl * 0.012);
         
@@ -561,7 +563,6 @@
                 spawnEnemy(p, badEmotions, enemySpeed);
                 consecutiveEmpty = 0;
             } else {
-                // High density of yellow blocks: 85% chance, or 100% if last platform was empty
                 if (Math.random() > 0.15 || consecutiveEmpty >= 1 || i === 1) {
                     spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
                     consecutiveEmpty = 0;
@@ -580,11 +581,18 @@
 
     function startLevelSequence(lvl, withCinematic = true, showPopup = true) {
         gameActive = false; isIntroAnimating = false;
-        if (player) player.visible = false; 
+        if (player) {
+            player.visible = false;
+            player.rotation.y = -Math.PI / 2; // Fixed: Face Camera directly
+        } 
         level = lvl; document.getElementById('lvl-val').innerText = level;
         const applySetup = () => {
             spawnLevel(level);
-            if (player) { player.visible = true; player.position.set(0, 2, 0); }
+            if (player) { 
+                player.visible = true; 
+                player.position.set(0, 2, 0); 
+                player.rotation.y = -Math.PI / 2; // Fixed: Face Camera directly
+            }
             velocityY = 0; velocityX = 0;
             if (withCinematic) { 
                 isIntroAnimating = true; 
@@ -721,9 +729,32 @@
         if (isIntroAnimating) {
             introProgress += 0.0035 * dt; 
             const easing = introProgress < 0.5 ? 4 * introProgress * introProgress * introProgress : 1 - Math.pow(-2 * introProgress + 2, 3) / 2;
+            
+            // Default look at camera (Rotation -PI/2 aligns local +X to global +Z if cam is at +Z)
+            // Note: Camera is at global +Z, so to face it, we rotate such that eyes point out.
+            player.rotation.y = -Math.PI / 2; 
+
+            // Blink timing shifted slightly later for visibility after landing
+            const blink1 = introProgress > 0.75 && introProgress < 0.78;
+            const blink2 = introProgress > 0.82 && introProgress < 0.85;
+            
+            if (blink1 || blink2) {
+                player.userData.eyes.forEach(eye => eye.scale.y = 0.1);
+            } else {
+                player.userData.eyes.forEach(eye => eye.scale.y = 1.0);
+            }
+
+            // Turn logic (between 0.92 and 1.0)
+            if (introProgress > 0.92) {
+                const turnEase = (introProgress - 0.92) / 0.08;
+                // PI/2 is Facing Right (The Path)
+                player.rotation.y = THREE.MathUtils.lerp(-Math.PI / 2, 0, turnEase);
+            }
+
             if (introProgress >= 1) { 
                 isIntroAnimating = false; 
                 gameActive = true; 
+                player.rotation.y = 0; 
                 camera.position.copy(camEnd); 
                 camera.lookAt(player.position.x, player.position.y + 1, 0);
             }
@@ -736,7 +767,17 @@
             return;
         }
         if (!gameActive || isDying) { monitorIntroLanding(); return; }
-        if (keys.left) velocityX = -0.3; else if (keys.right) velocityX = 0.3; else velocityX = 0;
+        
+        if (keys.left) {
+            velocityX = -0.3;
+            player.rotation.y = THREE.MathUtils.lerp(player.rotation.y, Math.PI, 0.15 * dt);
+        } else if (keys.right) {
+            velocityX = 0.3;
+            player.rotation.y = THREE.MathUtils.lerp(player.rotation.y, 0, 0.15 * dt);
+        } else {
+            velocityX = 0;
+        }
+
         player.position.x += velocityX * dt;
         let gravityScale = 0.022; 
         velocityY -= gravityScale * dt;
@@ -744,17 +785,37 @@
         const targetScaleY = 1 + velocityY * 0.15;
         player.scale.y = THREE.MathUtils.lerp(player.scale.y, Math.max(0.95, Math.min(1.05, targetScaleY)), 0.15 * dt);
         player.scale.x = player.scale.z = 1 / Math.sqrt(player.scale.y);
+        
         platforms.forEach(p => {
             const pBox = new THREE.Box3().setFromObject(p);
             const playerBox = new THREE.Box3().setFromObject(player);
-            if (playerBox.intersectsBox(pBox)) { if (velocityY <= 0 && player.position.y > p.position.y) { player.position.y = p.position.y + 1.35; velocityY = 0; isJumping = false; } }
+            if (playerBox.intersectsBox(pBox)) { 
+                if (velocityY <= 0 && player.position.y > p.position.y) { 
+                    player.position.y = p.position.y + 1.35; 
+                    velocityY = 0; 
+                    isJumping = false; 
+                } 
+            }
         });
-        if (door && player.position.distanceTo(door.position) < 4.5) { if (level >= 10) showGameOver(true); else startLevelSequence(level + 1, true, true); }
+
+        if (door && player.position.distanceTo(door.position) < 4.5) { 
+            if (level >= 10) showGameOver(true); 
+            else startLevelSequence(level + 1, true, true); 
+        }
+
         if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; }
+        
         items.forEach((it, idx) => {
             it.mesh.position.y = it.baseY + Math.sin(Date.now() * 0.005) * 0.5;
-            if (player.position.distanceTo(it.mesh.position) < 3.0) { scene.remove(it.mesh); items.splice(idx, 1); score += 10; document.getElementById('score-val').innerText = score; popMessage(it.text + "! ✨"); }
+            if (player.position.distanceTo(it.mesh.position) < 3.0) { 
+                scene.remove(it.mesh); 
+                items.splice(idx, 1); 
+                score += 10; 
+                document.getElementById('score-val').innerText = score; 
+                popMessage(it.text + "! ✨"); 
+            }
         });
+
         enemies.forEach((en, idx) => {
             en.mesh.position.x += en.dir * en.speed * dt;
             en.mesh.position.y = en.surfaceY + 1.1; 
@@ -763,32 +824,110 @@
             const margin = 0.1;
             const relativeX = en.mesh.position.x - en.platform.position.x;
             const limit = halfPlatformWidth - halfEnemyWidth - margin;
-            if (Math.abs(relativeX) > limit) { en.dir *= -1; en.mesh.position.x = en.platform.position.x + Math.sign(relativeX) * limit; }
+            if (Math.abs(relativeX) > limit) { 
+                en.dir *= -1; 
+                en.mesh.position.x = en.platform.position.x + Math.sign(relativeX) * limit; 
+            }
             if (new THREE.Box3().setFromObject(player).intersectsBox(new THREE.Box3().setFromObject(en.mesh))) { 
                 if (velocityY < -0.05 && player.position.y > en.mesh.position.y + 0.5) { 
-                    scene.remove(en.mesh); enemies.splice(idx, 1); velocityY = 0.42; popMessage("OVERCOME!");
+                    scene.remove(en.mesh); 
+                    enemies.splice(idx, 1); 
+                    velocityY = 0.42; 
+                    popMessage("OVERCOME!");
                 } else handleDeath(); 
             }
         });
+
         if (player.position.y < -50) handleDeath();
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, player.position.x, 0.1 * dt);
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, player.position.y + 6, 0.1 * dt);
         camera.lookAt(player.position.x, player.position.y + 1, 0);
     }
-    function showGameOver(win) { gameActive = false; const screen = document.querySelector('.game-over-screen'); screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; screen.style.display = 'flex'; }
-    function restartGame() { score = 0; lives = 3; level = 1; document.getElementById('score-val').innerText = score; document.getElementById('lives-val').innerText = lives; document.getElementById('lvl-val').innerText = level; document.querySelector('.game-over-screen').style.display = 'none'; document.querySelector('.start-screen').style.display = 'flex'; gameActive = false; if(player) player.visible = false; }
-    function animate(currentTime) { requestAnimationFrame(animate); const dt = Math.min(currentTime - lastTime, 100) / 16.66; lastTime = currentTime; update(dt); if (renderer && scene && camera) renderer.render(scene, camera); }
-    const bind = (sel, k) => { const el = document.querySelector(sel); el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); el.addEventListener('mousedown', () => { keys[k] = true; }); el.addEventListener('mouseup', () => { keys[k] = false; }); };
+
+    function showGameOver(win) { 
+        gameActive = false; 
+        const screen = document.querySelector('.game-over-screen'); 
+        screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
+        document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
+        screen.style.display = 'flex'; 
+    }
+
+    function restartGame() { 
+        score = 0; lives = 3; level = 1; 
+        document.getElementById('score-val').innerText = score; 
+        document.getElementById('lives-val').innerText = lives; 
+        document.getElementById('lvl-val').innerText = level; 
+        document.querySelector('.game-over-screen').style.display = 'none'; 
+        document.querySelector('.start-screen').style.display = 'flex'; 
+        gameActive = false; 
+        if(player) player.visible = false; 
+    }
+
+    function animate(currentTime) { 
+        requestAnimationFrame(animate); 
+        const dt = Math.min(currentTime - lastTime, 100) / 16.66; 
+        lastTime = currentTime; 
+        update(dt); 
+        if (renderer && scene && camera) renderer.render(scene, camera); 
+    }
+
+    const bind = (sel, k) => { 
+        const el = document.querySelector(sel); 
+        el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
+        el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
+        el.addEventListener('mousedown', () => { keys[k] = true; }); 
+        el.addEventListener('mouseup', () => { keys[k] = false; }); 
+    };
+
     bind('.btn-left', 'left'); bind('.btn-right', 'right'); bind('.btn-jump', 'up');
-    window.addEventListener('keydown', (e) => { if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } });
-    window.addEventListener('keyup', (e) => { if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = false; if(e.code === 'ArrowRight' || e.key === 'd') keys.right = false; if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') keys.up = false; });
-    document.querySelector('.start-btn').onclick = () => { document.querySelector('.start-screen').style.display = 'none'; init(); restartGameOnlyStats(); };
-    function restartGameOnlyStats() { score = 0; lives = 3; level = 1; document.getElementById('score-val').innerText = score; document.getElementById('lives-val').innerText = lives; document.getElementById('lvl-val').innerText = level; startLevelSequence(1, true, true); }
+    
+    window.addEventListener('keydown', (e) => { 
+        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; 
+        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; 
+        if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } 
+    });
+
+    window.addEventListener('keyup', (e) => { 
+        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = false; 
+        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = false; 
+        if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') keys.up = false; 
+    });
+
+    document.querySelector('.start-btn').onclick = () => { 
+        document.querySelector('.start-screen').style.display = 'none'; 
+        init(); 
+        restartGameOnlyStats(); 
+    };
+
+    function restartGameOnlyStats() { 
+        score = 0; lives = 3; level = 1; 
+        document.getElementById('score-val').innerText = score; 
+        document.getElementById('lives-val').innerText = lives; 
+        document.getElementById('lvl-val').innerText = level; 
+        startLevelSequence(1, true, true); 
+    }
+
     document.querySelector('.restart-btn').onclick = restartGame;
     document.querySelector('.home-btn').onclick = goHome;
     document.querySelector('.fullscreen-btn').onclick = toggleFullScreen;
-    function popMessage(txt) { const msg = document.querySelector('.message-box'); if(msg) { msg.innerText = txt; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 1500); } }
-    window.addEventListener('resize', () => { if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); } });
+
+    function popMessage(txt) { 
+        const msg = document.querySelector('.message-box'); 
+        if(msg) { 
+            msg.innerText = txt; 
+            msg.style.display = 'block'; 
+            setTimeout(() => { msg.style.display = 'none'; }, 1500); 
+        } 
+    }
+
+    window.addEventListener('resize', () => { 
+        if(camera && renderer) { 
+            camera.aspect = window.innerWidth / window.innerHeight; 
+            camera.updateProjectionMatrix(); 
+            renderer.setSize(window.innerWidth, window.innerHeight); 
+        } 
+    });
+
     window.onload = function() { animate(performance.now()); }
 </script>
 </body>
