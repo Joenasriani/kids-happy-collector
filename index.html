@@ -533,10 +533,10 @@
         const verticalClimb = lvl * 4.5;
         
         const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
-        // Increased spacing slightly more while maintaining reachability
         const spacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92; 
         
-        let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : lvl + 2;
+        // Balanced enemy count - always much fewer than yellow deeds
+        let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.2) + 1;
         const enemySpeed = 0.03 + (lvl * 0.012);
         
         const possibleIndices = [];
@@ -548,6 +548,8 @@
         const goodEmotions = ["BRAVERY", "JOY", "LOVE", "HOPE", "PEACE", "KINDNESS", "CALM", "PRIDE", "TRUST", "HAPPINESS"];
         const badEmotions = ["ANGER", "GREED", "JEALOUSY", "RUDENESS", "ENVY", "HATE", "DESPAIR"];
         
+        let consecutiveEmpty = 0;
+
         for (let i = 1; i < segments; i++) {
             const x = i * spacing;
             let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.8));
@@ -557,8 +559,15 @@
             
             if (selectedEnemyIndices.includes(i)) {
                 spawnEnemy(p, badEmotions, enemySpeed);
-            } else if (Math.random() > 0.6) {
-                spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
+                consecutiveEmpty = 0;
+            } else {
+                // High density of yellow blocks: 85% chance, or 100% if last platform was empty
+                if (Math.random() > 0.15 || consecutiveEmpty >= 1 || i === 1) {
+                    spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
+                    consecutiveEmpty = 0;
+                } else {
+                    consecutiveEmpty++;
+                }
             }
         }
         const finalX = segments * spacing;
