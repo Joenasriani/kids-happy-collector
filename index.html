@@ -179,8 +179,8 @@
         .ctrl-group { display: flex; gap: 3vmin; pointer-events: auto; align-items: center; }
 
         .btn {
-            width: 14vmin;
-            height: 14vmin;
+            width: clamp(52px, 14vmin, 96px);
+            height: clamp(52px, 14vmin, 96px);
             background: var(--glass);
             backdrop-filter: none;
             border: 0.4vmin solid rgba(255,255,255,0.6);
@@ -189,7 +189,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 6vmin;
+            font-size: clamp(24px, 6vmin, 44px);
             cursor: pointer;
             user-select: none;
             pointer-events: auto;
@@ -197,7 +197,7 @@
         }
 
         .btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.9); }
-        .jump-btn { width: 26vmin; border-radius: 6vmin; font-weight: 900; font-size: 5vmin; }
+        .jump-btn { width: clamp(120px, 26vmin, 190px); border-radius: 6vmin; font-weight: 900; font-size: clamp(18px, 5vmin, 34px); }
 
         .screen-overlay {
             position: fixed;
@@ -355,12 +355,16 @@
         }
 
         .instruction-item {
-            font-size: 3.5vmin;
+            font-size: clamp(14px, 3.5vmin, 24px);
             margin: 1vmin 0;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 2vmin;
+        }
+
+        @media (min-width: 900px) {
+            .controls { bottom: 3vmin; justify-content: space-between; padding: 0 8vmin; }
         }
     </style>
 </head>
@@ -431,11 +435,16 @@
     let scene, camera, renderer, player, door;
     let platforms = [], items = [], enemies = [], clouds = [], particles = [];
     let score = 0, lives = 3, level = 1;
+    let levelTarget = 1, collectedThisLevel = 0, totalGoodItems = 0, doorUnlocked = false;
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
     let isIntroAnimating = false, introProgress = 0;
     let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
+    let doorPromptCooldown = 0;
+    let audioCtx = null;
+    let moveSoundTick = 0;
+    let lastGrounded = false;
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
 
@@ -532,11 +541,16 @@
         enemies.forEach(en => scene.remove(en.mesh));
         if (door) scene.remove(door);
         platforms = []; items = []; enemies = [];
+        totalGoodItems = 0;
+        collectedThisLevel = 0;
+        doorUnlocked = false;
         const segments = 5 + (lvl * 5);
         const verticalClimb = lvl * 4.5;
         
         const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
-        const spacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92; 
+        const spacingBase = (platformWidth + 6.2 + (lvl * 0.45)) * 0.84;
+        const spacingTightener = lvl >= 4 ? Math.max(0.8, 1 - ((lvl - 3) * 0.03)) : 1;
+        const spacing = spacingBase * spacingTightener; 
         
         let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.2) + 1;
         const enemySpeed = 0.03 + (lvl * 0.012);
@@ -554,7 +568,11 @@
 
         for (let i = 1; i < segments; i++) {
             const x = i * spacing;
-            let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.8));
+            let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.75));
+            const maxRisePerPlatform = 3.4 + Math.min(lvl * 0.15, 1.0);
+            const maxDropPerPlatform = 2.6;
+            if (currentY > lastY + maxRisePerPlatform) currentY = lastY + maxRisePerPlatform;
+            if (currentY < lastY - maxDropPerPlatform) currentY = lastY - maxDropPerPlatform;
             if (Math.abs(currentY - lastY) < 2.2) currentY += 2.8;
             lastY = currentY;
             const p = addPlatform(x, currentY, platformWidth, 0x7bed9f);
@@ -565,6 +583,7 @@
             } else {
                 if (Math.random() > 0.15 || consecutiveEmpty >= 1 || i === 1) {
                     spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
+                    totalGoodItems++;
                     consecutiveEmpty = 0;
                 } else {
                     consecutiveEmpty++;
@@ -574,9 +593,79 @@
         const finalX = segments * spacing;
         addPlatform(finalX, verticalClimb + 2, 20, 0x2ed573);
         door = createDoorMesh(); door.position.set(finalX, verticalClimb + 6, 0); scene.add(door);
+        levelTarget = Math.max(1, Math.ceil(totalGoodItems * 0.6));
+        setDoorVisualState();
         cinematicDoorPos.copy(door.position);
         camStart.set(door.position.x + 30, door.position.y + 15, 60); 
         camEnd.set(0, 2 + 6, 22);
+    }
+
+    function setDoorVisualState() {
+        if (!door) return;
+        door.children.forEach((child, idx) => {
+            if (!child.material || !child.material.color) return;
+            if (idx === 0) child.material.color.setHex(0x5d4037);
+            if (idx === 1) child.material.color.setHex(0x8d6e63);
+            if (idx === 2) child.material.color.setHex(0xffd700);
+        });
+    }
+
+    function initAudio() {
+        if (audioCtx) return;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        audioCtx = new Ctx();
+    }
+
+    function playSoftTone(freq = 440, duration = 0.08, type = 'sine', volume = 0.04, slideTo = null) {
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2400, now);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        if (slideTo) osc.frequency.linearRampToValueAtTime(slideTo, now + duration);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(volume, now + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+    }
+
+    function playMoveStep() {
+        const tone = 170 + Math.random() * 35;
+        playSoftTone(tone, 0.055, 'triangle', 0.02, tone - 20);
+    }
+
+    function playJumpSound() { playSoftTone(360, 0.14, 'sine', 0.032, 620); }
+    function playLandSound() { playSoftTone(220, 0.06, 'triangle', 0.022, 170); }
+    function playCollectSound() { playSoftTone(590, 0.09, 'sine', 0.03, 760); }
+    function playUnlockSound() { playSoftTone(520, 0.12, 'triangle', 0.03, 840); }
+    function playLockedSound() { playSoftTone(190, 0.1, 'sawtooth', 0.012, 160); }
+    function playHurtSound() { playSoftTone(250, 0.16, 'triangle', 0.03, 130); }
+    function playStompSound() { playSoftTone(300, 0.08, 'triangle', 0.026, 210); }
+    function playLevelSound() { playSoftTone(460, 0.1, 'sine', 0.03, 680); }
+    function playGameOverSound() { playSoftTone(300, 0.22, 'triangle', 0.03, 120); }
+    function playButtonSound() { playSoftTone(420, 0.08, 'sine', 0.024, 480); }
+    function playLastLifeAlertSound() { playSoftTone(410, 0.09, 'sine', 0.026, 520); }
+
+    function movementSoundLoop(dt) {
+        if (!gameActive || isDying) return;
+        if ((keys.left || keys.right) && !isJumping) {
+            moveSoundTick += dt;
+            if (moveSoundTick >= 5.8) {
+                playMoveStep();
+                moveSoundTick = 0;
+            }
+        } else {
+            moveSoundTick = 0;
+        }
     }
 
     function startLevelSequence(lvl, withCinematic = true, showPopup = true) {
@@ -689,6 +778,7 @@
         isDying = true; gameActive = false; 
         createExplosion(player.position);
         lives--;
+        playHurtSound();
         document.getElementById('lives-val').innerText = lives;
         if (lives === 1) showNotificationAlert();
         else if (lives > 0) popMessage(oopsies[Math.floor(Math.random() * oopsies.length)]);
@@ -698,6 +788,7 @@
 
     function showNotificationAlert() {
         const alert = document.querySelector('.notification-alert');
+        playLastLifeAlertSound();
         alert.style.display = 'block'; setTimeout(() => alert.style.display = 'none', 3500);
     }
 
@@ -711,6 +802,7 @@
         gameActive = false; isIntroAnimating = false; 
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
+        keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false;
     }
 
@@ -798,12 +890,24 @@
             }
         });
 
-        if (door && player.position.distanceTo(door.position) < 4.5) { 
-            if (level >= 10) showGameOver(true); 
-            else startLevelSequence(level + 1, true, true); 
+        if (door && player.position.distanceTo(door.position) < 4.5) {
+            if (!doorUnlocked) {
+                if (doorPromptCooldown <= 0) {
+                    popMessage(`Door locked! ${Math.max(levelTarget - collectedThisLevel, 0)} more needed`);
+                    playLockedSound();
+                    doorPromptCooldown = 50;
+                }
+                player.position.x -= Math.sign(velocityX || 1) * 0.9 * dt;
+            } else if (level >= 10) {
+                showGameOver(true);
+            } else {
+                playLevelSound();
+                startLevelSequence(level + 1, true, true);
+            }
         }
+        if (doorPromptCooldown > 0) doorPromptCooldown -= dt;
 
-        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; }
+        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; playJumpSound(); }
         
         items.forEach((it, idx) => {
             it.mesh.position.y = it.baseY + Math.sin(Date.now() * 0.005) * 0.5;
@@ -811,8 +915,17 @@
                 scene.remove(it.mesh); 
                 items.splice(idx, 1); 
                 score += 10; 
+                collectedThisLevel++;
                 document.getElementById('score-val').innerText = score; 
-                popMessage(it.text + "! ✨"); 
+                if (!doorUnlocked && collectedThisLevel >= levelTarget) {
+                    doorUnlocked = true;
+                    setDoorVisualState();
+                    playUnlockSound();
+                    popMessage("DOOR UNLOCKED! 🚪✨");
+                } else {
+                    playCollectSound();
+                    popMessage(it.text + "! ✨"); 
+                }
             }
         });
 
@@ -833,12 +946,17 @@
                     scene.remove(en.mesh); 
                     enemies.splice(idx, 1); 
                     velocityY = 0.42; 
+                    playStompSound();
                     popMessage("OVERCOME!");
                 } else handleDeath(); 
             }
         });
 
         if (player.position.y < -50) handleDeath();
+        const groundedNow = velocityY === 0 && !isJumping;
+        if (groundedNow && !lastGrounded) playLandSound();
+        lastGrounded = groundedNow;
+        movementSoundLoop(dt);
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, player.position.x, 0.1 * dt);
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, player.position.y + 6, 0.1 * dt);
         camera.lookAt(player.position.x, player.position.y + 1, 0);
@@ -846,6 +964,8 @@
 
     function showGameOver(win) { 
         gameActive = false; 
+        if (!win) playGameOverSound();
+        else playLevelSound();
         const screen = document.querySelector('.game-over-screen'); 
         screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
         document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
@@ -860,6 +980,7 @@
         document.querySelector('.game-over-screen').style.display = 'none'; 
         document.querySelector('.start-screen').style.display = 'flex'; 
         gameActive = false; 
+        keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false; 
     }
 
@@ -873,15 +994,17 @@
 
     const bind = (sel, k) => { 
         const el = document.querySelector(sel); 
-        el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
-        el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
-        el.addEventListener('mousedown', () => { keys[k] = true; }); 
-        el.addEventListener('mouseup', () => { keys[k] = false; }); 
+        if (!el) return;
+        el.addEventListener('pointerdown', (e) => { e.preventDefault(); initAudio(); keys[k] = true; playButtonSound(); }, {passive: false}); 
+        el.addEventListener('pointerup', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
+        el.addEventListener('pointercancel', () => { keys[k] = false; }); 
+        el.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'mouse') keys[k] = false; }); 
     };
 
     bind('.btn-left', 'left'); bind('.btn-right', 'right'); bind('.btn-jump', 'up');
     
     window.addEventListener('keydown', (e) => { 
+        initAudio();
         if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; 
         if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; 
         if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } 
@@ -894,6 +1017,8 @@
     });
 
     document.querySelector('.start-btn').onclick = () => { 
+        initAudio();
+        playButtonSound();
         document.querySelector('.start-screen').style.display = 'none'; 
         init(); 
         restartGameOnlyStats(); 
@@ -901,15 +1026,16 @@
 
     function restartGameOnlyStats() { 
         score = 0; lives = 3; level = 1; 
+        keys.left = false; keys.right = false; keys.up = false;
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
         document.getElementById('lvl-val').innerText = level; 
         startLevelSequence(1, true, true); 
     }
 
-    document.querySelector('.restart-btn').onclick = restartGame;
-    document.querySelector('.home-btn').onclick = goHome;
-    document.querySelector('.fullscreen-btn').onclick = toggleFullScreen;
+    document.querySelector('.restart-btn').onclick = () => { initAudio(); playButtonSound(); restartGame(); };
+    document.querySelector('.home-btn').onclick = () => { initAudio(); playButtonSound(); goHome(); };
+    document.querySelector('.fullscreen-btn').onclick = () => { initAudio(); playButtonSound(); toggleFullScreen(); };
 
     function popMessage(txt) { 
         const msg = document.querySelector('.message-box'); 
