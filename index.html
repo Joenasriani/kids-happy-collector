@@ -33,6 +33,15 @@
             z-index: 50;
         }
 
+        .center-hud {
+            position: absolute;
+            top: calc(3vmin + env(safe-area-inset-top, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 60;
+            pointer-events: none;
+        }
+
         .hud-column {
             display: flex;
             flex-direction: column;
@@ -91,6 +100,27 @@
             border-width: 0.6vmin;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 3.5vmin;
+        }
+
+        .objective-card {
+            font-size: clamp(13px, 2.8vmin, 22px);
+            padding: 1.4vmin 3.4vmin;
+            border-radius: 3vmin;
+            max-width: min(78vw, 680px);
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .objective-card.locked {
+            border-color: rgba(255, 124, 124, 0.8);
+            color: #ffe6e6;
+            background: rgba(255, 71, 87, 0.35);
+        }
+
+        .objective-card.unlocked {
+            border-color: rgba(46, 213, 115, 0.9);
+            background: rgba(46, 213, 115, 0.35);
+            color: #f4fff8;
         }
 
         .message-box {
@@ -363,6 +393,13 @@
             gap: 2vmin;
         }
 
+        .tiny-note {
+            font-size: clamp(12px, 2.2vmin, 16px);
+            opacity: 0.9;
+            margin-top: 2vmin;
+            letter-spacing: 0.05em;
+        }
+
         @media (min-width: 900px) {
             .controls { bottom: 3vmin; justify-content: space-between; padding: 0 8vmin; }
         }
@@ -381,10 +418,11 @@
     </div>
     
     <div class="instruction-box">
-        <div class="instruction-item">✨ Collect: Yellow blocks = Good Emotions</div>
-        <div class="instruction-item">🚫 Avoid: Red blocks = Bad Emotions</div>
-        <div class="instruction-item">❤️ Warning: 3 lives to beat level 10</div>
+        <div class="instruction-item">✨ Collect yellow emotions to unlock each door</div>
+        <div class="instruction-item">🚫 Avoid or stomp red emotions from above</div>
+        <div class="instruction-item">🏁 Reach level 10 before you run out of 3 lives</div>
     </div>
+    <div class="tiny-note">Keyboard: ←/→ or A/D to move, Space/W/↑ to jump</div>
 
     <button class="start-btn action-btn">PLAY NOW</button>
 </div>
@@ -421,6 +459,10 @@
     </div>
 </div>
 
+<div class="center-hud">
+    <div id="objective-card" class="hud-card objective-card locked">Collect joy blocks to unlock the door</div>
+</div>
+
 <div class="controls">
     <div class="ctrl-group">
         <div class="btn btn-left">◀</div>
@@ -442,9 +484,6 @@
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
     let doorPromptCooldown = 0;
-    let audioCtx = null;
-    let moveSoundTick = 0;
-    let lastGrounded = false;
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
 
@@ -594,77 +633,35 @@
         addPlatform(finalX, verticalClimb + 2, 20, 0x2ed573);
         door = createDoorMesh(); door.position.set(finalX, verticalClimb + 6, 0); scene.add(door);
         levelTarget = Math.max(1, Math.ceil(totalGoodItems * 0.6));
-        setDoorVisualState();
+        updateObjectiveCard();
+        setDoorVisualState(false);
         cinematicDoorPos.copy(door.position);
         camStart.set(door.position.x + 30, door.position.y + 15, 60); 
         camEnd.set(0, 2 + 6, 22);
     }
 
-    function setDoorVisualState() {
+    function setDoorVisualState(unlocked) {
         if (!door) return;
         door.children.forEach((child, idx) => {
             if (!child.material || !child.material.color) return;
-            if (idx === 0) child.material.color.setHex(0x5d4037);
-            if (idx === 1) child.material.color.setHex(0x8d6e63);
-            if (idx === 2) child.material.color.setHex(0xffd700);
+            if (idx === 0) child.material.color.setHex(unlocked ? 0x2ecc71 : 0x8d4e85);
+            if (idx === 1) child.material.color.setHex(unlocked ? 0x7bed9f : 0xc44569);
+            if (idx === 2) child.material.color.setHex(unlocked ? 0xffd700 : 0xf1c40f);
         });
     }
 
-    function initAudio() {
-        if (audioCtx) return;
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if (!Ctx) return;
-        audioCtx = new Ctx();
-    }
-
-    function playSoftTone(freq = 440, duration = 0.08, type = 'sine', volume = 0.04, slideTo = null) {
-        if (!audioCtx) return;
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(2400, now);
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, now);
-        if (slideTo) osc.frequency.linearRampToValueAtTime(slideTo, now + duration);
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(volume, now + 0.018);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + duration + 0.02);
-    }
-
-    function playMoveStep() {
-        const tone = 170 + Math.random() * 35;
-        playSoftTone(tone, 0.055, 'triangle', 0.02, tone - 20);
-    }
-
-    function playJumpSound() { playSoftTone(360, 0.14, 'sine', 0.032, 620); }
-    function playLandSound() { playSoftTone(220, 0.06, 'triangle', 0.022, 170); }
-    function playCollectSound() { playSoftTone(590, 0.09, 'sine', 0.03, 760); }
-    function playUnlockSound() { playSoftTone(520, 0.12, 'triangle', 0.03, 840); }
-    function playLockedSound() { playSoftTone(190, 0.1, 'sawtooth', 0.012, 160); }
-    function playHurtSound() { playSoftTone(250, 0.16, 'triangle', 0.03, 130); }
-    function playStompSound() { playSoftTone(300, 0.08, 'triangle', 0.026, 210); }
-    function playLevelSound() { playSoftTone(460, 0.1, 'sine', 0.03, 680); }
-    function playGameOverSound() { playSoftTone(300, 0.22, 'triangle', 0.03, 120); }
-    function playButtonSound() { playSoftTone(420, 0.08, 'sine', 0.024, 480); }
-    function playLastLifeAlertSound() { playSoftTone(410, 0.09, 'sine', 0.026, 520); }
-
-    function movementSoundLoop(dt) {
-        if (!gameActive || isDying) return;
-        if ((keys.left || keys.right) && !isJumping) {
-            moveSoundTick += dt;
-            if (moveSoundTick >= 5.8) {
-                playMoveStep();
-                moveSoundTick = 0;
-            }
+    function updateObjectiveCard() {
+        const objectiveCard = document.getElementById('objective-card');
+        if (!objectiveCard) return;
+        const remaining = Math.max(levelTarget - collectedThisLevel, 0);
+        if (doorUnlocked) {
+            objectiveCard.classList.remove('locked');
+            objectiveCard.classList.add('unlocked');
+            objectiveCard.innerText = `Door unlocked! Reach it to clear Level ${level}.`;
         } else {
-            moveSoundTick = 0;
+            objectiveCard.classList.remove('unlocked');
+            objectiveCard.classList.add('locked');
+            objectiveCard.innerText = `Collect ${remaining} more joy block${remaining === 1 ? '' : 's'} to unlock the door (${collectedThisLevel}/${levelTarget}).`;
         }
     }
 
@@ -894,14 +891,12 @@
             if (!doorUnlocked) {
                 if (doorPromptCooldown <= 0) {
                     popMessage(`Door locked! ${Math.max(levelTarget - collectedThisLevel, 0)} more needed`);
-                    playLockedSound();
                     doorPromptCooldown = 50;
                 }
                 player.position.x -= Math.sign(velocityX || 1) * 0.9 * dt;
             } else if (level >= 10) {
                 showGameOver(true);
             } else {
-                playLevelSound();
                 startLevelSequence(level + 1, true, true);
             }
         }
@@ -919,13 +914,12 @@
                 document.getElementById('score-val').innerText = score; 
                 if (!doorUnlocked && collectedThisLevel >= levelTarget) {
                     doorUnlocked = true;
-                    setDoorVisualState();
-                    playUnlockSound();
+                    setDoorVisualState(true);
                     popMessage("DOOR UNLOCKED! 🚪✨");
                 } else {
-                    playCollectSound();
                     popMessage(it.text + "! ✨"); 
                 }
+                updateObjectiveCard();
             }
         });
 
@@ -995,7 +989,7 @@
     const bind = (sel, k) => { 
         const el = document.querySelector(sel); 
         if (!el) return;
-        el.addEventListener('pointerdown', (e) => { e.preventDefault(); initAudio(); keys[k] = true; playButtonSound(); }, {passive: false}); 
+        el.addEventListener('pointerdown', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
         el.addEventListener('pointerup', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
         el.addEventListener('pointercancel', () => { keys[k] = false; }); 
         el.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'mouse') keys[k] = false; }); 
@@ -1030,6 +1024,7 @@
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
         document.getElementById('lvl-val').innerText = level; 
+        updateObjectiveCard();
         startLevelSequence(1, true, true); 
     }
 
