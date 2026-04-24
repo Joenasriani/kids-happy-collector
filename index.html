@@ -33,6 +33,15 @@
             z-index: 50;
         }
 
+        .center-hud {
+            position: absolute;
+            top: calc(3vmin + env(safe-area-inset-top, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 60;
+            pointer-events: none;
+        }
+
         .hud-column {
             display: flex;
             flex-direction: column;
@@ -91,6 +100,27 @@
             border-width: 0.6vmin;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 3.5vmin;
+        }
+
+        .objective-card {
+            font-size: clamp(13px, 2.8vmin, 22px);
+            padding: 1.4vmin 3.4vmin;
+            border-radius: 3vmin;
+            max-width: min(78vw, 680px);
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .objective-card.locked {
+            border-color: rgba(255, 124, 124, 0.8);
+            color: #ffe6e6;
+            background: rgba(255, 71, 87, 0.35);
+        }
+
+        .objective-card.unlocked {
+            border-color: rgba(46, 213, 115, 0.9);
+            background: rgba(46, 213, 115, 0.35);
+            color: #f4fff8;
         }
 
         .message-box {
@@ -179,8 +209,8 @@
         .ctrl-group { display: flex; gap: 3vmin; pointer-events: auto; align-items: center; }
 
         .btn {
-            width: 14vmin;
-            height: 14vmin;
+            width: clamp(52px, 14vmin, 96px);
+            height: clamp(52px, 14vmin, 96px);
             background: var(--glass);
             backdrop-filter: none;
             border: 0.4vmin solid rgba(255,255,255,0.6);
@@ -189,7 +219,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 6vmin;
+            font-size: clamp(24px, 6vmin, 44px);
             cursor: pointer;
             user-select: none;
             pointer-events: auto;
@@ -197,7 +227,7 @@
         }
 
         .btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.9); }
-        .jump-btn { width: 26vmin; border-radius: 6vmin; font-weight: 900; font-size: 5vmin; }
+        .jump-btn { width: clamp(120px, 26vmin, 190px); border-radius: 6vmin; font-weight: 900; font-size: clamp(18px, 5vmin, 34px); }
 
         .screen-overlay {
             position: fixed;
@@ -355,12 +385,23 @@
         }
 
         .instruction-item {
-            font-size: 3.5vmin;
+            font-size: clamp(14px, 3.5vmin, 24px);
             margin: 1vmin 0;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 2vmin;
+        }
+
+        .tiny-note {
+            font-size: clamp(12px, 2.2vmin, 16px);
+            opacity: 0.9;
+            margin-top: 2vmin;
+            letter-spacing: 0.05em;
+        }
+
+        @media (min-width: 900px) {
+            .controls { bottom: 3vmin; justify-content: space-between; padding: 0 8vmin; }
         }
     </style>
 </head>
@@ -377,10 +418,11 @@
     </div>
     
     <div class="instruction-box">
-        <div class="instruction-item">✨ Collect: Yellow blocks = Good Emotions</div>
-        <div class="instruction-item">🚫 Avoid: Red blocks = Bad Emotions</div>
-        <div class="instruction-item">❤️ Warning: 3 lives to beat level 10</div>
+        <div class="instruction-item">✨ Collect yellow emotions to unlock each door</div>
+        <div class="instruction-item">🚫 Avoid or stomp red emotions from above</div>
+        <div class="instruction-item">🏁 Reach level 10 before you run out of 3 lives</div>
     </div>
+    <div class="tiny-note">Keyboard: ←/→ or A/D to move, Space/W/↑ to jump</div>
 
     <button class="start-btn action-btn">PLAY NOW</button>
 </div>
@@ -417,6 +459,10 @@
     </div>
 </div>
 
+<div class="center-hud">
+    <div id="objective-card" class="hud-card objective-card locked">Collect joy blocks to unlock the door</div>
+</div>
+
 <div class="controls">
     <div class="ctrl-group">
         <div class="btn btn-left">◀</div>
@@ -431,11 +477,13 @@
     let scene, camera, renderer, player, door;
     let platforms = [], items = [], enemies = [], clouds = [], particles = [];
     let score = 0, lives = 3, level = 1;
+    let levelTarget = 1, collectedThisLevel = 0, totalGoodItems = 0, doorUnlocked = false;
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
     let isIntroAnimating = false, introProgress = 0;
     let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
+    let doorPromptCooldown = 0;
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
 
@@ -532,6 +580,9 @@
         enemies.forEach(en => scene.remove(en.mesh));
         if (door) scene.remove(door);
         platforms = []; items = []; enemies = [];
+        totalGoodItems = 0;
+        collectedThisLevel = 0;
+        doorUnlocked = false;
         const segments = 5 + (lvl * 5);
         const verticalClimb = lvl * 4.5;
         
@@ -565,6 +616,7 @@
             } else {
                 if (Math.random() > 0.15 || consecutiveEmpty >= 1 || i === 1) {
                     spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
+                    totalGoodItems++;
                     consecutiveEmpty = 0;
                 } else {
                     consecutiveEmpty++;
@@ -574,9 +626,37 @@
         const finalX = segments * spacing;
         addPlatform(finalX, verticalClimb + 2, 20, 0x2ed573);
         door = createDoorMesh(); door.position.set(finalX, verticalClimb + 6, 0); scene.add(door);
+        levelTarget = Math.max(1, Math.ceil(totalGoodItems * 0.6));
+        updateObjectiveCard();
+        setDoorVisualState(false);
         cinematicDoorPos.copy(door.position);
         camStart.set(door.position.x + 30, door.position.y + 15, 60); 
         camEnd.set(0, 2 + 6, 22);
+    }
+
+    function setDoorVisualState(unlocked) {
+        if (!door) return;
+        door.children.forEach((child, idx) => {
+            if (!child.material || !child.material.color) return;
+            if (idx === 0) child.material.color.setHex(unlocked ? 0x2ecc71 : 0x8d4e85);
+            if (idx === 1) child.material.color.setHex(unlocked ? 0x7bed9f : 0xc44569);
+            if (idx === 2) child.material.color.setHex(unlocked ? 0xffd700 : 0xf1c40f);
+        });
+    }
+
+    function updateObjectiveCard() {
+        const objectiveCard = document.getElementById('objective-card');
+        if (!objectiveCard) return;
+        const remaining = Math.max(levelTarget - collectedThisLevel, 0);
+        if (doorUnlocked) {
+            objectiveCard.classList.remove('locked');
+            objectiveCard.classList.add('unlocked');
+            objectiveCard.innerText = `Door unlocked! Reach it to clear Level ${level}.`;
+        } else {
+            objectiveCard.classList.remove('unlocked');
+            objectiveCard.classList.add('locked');
+            objectiveCard.innerText = `Collect ${remaining} more joy block${remaining === 1 ? '' : 's'} to unlock the door (${collectedThisLevel}/${levelTarget}).`;
+        }
     }
 
     function startLevelSequence(lvl, withCinematic = true, showPopup = true) {
@@ -711,6 +791,7 @@
         gameActive = false; isIntroAnimating = false; 
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
+        keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false;
     }
 
@@ -798,10 +879,20 @@
             }
         });
 
-        if (door && player.position.distanceTo(door.position) < 4.5) { 
-            if (level >= 10) showGameOver(true); 
-            else startLevelSequence(level + 1, true, true); 
+        if (door && player.position.distanceTo(door.position) < 4.5) {
+            if (!doorUnlocked) {
+                if (doorPromptCooldown <= 0) {
+                    popMessage(`Door locked! ${Math.max(levelTarget - collectedThisLevel, 0)} more needed`);
+                    doorPromptCooldown = 50;
+                }
+                player.position.x -= Math.sign(velocityX || 1) * 0.9 * dt;
+            } else if (level >= 10) {
+                showGameOver(true);
+            } else {
+                startLevelSequence(level + 1, true, true);
+            }
         }
+        if (doorPromptCooldown > 0) doorPromptCooldown -= dt;
 
         if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; }
         
@@ -811,8 +902,16 @@
                 scene.remove(it.mesh); 
                 items.splice(idx, 1); 
                 score += 10; 
+                collectedThisLevel++;
                 document.getElementById('score-val').innerText = score; 
-                popMessage(it.text + "! ✨"); 
+                if (!doorUnlocked && collectedThisLevel >= levelTarget) {
+                    doorUnlocked = true;
+                    setDoorVisualState(true);
+                    popMessage("DOOR UNLOCKED! 🚪✨");
+                } else {
+                    popMessage(it.text + "! ✨"); 
+                }
+                updateObjectiveCard();
             }
         });
 
@@ -860,6 +959,7 @@
         document.querySelector('.game-over-screen').style.display = 'none'; 
         document.querySelector('.start-screen').style.display = 'flex'; 
         gameActive = false; 
+        keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false; 
     }
 
@@ -873,10 +973,11 @@
 
     const bind = (sel, k) => { 
         const el = document.querySelector(sel); 
-        el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
-        el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
-        el.addEventListener('mousedown', () => { keys[k] = true; }); 
-        el.addEventListener('mouseup', () => { keys[k] = false; }); 
+        if (!el) return;
+        el.addEventListener('pointerdown', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
+        el.addEventListener('pointerup', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
+        el.addEventListener('pointercancel', () => { keys[k] = false; }); 
+        el.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'mouse') keys[k] = false; }); 
     };
 
     bind('.btn-left', 'left'); bind('.btn-right', 'right'); bind('.btn-jump', 'up');
@@ -901,9 +1002,11 @@
 
     function restartGameOnlyStats() { 
         score = 0; lives = 3; level = 1; 
+        keys.left = false; keys.right = false; keys.up = false;
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
         document.getElementById('lvl-val').innerText = level; 
+        updateObjectiveCard();
         startLevelSequence(1, true, true); 
     }
 
