@@ -35,7 +35,7 @@
 
         .center-hud {
             position: absolute;
-            top: calc(3vmin + env(safe-area-inset-top, 0px));
+            top: calc(3vmin + env(safe-area-inset-top, 0px) + clamp(62px, 10vmin, 118px));
             left: 50%;
             transform: translateX(-50%);
             z-index: 60;
@@ -651,9 +651,9 @@
         if (!door) return;
         door.children.forEach((child, idx) => {
             if (!child.material || !child.material.color) return;
-            if (idx === 0) child.material.color.setHex(unlocked ? 0x2ecc71 : 0x8d4e85);
-            if (idx === 1) child.material.color.setHex(unlocked ? 0x7bed9f : 0xc44569);
-            if (idx === 2) child.material.color.setHex(unlocked ? 0xffd700 : 0xf1c40f);
+            if (idx === 0) child.material.color.setHex(unlocked ? 0x8b5a2b : 0x6f3f2f);
+            if (idx === 1) child.material.color.setHex(unlocked ? 0xc7965a : 0x8d6e63);
+            if (idx === 2) child.material.color.setHex(unlocked ? 0xffe08a : 0xb8860b);
         });
     }
 
@@ -778,12 +778,13 @@
         }
     }
 
-    function handleDeath() {
+    function handleDeath(cause = 'enemy') {
         if (isDying) return;
         isDying = true; gameActive = false; 
         createExplosion(player.position);
         lives--;
-        playHurtSound();
+        if (cause === 'fall') playFallSound();
+        else playHurtSound();
         document.getElementById('lives-val').innerText = lives;
         if (lives === 1) showNotificationAlert();
         else if (lives > 0) popMessage(oopsies[Math.floor(Math.random() * oopsies.length)]);
@@ -807,6 +808,8 @@
         gameActive = false; isIntroAnimating = false; 
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
+        const hint = document.getElementById('quick-hint');
+        if (hint) hint.style.display = 'none';
         keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false;
     }
@@ -903,8 +906,10 @@
                 }
                 player.position.x -= Math.sign(velocityX || 1) * 0.9 * dt;
             } else if (level >= 10) {
+                playDoorClearSound(true);
                 showGameOver(true);
             } else {
+                playDoorClearSound(false);
                 startLevelSequence(level + 1, true, true);
             }
         }
@@ -924,8 +929,10 @@
                     doorUnlocked = true;
                     setDoorVisualState(true);
                     popMessage("DOOR UNLOCKED! 🚪✨");
+                    playDoorUnlockSound();
                 } else {
                     popMessage(it.text + "! ✨"); 
+                    playCollectSound();
                 }
                 updateObjectiveCard();
             }
@@ -950,11 +957,11 @@
                     velocityY = 0.42; 
                     playStompSound();
                     popMessage("OVERCOME!");
-                } else handleDeath(); 
+                } else handleDeath('enemy'); 
             }
         });
 
-        if (player.position.y < -50) handleDeath();
+        if (player.position.y < -50) handleDeath('fall');
         const groundedNow = velocityY === 0 && !isJumping;
         if (groundedNow && !lastGrounded) playLandSound();
         lastGrounded = groundedNow;
@@ -967,7 +974,6 @@
     function showGameOver(win) { 
         gameActive = false; 
         if (!win) playGameOverSound();
-        else playLevelSound();
         const screen = document.querySelector('.game-over-screen'); 
         screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
         document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
@@ -981,6 +987,8 @@
         document.getElementById('lvl-val').innerText = level; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
         document.querySelector('.start-screen').style.display = 'flex'; 
+        const hint = document.getElementById('quick-hint');
+        if (hint) hint.style.display = 'none';
         gameActive = false; 
         keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false; 
