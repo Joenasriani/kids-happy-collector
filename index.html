@@ -35,7 +35,7 @@
 
         .center-hud {
             position: absolute;
-            top: calc(3vmin + env(safe-area-inset-top, 0px));
+            top: calc(3vmin + env(safe-area-inset-top, 0px) + clamp(62px, 10vmin, 118px));
             left: 50%;
             transform: translateX(-50%);
             z-index: 60;
@@ -462,6 +462,7 @@
 <div class="center-hud">
     <div id="objective-card" class="hud-card objective-card locked">Collect joy blocks to unlock the door</div>
 </div>
+<div id="quick-hint" class="hud-card" style="position:absolute;left:50%;top:calc(3vmin + env(safe-area-inset-top,0px) + clamp(132px, 22vmin, 220px));transform:translateX(-50%);z-index:61;font-size:clamp(11px,2.1vmin,18px);display:none;max-width:min(88vw,760px);text-align:center;padding:1.1vmin 2.6vmin;opacity:0.95;">Collect yellow blocks, avoid red blocks, unlock the door.</div>
 
 <div class="controls">
     <div class="ctrl-group">
@@ -484,6 +485,12 @@
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
     let doorPromptCooldown = 0;
+    let lastGrounded = false;
+    let quickHintTimeout = null;
+    let audioCtx = null;
+    let masterGain = null;
+    let movementOsc = null;
+    let movementGain = null;
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
 
@@ -644,9 +651,9 @@
         if (!door) return;
         door.children.forEach((child, idx) => {
             if (!child.material || !child.material.color) return;
-            if (idx === 0) child.material.color.setHex(unlocked ? 0x2ecc71 : 0x8d4e85);
-            if (idx === 1) child.material.color.setHex(unlocked ? 0x7bed9f : 0xc44569);
-            if (idx === 2) child.material.color.setHex(unlocked ? 0xffd700 : 0xf1c40f);
+            if (idx === 0) child.material.color.setHex(unlocked ? 0x8b5a2b : 0x6f3f2f);
+            if (idx === 1) child.material.color.setHex(unlocked ? 0xc7965a : 0x8d6e63);
+            if (idx === 2) child.material.color.setHex(unlocked ? 0xffe08a : 0xb8860b);
         });
     }
 
@@ -692,6 +699,7 @@
                 camera.position.copy(camEnd); 
                 camera.lookAt(player.position.x, player.position.y + 1, 0); 
             }
+            showQuickHint();
         };
         if (showPopup) {
             const popup = document.querySelector('.level-popup');
@@ -770,12 +778,13 @@
         }
     }
 
-    function handleDeath() {
+    function handleDeath(cause = 'enemy') {
         if (isDying) return;
         isDying = true; gameActive = false; 
         createExplosion(player.position);
         lives--;
-        playHurtSound();
+        if (cause === 'fall') playFallSound();
+        else playHurtSound();
         document.getElementById('lives-val').innerText = lives;
         if (lives === 1) showNotificationAlert();
         else if (lives > 0) popMessage(oopsies[Math.floor(Math.random() * oopsies.length)]);
@@ -799,6 +808,8 @@
         gameActive = false; isIntroAnimating = false; 
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
+        const hint = document.getElementById('quick-hint');
+        if (hint) hint.style.display = 'none';
         keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false;
     }
@@ -895,8 +906,10 @@
                 }
                 player.position.x -= Math.sign(velocityX || 1) * 0.9 * dt;
             } else if (level >= 10) {
+                playDoorClearSound(true);
                 showGameOver(true);
             } else {
+                playDoorClearSound(false);
                 startLevelSequence(level + 1, true, true);
             }
         }
@@ -916,8 +929,10 @@
                     doorUnlocked = true;
                     setDoorVisualState(true);
                     popMessage("DOOR UNLOCKED! 🚪✨");
+                    playDoorUnlockSound();
                 } else {
                     popMessage(it.text + "! ✨"); 
+                    playCollectSound();
                 }
                 updateObjectiveCard();
             }
@@ -942,11 +957,11 @@
                     velocityY = 0.42; 
                     playStompSound();
                     popMessage("OVERCOME!");
-                } else handleDeath(); 
+                } else handleDeath('enemy'); 
             }
         });
 
-        if (player.position.y < -50) handleDeath();
+        if (player.position.y < -50) handleDeath('fall');
         const groundedNow = velocityY === 0 && !isJumping;
         if (groundedNow && !lastGrounded) playLandSound();
         lastGrounded = groundedNow;
@@ -959,7 +974,6 @@
     function showGameOver(win) { 
         gameActive = false; 
         if (!win) playGameOverSound();
-        else playLevelSound();
         const screen = document.querySelector('.game-over-screen'); 
         screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
         document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
@@ -973,6 +987,8 @@
         document.getElementById('lvl-val').innerText = level; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
         document.querySelector('.start-screen').style.display = 'flex'; 
+        const hint = document.getElementById('quick-hint');
+        if (hint) hint.style.display = 'none';
         gameActive = false; 
         keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false; 
@@ -999,15 +1015,17 @@
     
     window.addEventListener('keydown', (e) => { 
         initAudio();
-        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; 
-        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; 
-        if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } 
+        const key = (e.key || '').toLowerCase();
+        if(e.code === 'ArrowLeft' || key === 'a') keys.left = true; 
+        if(e.code === 'ArrowRight' || key === 'd') keys.right = true; 
+        if(e.code === 'Space' || e.code === 'ArrowUp' || key === 'w') { e.preventDefault(); keys.up = true; } 
     });
 
     window.addEventListener('keyup', (e) => { 
-        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = false; 
-        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = false; 
-        if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') keys.up = false; 
+        const key = (e.key || '').toLowerCase();
+        if(e.code === 'ArrowLeft' || key === 'a') keys.left = false; 
+        if(e.code === 'ArrowRight' || key === 'd') keys.right = false; 
+        if(e.code === 'Space' || e.code === 'ArrowUp' || key === 'w') keys.up = false; 
     });
 
     document.querySelector('.start-btn').onclick = () => { 
@@ -1028,6 +1046,16 @@
         startLevelSequence(1, true, true); 
     }
 
+    function showQuickHint() {
+        const hint = document.getElementById('quick-hint');
+        if (!hint) return;
+        hint.style.display = 'flex';
+        clearTimeout(quickHintTimeout);
+        quickHintTimeout = setTimeout(() => {
+            hint.style.display = 'none';
+        }, 4500);
+    }
+
     document.querySelector('.restart-btn').onclick = () => { initAudio(); playButtonSound(); restartGame(); };
     document.querySelector('.home-btn').onclick = () => { initAudio(); playButtonSound(); goHome(); };
     document.querySelector('.fullscreen-btn').onclick = () => { initAudio(); playButtonSound(); toggleFullScreen(); };
@@ -1039,6 +1067,109 @@
             msg.style.display = 'block'; 
             setTimeout(() => { msg.style.display = 'none'; }, 1500); 
         } 
+    }
+
+    function initAudio() {
+        if (audioCtx) return;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        audioCtx = new Ctx();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.14;
+        masterGain.connect(audioCtx.destination);
+    }
+
+    function playTone(freq, duration = 0.12, type = 'sine', gainValue = 0.6, rampTo = 0.0001, attack = 0.006) {
+        if (!audioCtx || !masterGain) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(Math.max(gainValue, 0.0002), now + attack);
+        gain.gain.exponentialRampToValueAtTime(rampTo, now + duration);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start(now);
+        osc.stop(now + duration);
+    }
+
+    function playJumpSound() { playTone(520, 0.12, 'triangle', 0.11, 0.0001, 0.005); }
+    function playLandSound() { playTone(180, 0.08, 'sine', 0.06, 0.0001, 0.004); }
+    function playCollectSound() {
+        playTone(660, 0.1, 'triangle', 0.08, 0.0001, 0.004);
+        setTimeout(() => playTone(880, 0.12, 'triangle', 0.08, 0.0001, 0.004), 75);
+    }
+    function playStompSound() {
+        playTone(230, 0.08, 'sine', 0.08, 0.0001, 0.003);
+        setTimeout(() => playTone(320, 0.08, 'triangle', 0.06, 0.0001, 0.003), 55);
+    }
+    function playHurtSound() {
+        playTone(240, 0.13, 'triangle', 0.09, 0.0001, 0.004);
+        setTimeout(() => playTone(170, 0.16, 'sine', 0.08, 0.0001, 0.004), 90);
+    }
+    function playFallSound() {
+        playTone(420, 0.13, 'triangle', 0.08, 0.0001, 0.004);
+        setTimeout(() => playTone(290, 0.15, 'triangle', 0.08, 0.0001, 0.004), 80);
+        setTimeout(() => playTone(180, 0.24, 'sine', 0.08, 0.0001, 0.004), 190);
+    }
+    function playButtonSound() { playTone(740, 0.09, 'triangle', 0.07, 0.0001, 0.004); }
+    function playDoorUnlockSound() {
+        playTone(523, 0.1, 'triangle', 0.08, 0.0001, 0.004);
+        setTimeout(() => playTone(659, 0.1, 'triangle', 0.08, 0.0001, 0.004), 85);
+        setTimeout(() => playTone(784, 0.14, 'triangle', 0.08, 0.0001, 0.004), 170);
+    }
+    function playDoorClearSound(isFinalWin) {
+        playTone(523, 0.11, 'triangle', 0.08, 0.0001, 0.004);
+        setTimeout(() => playTone(659, 0.11, 'triangle', 0.08, 0.0001, 0.004), 100);
+        setTimeout(() => playTone(784, 0.15, 'triangle', 0.08, 0.0001, 0.004), 200);
+        if (isFinalWin) {
+            setTimeout(() => playTone(988, 0.24, 'triangle', 0.1, 0.0001, 0.004), 320);
+        }
+    }
+    function playLevelSound() { playDoorClearSound(false); }
+    function playLastLifeAlertSound() {
+        playTone(392, 0.1, 'sine', 0.06, 0.0001, 0.004);
+        setTimeout(() => playTone(392, 0.12, 'sine', 0.06, 0.0001, 0.004), 120);
+    }
+    function playGameOverSound() {
+        playTone(392, 0.12, 'triangle', 0.08, 0.0001, 0.004);
+        setTimeout(() => playTone(330, 0.12, 'triangle', 0.08, 0.0001, 0.004), 120);
+        setTimeout(() => playTone(262, 0.24, 'sine', 0.09, 0.0001, 0.004), 240);
+    }
+
+    function movementSoundLoop(dt) {
+        if (!audioCtx || !masterGain) return;
+        const moving = (keys.left || keys.right) && !isJumping && gameActive;
+        if (moving && !movementOsc) {
+            movementOsc = audioCtx.createOscillator();
+            movementGain = audioCtx.createGain();
+            movementOsc.type = 'sine';
+            movementOsc.frequency.value = 8;
+            movementGain.gain.value = 0.01;
+            movementOsc.connect(movementGain);
+            movementGain.connect(masterGain);
+            movementOsc.start();
+        }
+        if (!moving && movementOsc) {
+            movementGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.03);
+            setTimeout(() => {
+                if (movementOsc) {
+                    movementOsc.stop();
+                    movementOsc.disconnect();
+                    movementOsc = null;
+                }
+                if (movementGain) {
+                    movementGain.disconnect();
+                    movementGain = null;
+                }
+            }, 40);
+        }
+        if (movementOsc && movementGain) {
+            const speedInfluence = Math.min(Math.abs(velocityX) * dt, 1);
+            movementGain.gain.setTargetAtTime(0.008 + speedInfluence * 0.014, audioCtx.currentTime, 0.06);
+        }
     }
 
     window.addEventListener('resize', () => { 
