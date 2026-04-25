@@ -462,7 +462,7 @@
 <div class="center-hud">
     <div id="objective-card" class="hud-card objective-card locked">Collect joy blocks to unlock the door</div>
 </div>
-<div id="quick-hint" class="hud-card" style="position:absolute;left:50%;top:calc(3vmin + env(safe-area-inset-top,0px) + clamp(132px, 22vmin, 220px));transform:translateX(-50%);z-index:61;font-size:clamp(11px,2.1vmin,18px);display:none;max-width:min(88vw,760px);text-align:center;padding:1.1vmin 2.6vmin;opacity:0.95;">Collect yellow blocks, avoid red blocks, unlock the door.</div>
+<div id="quick-hint" class="hud-card" style="position:absolute;left:50%;top:calc(12vmin + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:61;font-size:clamp(12px,2.5vmin,20px);display:none;max-width:min(86vw,760px);text-align:center;">Collect yellow blocks, avoid red blocks, unlock the door.</div>
 
 <div class="controls">
     <div class="ctrl-group">
@@ -1079,15 +1079,14 @@
         masterGain.connect(audioCtx.destination);
     }
 
-    function playTone(freq, duration = 0.12, type = 'sine', gainValue = 0.6, rampTo = 0.0001, attack = 0.006) {
+    function playTone(freq, duration = 0.12, type = 'sine', gainValue = 0.6, rampTo = 0.0001) {
         if (!audioCtx || !masterGain) return;
         const now = audioCtx.currentTime;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(Math.max(gainValue, 0.0002), now + attack);
+        gain.gain.setValueAtTime(gainValue, now);
         gain.gain.exponentialRampToValueAtTime(rampTo, now + duration);
         osc.connect(gain);
         gain.connect(masterGain);
@@ -1095,49 +1094,14 @@
         osc.stop(now + duration);
     }
 
-    function playJumpSound() { playTone(520, 0.12, 'triangle', 0.11, 0.0001, 0.005); }
-    function playLandSound() { playTone(180, 0.08, 'sine', 0.06, 0.0001, 0.004); }
-    function playCollectSound() {
-        playTone(660, 0.1, 'triangle', 0.08, 0.0001, 0.004);
-        setTimeout(() => playTone(880, 0.12, 'triangle', 0.08, 0.0001, 0.004), 75);
-    }
-    function playStompSound() {
-        playTone(230, 0.08, 'sine', 0.08, 0.0001, 0.003);
-        setTimeout(() => playTone(320, 0.08, 'triangle', 0.06, 0.0001, 0.003), 55);
-    }
-    function playHurtSound() {
-        playTone(240, 0.13, 'triangle', 0.09, 0.0001, 0.004);
-        setTimeout(() => playTone(170, 0.16, 'sine', 0.08, 0.0001, 0.004), 90);
-    }
-    function playFallSound() {
-        playTone(420, 0.13, 'triangle', 0.08, 0.0001, 0.004);
-        setTimeout(() => playTone(290, 0.15, 'triangle', 0.08, 0.0001, 0.004), 80);
-        setTimeout(() => playTone(180, 0.24, 'sine', 0.08, 0.0001, 0.004), 190);
-    }
-    function playButtonSound() { playTone(740, 0.09, 'triangle', 0.07, 0.0001, 0.004); }
-    function playDoorUnlockSound() {
-        playTone(523, 0.1, 'triangle', 0.08, 0.0001, 0.004);
-        setTimeout(() => playTone(659, 0.1, 'triangle', 0.08, 0.0001, 0.004), 85);
-        setTimeout(() => playTone(784, 0.14, 'triangle', 0.08, 0.0001, 0.004), 170);
-    }
-    function playDoorClearSound(isFinalWin) {
-        playTone(523, 0.11, 'triangle', 0.08, 0.0001, 0.004);
-        setTimeout(() => playTone(659, 0.11, 'triangle', 0.08, 0.0001, 0.004), 100);
-        setTimeout(() => playTone(784, 0.15, 'triangle', 0.08, 0.0001, 0.004), 200);
-        if (isFinalWin) {
-            setTimeout(() => playTone(988, 0.24, 'triangle', 0.1, 0.0001, 0.004), 320);
-        }
-    }
-    function playLevelSound() { playDoorClearSound(false); }
-    function playLastLifeAlertSound() {
-        playTone(392, 0.1, 'sine', 0.06, 0.0001, 0.004);
-        setTimeout(() => playTone(392, 0.12, 'sine', 0.06, 0.0001, 0.004), 120);
-    }
-    function playGameOverSound() {
-        playTone(392, 0.12, 'triangle', 0.08, 0.0001, 0.004);
-        setTimeout(() => playTone(330, 0.12, 'triangle', 0.08, 0.0001, 0.004), 120);
-        setTimeout(() => playTone(262, 0.24, 'sine', 0.09, 0.0001, 0.004), 240);
-    }
+    function playJumpSound() { playTone(620, 0.12, 'triangle', 0.35); }
+    function playLandSound() { playTone(180, 0.09, 'square', 0.25); }
+    function playStompSound() { playTone(210, 0.1, 'square', 0.3); playTone(380, 0.08, 'triangle', 0.18); }
+    function playHurtSound() { playTone(120, 0.2, 'sawtooth', 0.35); }
+    function playButtonSound() { playTone(550, 0.08, 'triangle', 0.2); }
+    function playLevelSound() { playTone(523, 0.09, 'triangle', 0.22); setTimeout(() => playTone(659, 0.09, 'triangle', 0.22), 90); setTimeout(() => playTone(784, 0.14, 'triangle', 0.22), 180); }
+    function playLastLifeAlertSound() { playTone(220, 0.14, 'square', 0.22); setTimeout(() => playTone(220, 0.2, 'square', 0.2), 120); }
+    function playGameOverSound() { playTone(280, 0.12, 'sawtooth', 0.2); setTimeout(() => playTone(180, 0.18, 'sawtooth', 0.24), 120); }
 
     function movementSoundLoop(dt) {
         if (!audioCtx || !masterGain) return;
@@ -1145,9 +1109,9 @@
         if (moving && !movementOsc) {
             movementOsc = audioCtx.createOscillator();
             movementGain = audioCtx.createGain();
-            movementOsc.type = 'sine';
-            movementOsc.frequency.value = 8;
-            movementGain.gain.value = 0.01;
+            movementOsc.type = 'triangle';
+            movementOsc.frequency.value = 7;
+            movementGain.gain.value = 0.03;
             movementOsc.connect(movementGain);
             movementGain.connect(masterGain);
             movementOsc.start();
@@ -1168,7 +1132,7 @@
         }
         if (movementOsc && movementGain) {
             const speedInfluence = Math.min(Math.abs(velocityX) * dt, 1);
-            movementGain.gain.setTargetAtTime(0.008 + speedInfluence * 0.014, audioCtx.currentTime, 0.06);
+            movementGain.gain.setTargetAtTime(0.015 + speedInfluence * 0.04, audioCtx.currentTime, 0.05);
         }
     }
 
