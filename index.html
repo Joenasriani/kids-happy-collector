@@ -587,7 +587,9 @@
         const verticalClimb = lvl * 4.5;
         
         const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
-        const spacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92; 
+        const spacingBase = (platformWidth + 6.2 + (lvl * 0.45)) * 0.84;
+        const spacingTightener = lvl >= 4 ? Math.max(0.8, 1 - ((lvl - 3) * 0.03)) : 1;
+        const spacing = spacingBase * spacingTightener; 
         
         let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.2) + 1;
         const enemySpeed = 0.03 + (lvl * 0.012);
@@ -605,7 +607,11 @@
 
         for (let i = 1; i < segments; i++) {
             const x = i * spacing;
-            let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.8));
+            let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.75));
+            const maxRisePerPlatform = 3.4 + Math.min(lvl * 0.15, 1.0);
+            const maxDropPerPlatform = 2.6;
+            if (currentY > lastY + maxRisePerPlatform) currentY = lastY + maxRisePerPlatform;
+            if (currentY < lastY - maxDropPerPlatform) currentY = lastY - maxDropPerPlatform;
             if (Math.abs(currentY - lastY) < 2.2) currentY += 2.8;
             lastY = currentY;
             const p = addPlatform(x, currentY, platformWidth, 0x7bed9f);
@@ -769,6 +775,7 @@
         isDying = true; gameActive = false; 
         createExplosion(player.position);
         lives--;
+        playHurtSound();
         document.getElementById('lives-val').innerText = lives;
         if (lives === 1) showNotificationAlert();
         else if (lives > 0) popMessage(oopsies[Math.floor(Math.random() * oopsies.length)]);
@@ -778,6 +785,7 @@
 
     function showNotificationAlert() {
         const alert = document.querySelector('.notification-alert');
+        playLastLifeAlertSound();
         alert.style.display = 'block'; setTimeout(() => alert.style.display = 'none', 3500);
     }
 
@@ -894,7 +902,7 @@
         }
         if (doorPromptCooldown > 0) doorPromptCooldown -= dt;
 
-        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; }
+        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; playJumpSound(); }
         
         items.forEach((it, idx) => {
             it.mesh.position.y = it.baseY + Math.sin(Date.now() * 0.005) * 0.5;
@@ -932,12 +940,17 @@
                     scene.remove(en.mesh); 
                     enemies.splice(idx, 1); 
                     velocityY = 0.42; 
+                    playStompSound();
                     popMessage("OVERCOME!");
                 } else handleDeath(); 
             }
         });
 
         if (player.position.y < -50) handleDeath();
+        const groundedNow = velocityY === 0 && !isJumping;
+        if (groundedNow && !lastGrounded) playLandSound();
+        lastGrounded = groundedNow;
+        movementSoundLoop(dt);
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, player.position.x, 0.1 * dt);
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, player.position.y + 6, 0.1 * dt);
         camera.lookAt(player.position.x, player.position.y + 1, 0);
@@ -945,6 +958,8 @@
 
     function showGameOver(win) { 
         gameActive = false; 
+        if (!win) playGameOverSound();
+        else playLevelSound();
         const screen = document.querySelector('.game-over-screen'); 
         screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
         document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
@@ -983,6 +998,7 @@
     bind('.btn-left', 'left'); bind('.btn-right', 'right'); bind('.btn-jump', 'up');
     
     window.addEventListener('keydown', (e) => { 
+        initAudio();
         if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; 
         if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; 
         if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } 
@@ -995,6 +1011,8 @@
     });
 
     document.querySelector('.start-btn').onclick = () => { 
+        initAudio();
+        playButtonSound();
         document.querySelector('.start-screen').style.display = 'none'; 
         init(); 
         restartGameOnlyStats(); 
@@ -1010,9 +1028,9 @@
         startLevelSequence(1, true, true); 
     }
 
-    document.querySelector('.restart-btn').onclick = restartGame;
-    document.querySelector('.home-btn').onclick = goHome;
-    document.querySelector('.fullscreen-btn').onclick = toggleFullScreen;
+    document.querySelector('.restart-btn').onclick = () => { initAudio(); playButtonSound(); restartGame(); };
+    document.querySelector('.home-btn').onclick = () => { initAudio(); playButtonSound(); goHome(); };
+    document.querySelector('.fullscreen-btn').onclick = () => { initAudio(); playButtonSound(); toggleFullScreen(); };
 
     function popMessage(txt) { 
         const msg = document.querySelector('.message-box'); 
