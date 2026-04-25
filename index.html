@@ -462,6 +462,7 @@
 <div class="center-hud">
     <div id="objective-card" class="hud-card objective-card locked">Collect joy blocks to unlock the door</div>
 </div>
+<div id="quick-hint" class="hud-card" style="position:absolute;left:50%;top:calc(12vmin + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:61;font-size:clamp(12px,2.5vmin,20px);display:none;max-width:min(86vw,760px);text-align:center;">Collect yellow blocks, avoid red blocks, unlock the door.</div>
 
 <div class="controls">
     <div class="ctrl-group">
@@ -484,6 +485,12 @@
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
     let doorPromptCooldown = 0;
+    let lastGrounded = false;
+    let quickHintTimeout = null;
+    let audioCtx = null;
+    let masterGain = null;
+    let movementOsc = null;
+    let movementGain = null;
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
 
@@ -692,6 +699,7 @@
                 camera.position.copy(camEnd); 
                 camera.lookAt(player.position.x, player.position.y + 1, 0); 
             }
+            showQuickHint();
         };
         if (showPopup) {
             const popup = document.querySelector('.level-popup');
@@ -999,15 +1007,17 @@
     
     window.addEventListener('keydown', (e) => { 
         initAudio();
-        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; 
-        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; 
-        if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } 
+        const key = (e.key || '').toLowerCase();
+        if(e.code === 'ArrowLeft' || key === 'a') keys.left = true; 
+        if(e.code === 'ArrowRight' || key === 'd') keys.right = true; 
+        if(e.code === 'Space' || e.code === 'ArrowUp' || key === 'w') { e.preventDefault(); keys.up = true; } 
     });
 
     window.addEventListener('keyup', (e) => { 
-        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = false; 
-        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = false; 
-        if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') keys.up = false; 
+        const key = (e.key || '').toLowerCase();
+        if(e.code === 'ArrowLeft' || key === 'a') keys.left = false; 
+        if(e.code === 'ArrowRight' || key === 'd') keys.right = false; 
+        if(e.code === 'Space' || e.code === 'ArrowUp' || key === 'w') keys.up = false; 
     });
 
     document.querySelector('.start-btn').onclick = () => { 
@@ -1028,6 +1038,16 @@
         startLevelSequence(1, true, true); 
     }
 
+    function showQuickHint() {
+        const hint = document.getElementById('quick-hint');
+        if (!hint) return;
+        hint.style.display = 'flex';
+        clearTimeout(quickHintTimeout);
+        quickHintTimeout = setTimeout(() => {
+            hint.style.display = 'none';
+        }, 4500);
+    }
+
     document.querySelector('.restart-btn').onclick = () => { initAudio(); playButtonSound(); restartGame(); };
     document.querySelector('.home-btn').onclick = () => { initAudio(); playButtonSound(); goHome(); };
     document.querySelector('.fullscreen-btn').onclick = () => { initAudio(); playButtonSound(); toggleFullScreen(); };
@@ -1039,6 +1059,73 @@
             msg.style.display = 'block'; 
             setTimeout(() => { msg.style.display = 'none'; }, 1500); 
         } 
+    }
+
+    function initAudio() {
+        if (audioCtx) return;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        audioCtx = new Ctx();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.14;
+        masterGain.connect(audioCtx.destination);
+    }
+
+    function playTone(freq, duration = 0.12, type = 'sine', gainValue = 0.6, rampTo = 0.0001) {
+        if (!audioCtx || !masterGain) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(gainValue, now);
+        gain.gain.exponentialRampToValueAtTime(rampTo, now + duration);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start(now);
+        osc.stop(now + duration);
+    }
+
+    function playJumpSound() { playTone(620, 0.12, 'triangle', 0.35); }
+    function playLandSound() { playTone(180, 0.09, 'square', 0.25); }
+    function playStompSound() { playTone(210, 0.1, 'square', 0.3); playTone(380, 0.08, 'triangle', 0.18); }
+    function playHurtSound() { playTone(120, 0.2, 'sawtooth', 0.35); }
+    function playButtonSound() { playTone(550, 0.08, 'triangle', 0.2); }
+    function playLevelSound() { playTone(523, 0.09, 'triangle', 0.22); setTimeout(() => playTone(659, 0.09, 'triangle', 0.22), 90); setTimeout(() => playTone(784, 0.14, 'triangle', 0.22), 180); }
+    function playLastLifeAlertSound() { playTone(220, 0.14, 'square', 0.22); setTimeout(() => playTone(220, 0.2, 'square', 0.2), 120); }
+    function playGameOverSound() { playTone(280, 0.12, 'sawtooth', 0.2); setTimeout(() => playTone(180, 0.18, 'sawtooth', 0.24), 120); }
+
+    function movementSoundLoop(dt) {
+        if (!audioCtx || !masterGain) return;
+        const moving = (keys.left || keys.right) && !isJumping && gameActive;
+        if (moving && !movementOsc) {
+            movementOsc = audioCtx.createOscillator();
+            movementGain = audioCtx.createGain();
+            movementOsc.type = 'triangle';
+            movementOsc.frequency.value = 7;
+            movementGain.gain.value = 0.03;
+            movementOsc.connect(movementGain);
+            movementGain.connect(masterGain);
+            movementOsc.start();
+        }
+        if (!moving && movementOsc) {
+            movementGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.03);
+            setTimeout(() => {
+                if (movementOsc) {
+                    movementOsc.stop();
+                    movementOsc.disconnect();
+                    movementOsc = null;
+                }
+                if (movementGain) {
+                    movementGain.disconnect();
+                    movementGain = null;
+                }
+            }, 40);
+        }
+        if (movementOsc && movementGain) {
+            const speedInfluence = Math.min(Math.abs(velocityX) * dt, 1);
+            movementGain.gain.setTargetAtTime(0.015 + speedInfluence * 0.04, audioCtx.currentTime, 0.05);
+        }
     }
 
     window.addEventListener('resize', () => { 
