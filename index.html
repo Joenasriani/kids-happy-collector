@@ -33,15 +33,6 @@
             z-index: 50;
         }
 
-        .center-hud {
-            position: absolute;
-            top: calc(3vmin + env(safe-area-inset-top, 0px) + clamp(62px, 10vmin, 118px));
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 60;
-            pointer-events: none;
-        }
-
         .hud-column {
             display: flex;
             flex-direction: column;
@@ -100,27 +91,6 @@
             border-width: 0.6vmin;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 3.5vmin;
-        }
-
-        .objective-card {
-            font-size: clamp(13px, 2.8vmin, 22px);
-            padding: 1.4vmin 3.4vmin;
-            border-radius: 3vmin;
-            max-width: min(78vw, 680px);
-            text-align: center;
-            line-height: 1.25;
-        }
-
-        .objective-card.locked {
-            border-color: rgba(255, 124, 124, 0.8);
-            color: #ffe6e6;
-            background: rgba(255, 71, 87, 0.35);
-        }
-
-        .objective-card.unlocked {
-            border-color: rgba(46, 213, 115, 0.9);
-            background: rgba(46, 213, 115, 0.35);
-            color: #f4fff8;
         }
 
         .message-box {
@@ -209,8 +179,8 @@
         .ctrl-group { display: flex; gap: 3vmin; pointer-events: auto; align-items: center; }
 
         .btn {
-            width: clamp(52px, 14vmin, 96px);
-            height: clamp(52px, 14vmin, 96px);
+            width: 14vmin;
+            height: 14vmin;
             background: var(--glass);
             backdrop-filter: none;
             border: 0.4vmin solid rgba(255,255,255,0.6);
@@ -219,7 +189,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: clamp(24px, 6vmin, 44px);
+            font-size: 6vmin;
             cursor: pointer;
             user-select: none;
             pointer-events: auto;
@@ -227,7 +197,7 @@
         }
 
         .btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.9); }
-        .jump-btn { width: clamp(120px, 26vmin, 190px); border-radius: 6vmin; font-weight: 900; font-size: clamp(18px, 5vmin, 34px); }
+        .jump-btn { width: 26vmin; border-radius: 6vmin; font-weight: 900; font-size: 5vmin; }
 
         .screen-overlay {
             position: fixed;
@@ -385,23 +355,12 @@
         }
 
         .instruction-item {
-            font-size: clamp(14px, 3.5vmin, 24px);
+            font-size: 3.5vmin;
             margin: 1vmin 0;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 2vmin;
-        }
-
-        .tiny-note {
-            font-size: clamp(12px, 2.2vmin, 16px);
-            opacity: 0.9;
-            margin-top: 2vmin;
-            letter-spacing: 0.05em;
-        }
-
-        @media (min-width: 900px) {
-            .controls { bottom: 3vmin; justify-content: space-between; padding: 0 8vmin; }
         }
     </style>
 </head>
@@ -418,11 +377,10 @@
     </div>
     
     <div class="instruction-box">
-        <div class="instruction-item">✨ Collect yellow emotions to unlock each door</div>
-        <div class="instruction-item">🚫 Avoid or stomp red emotions from above</div>
-        <div class="instruction-item">🏁 Reach level 10 before you run out of 3 lives</div>
+        <div class="instruction-item">✨ Collect: Yellow blocks = Good Emotions</div>
+        <div class="instruction-item">🚫 Avoid: Red blocks = Bad Emotions</div>
+        <div class="instruction-item">❤️ Warning: 3 lives to beat level 10</div>
     </div>
-    <div class="tiny-note">Keyboard: ←/→ or A/D to move, Space/W/↑ to jump</div>
 
     <button class="start-btn action-btn">PLAY NOW</button>
 </div>
@@ -459,11 +417,6 @@
     </div>
 </div>
 
-<div class="center-hud">
-    <div id="objective-card" class="hud-card objective-card locked">Collect joy blocks to unlock the door</div>
-</div>
-<div id="quick-hint" class="hud-card" style="position:absolute;left:50%;top:calc(12vmin + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:61;font-size:clamp(12px,2.5vmin,20px);display:none;max-width:min(86vw,760px);text-align:center;">Collect yellow blocks, avoid red blocks, unlock the door.</div>
-
 <div class="controls">
     <div class="ctrl-group">
         <div class="btn btn-left">◀</div>
@@ -478,19 +431,11 @@
     let scene, camera, renderer, player, door;
     let platforms = [], items = [], enemies = [], clouds = [], particles = [];
     let score = 0, lives = 3, level = 1;
-    let levelTarget = 1, collectedThisLevel = 0, totalGoodItems = 0, doorUnlocked = false;
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
     let isIntroAnimating = false, introProgress = 0;
     let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
-    let doorPromptCooldown = 0;
-    let lastGrounded = false;
-    let quickHintTimeout = null;
-    let audioCtx = null;
-    let masterGain = null;
-    let movementOsc = null;
-    let movementGain = null;
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
 
@@ -587,16 +532,11 @@
         enemies.forEach(en => scene.remove(en.mesh));
         if (door) scene.remove(door);
         platforms = []; items = []; enemies = [];
-        totalGoodItems = 0;
-        collectedThisLevel = 0;
-        doorUnlocked = false;
         const segments = 5 + (lvl * 5);
         const verticalClimb = lvl * 4.5;
         
         const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
-        const spacingBase = (platformWidth + 6.2 + (lvl * 0.45)) * 0.84;
-        const spacingTightener = lvl >= 4 ? Math.max(0.8, 1 - ((lvl - 3) * 0.03)) : 1;
-        const spacing = spacingBase * spacingTightener; 
+        const spacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92; 
         
         let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.2) + 1;
         const enemySpeed = 0.03 + (lvl * 0.012);
@@ -614,11 +554,7 @@
 
         for (let i = 1; i < segments; i++) {
             const x = i * spacing;
-            let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.75));
-            const maxRisePerPlatform = 3.4 + Math.min(lvl * 0.15, 1.0);
-            const maxDropPerPlatform = 2.6;
-            if (currentY > lastY + maxRisePerPlatform) currentY = lastY + maxRisePerPlatform;
-            if (currentY < lastY - maxDropPerPlatform) currentY = lastY - maxDropPerPlatform;
+            let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.8));
             if (Math.abs(currentY - lastY) < 2.2) currentY += 2.8;
             lastY = currentY;
             const p = addPlatform(x, currentY, platformWidth, 0x7bed9f);
@@ -629,7 +565,6 @@
             } else {
                 if (Math.random() > 0.15 || consecutiveEmpty >= 1 || i === 1) {
                     spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
-                    totalGoodItems++;
                     consecutiveEmpty = 0;
                 } else {
                     consecutiveEmpty++;
@@ -639,37 +574,9 @@
         const finalX = segments * spacing;
         addPlatform(finalX, verticalClimb + 2, 20, 0x2ed573);
         door = createDoorMesh(); door.position.set(finalX, verticalClimb + 6, 0); scene.add(door);
-        levelTarget = Math.max(1, Math.ceil(totalGoodItems * 0.6));
-        updateObjectiveCard();
-        setDoorVisualState(false);
         cinematicDoorPos.copy(door.position);
         camStart.set(door.position.x + 30, door.position.y + 15, 60); 
         camEnd.set(0, 2 + 6, 22);
-    }
-
-    function setDoorVisualState(unlocked) {
-        if (!door) return;
-        door.children.forEach((child, idx) => {
-            if (!child.material || !child.material.color) return;
-            if (idx === 0) child.material.color.setHex(unlocked ? 0x8b5a2b : 0x6f3f2f);
-            if (idx === 1) child.material.color.setHex(unlocked ? 0xc7965a : 0x8d6e63);
-            if (idx === 2) child.material.color.setHex(unlocked ? 0xffe08a : 0xb8860b);
-        });
-    }
-
-    function updateObjectiveCard() {
-        const objectiveCard = document.getElementById('objective-card');
-        if (!objectiveCard) return;
-        const remaining = Math.max(levelTarget - collectedThisLevel, 0);
-        if (doorUnlocked) {
-            objectiveCard.classList.remove('locked');
-            objectiveCard.classList.add('unlocked');
-            objectiveCard.innerText = `Door unlocked! Reach it to clear Level ${level}.`;
-        } else {
-            objectiveCard.classList.remove('unlocked');
-            objectiveCard.classList.add('locked');
-            objectiveCard.innerText = `Collect ${remaining} more joy block${remaining === 1 ? '' : 's'} to unlock the door (${collectedThisLevel}/${levelTarget}).`;
-        }
     }
 
     function startLevelSequence(lvl, withCinematic = true, showPopup = true) {
@@ -699,7 +606,6 @@
                 camera.position.copy(camEnd); 
                 camera.lookAt(player.position.x, player.position.y + 1, 0); 
             }
-            showQuickHint();
         };
         if (showPopup) {
             const popup = document.querySelector('.level-popup');
@@ -778,13 +684,11 @@
         }
     }
 
-    function handleDeath(cause = 'enemy') {
+    function handleDeath() {
         if (isDying) return;
         isDying = true; gameActive = false; 
         createExplosion(player.position);
         lives--;
-        if (cause === 'fall') playFallSound();
-        else playHurtSound();
         document.getElementById('lives-val').innerText = lives;
         if (lives === 1) showNotificationAlert();
         else if (lives > 0) popMessage(oopsies[Math.floor(Math.random() * oopsies.length)]);
@@ -794,7 +698,6 @@
 
     function showNotificationAlert() {
         const alert = document.querySelector('.notification-alert');
-        playLastLifeAlertSound();
         alert.style.display = 'block'; setTimeout(() => alert.style.display = 'none', 3500);
     }
 
@@ -808,9 +711,6 @@
         gameActive = false; isIntroAnimating = false; 
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
-        const hint = document.getElementById('quick-hint');
-        if (hint) hint.style.display = 'none';
-        keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false;
     }
 
@@ -898,24 +798,12 @@
             }
         });
 
-        if (door && player.position.distanceTo(door.position) < 4.5) {
-            if (!doorUnlocked) {
-                if (doorPromptCooldown <= 0) {
-                    popMessage(`Door locked! ${Math.max(levelTarget - collectedThisLevel, 0)} more needed`);
-                    doorPromptCooldown = 50;
-                }
-                player.position.x -= Math.sign(velocityX || 1) * 0.9 * dt;
-            } else if (level >= 10) {
-                playDoorClearSound(true);
-                showGameOver(true);
-            } else {
-                playDoorClearSound(false);
-                startLevelSequence(level + 1, true, true);
-            }
+        if (door && player.position.distanceTo(door.position) < 4.5) { 
+            if (level >= 10) showGameOver(true); 
+            else startLevelSequence(level + 1, true, true); 
         }
-        if (doorPromptCooldown > 0) doorPromptCooldown -= dt;
 
-        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; playJumpSound(); }
+        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; }
         
         items.forEach((it, idx) => {
             it.mesh.position.y = it.baseY + Math.sin(Date.now() * 0.005) * 0.5;
@@ -923,18 +811,8 @@
                 scene.remove(it.mesh); 
                 items.splice(idx, 1); 
                 score += 10; 
-                collectedThisLevel++;
                 document.getElementById('score-val').innerText = score; 
-                if (!doorUnlocked && collectedThisLevel >= levelTarget) {
-                    doorUnlocked = true;
-                    setDoorVisualState(true);
-                    popMessage("DOOR UNLOCKED! 🚪✨");
-                    playDoorUnlockSound();
-                } else {
-                    popMessage(it.text + "! ✨"); 
-                    playCollectSound();
-                }
-                updateObjectiveCard();
+                popMessage(it.text + "! ✨"); 
             }
         });
 
@@ -955,17 +833,12 @@
                     scene.remove(en.mesh); 
                     enemies.splice(idx, 1); 
                     velocityY = 0.42; 
-                    playStompSound();
                     popMessage("OVERCOME!");
-                } else handleDeath('enemy'); 
+                } else handleDeath(); 
             }
         });
 
-        if (player.position.y < -50) handleDeath('fall');
-        const groundedNow = velocityY === 0 && !isJumping;
-        if (groundedNow && !lastGrounded) playLandSound();
-        lastGrounded = groundedNow;
-        movementSoundLoop(dt);
+        if (player.position.y < -50) handleDeath();
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, player.position.x, 0.1 * dt);
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, player.position.y + 6, 0.1 * dt);
         camera.lookAt(player.position.x, player.position.y + 1, 0);
@@ -973,7 +846,6 @@
 
     function showGameOver(win) { 
         gameActive = false; 
-        if (!win) playGameOverSound();
         const screen = document.querySelector('.game-over-screen'); 
         screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
         document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
@@ -987,10 +859,7 @@
         document.getElementById('lvl-val').innerText = level; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
         document.querySelector('.start-screen').style.display = 'flex'; 
-        const hint = document.getElementById('quick-hint');
-        if (hint) hint.style.display = 'none';
         gameActive = false; 
-        keys.left = false; keys.right = false; keys.up = false;
         if(player) player.visible = false; 
     }
 
@@ -1004,33 +873,27 @@
 
     const bind = (sel, k) => { 
         const el = document.querySelector(sel); 
-        if (!el) return;
-        el.addEventListener('pointerdown', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
-        el.addEventListener('pointerup', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
-        el.addEventListener('pointercancel', () => { keys[k] = false; }); 
-        el.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'mouse') keys[k] = false; }); 
+        el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
+        el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
+        el.addEventListener('mousedown', () => { keys[k] = true; }); 
+        el.addEventListener('mouseup', () => { keys[k] = false; }); 
     };
 
     bind('.btn-left', 'left'); bind('.btn-right', 'right'); bind('.btn-jump', 'up');
     
     window.addEventListener('keydown', (e) => { 
-        initAudio();
-        const key = (e.key || '').toLowerCase();
-        if(e.code === 'ArrowLeft' || key === 'a') keys.left = true; 
-        if(e.code === 'ArrowRight' || key === 'd') keys.right = true; 
-        if(e.code === 'Space' || e.code === 'ArrowUp' || key === 'w') { e.preventDefault(); keys.up = true; } 
+        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; 
+        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; 
+        if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } 
     });
 
     window.addEventListener('keyup', (e) => { 
-        const key = (e.key || '').toLowerCase();
-        if(e.code === 'ArrowLeft' || key === 'a') keys.left = false; 
-        if(e.code === 'ArrowRight' || key === 'd') keys.right = false; 
-        if(e.code === 'Space' || e.code === 'ArrowUp' || key === 'w') keys.up = false; 
+        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = false; 
+        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = false; 
+        if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') keys.up = false; 
     });
 
     document.querySelector('.start-btn').onclick = () => { 
-        initAudio();
-        playButtonSound();
         document.querySelector('.start-screen').style.display = 'none'; 
         init(); 
         restartGameOnlyStats(); 
@@ -1038,27 +901,15 @@
 
     function restartGameOnlyStats() { 
         score = 0; lives = 3; level = 1; 
-        keys.left = false; keys.right = false; keys.up = false;
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
         document.getElementById('lvl-val').innerText = level; 
-        updateObjectiveCard();
         startLevelSequence(1, true, true); 
     }
 
-    function showQuickHint() {
-        const hint = document.getElementById('quick-hint');
-        if (!hint) return;
-        hint.style.display = 'flex';
-        clearTimeout(quickHintTimeout);
-        quickHintTimeout = setTimeout(() => {
-            hint.style.display = 'none';
-        }, 4500);
-    }
-
-    document.querySelector('.restart-btn').onclick = () => { initAudio(); playButtonSound(); restartGame(); };
-    document.querySelector('.home-btn').onclick = () => { initAudio(); playButtonSound(); goHome(); };
-    document.querySelector('.fullscreen-btn').onclick = () => { initAudio(); playButtonSound(); toggleFullScreen(); };
+    document.querySelector('.restart-btn').onclick = restartGame;
+    document.querySelector('.home-btn').onclick = goHome;
+    document.querySelector('.fullscreen-btn').onclick = toggleFullScreen;
 
     function popMessage(txt) { 
         const msg = document.querySelector('.message-box'); 
@@ -1067,73 +918,6 @@
             msg.style.display = 'block'; 
             setTimeout(() => { msg.style.display = 'none'; }, 1500); 
         } 
-    }
-
-    function initAudio() {
-        if (audioCtx) return;
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if (!Ctx) return;
-        audioCtx = new Ctx();
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.14;
-        masterGain.connect(audioCtx.destination);
-    }
-
-    function playTone(freq, duration = 0.12, type = 'sine', gainValue = 0.6, rampTo = 0.0001) {
-        if (!audioCtx || !masterGain) return;
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, now);
-        gain.gain.setValueAtTime(gainValue, now);
-        gain.gain.exponentialRampToValueAtTime(rampTo, now + duration);
-        osc.connect(gain);
-        gain.connect(masterGain);
-        osc.start(now);
-        osc.stop(now + duration);
-    }
-
-    function playJumpSound() { playTone(620, 0.12, 'triangle', 0.35); }
-    function playLandSound() { playTone(180, 0.09, 'square', 0.25); }
-    function playStompSound() { playTone(210, 0.1, 'square', 0.3); playTone(380, 0.08, 'triangle', 0.18); }
-    function playHurtSound() { playTone(120, 0.2, 'sawtooth', 0.35); }
-    function playButtonSound() { playTone(550, 0.08, 'triangle', 0.2); }
-    function playLevelSound() { playTone(523, 0.09, 'triangle', 0.22); setTimeout(() => playTone(659, 0.09, 'triangle', 0.22), 90); setTimeout(() => playTone(784, 0.14, 'triangle', 0.22), 180); }
-    function playLastLifeAlertSound() { playTone(220, 0.14, 'square', 0.22); setTimeout(() => playTone(220, 0.2, 'square', 0.2), 120); }
-    function playGameOverSound() { playTone(280, 0.12, 'sawtooth', 0.2); setTimeout(() => playTone(180, 0.18, 'sawtooth', 0.24), 120); }
-
-    function movementSoundLoop(dt) {
-        if (!audioCtx || !masterGain) return;
-        const moving = (keys.left || keys.right) && !isJumping && gameActive;
-        if (moving && !movementOsc) {
-            movementOsc = audioCtx.createOscillator();
-            movementGain = audioCtx.createGain();
-            movementOsc.type = 'triangle';
-            movementOsc.frequency.value = 7;
-            movementGain.gain.value = 0.03;
-            movementOsc.connect(movementGain);
-            movementGain.connect(masterGain);
-            movementOsc.start();
-        }
-        if (!moving && movementOsc) {
-            movementGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.03);
-            setTimeout(() => {
-                if (movementOsc) {
-                    movementOsc.stop();
-                    movementOsc.disconnect();
-                    movementOsc = null;
-                }
-                if (movementGain) {
-                    movementGain.disconnect();
-                    movementGain = null;
-                }
-            }, 40);
-        }
-        if (movementOsc && movementGain) {
-            const speedInfluence = Math.min(Math.abs(velocityX) * dt, 1);
-            movementGain.gain.setTargetAtTime(0.015 + speedInfluence * 0.04, audioCtx.currentTime, 0.05);
-        }
     }
 
     window.addEventListener('resize', () => { 
