@@ -998,9 +998,9 @@
         canvas.width = 256;
         canvas.height = 256;
         const ctx = canvas.getContext('2d');
-        const gradient = ctx.createRadialGradient(128, 128, 14, 128, 128, 118);
-        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.42)');
-        gradient.addColorStop(0.45, 'rgba(0, 0, 0, 0.22)');
+        const gradient = ctx.createRadialGradient(128, 128, 10, 128, 128, 120);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
+        gradient.addColorStop(0.42, 'rgba(0, 0, 0, 0.30)');
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 256, 256);
@@ -1009,7 +1009,7 @@
         const material = new THREE.MeshBasicMaterial({
             map: texture,
             transparent: true,
-            opacity: 0.28,
+            opacity: 0.36,
             depthWrite: false
         });
         characterShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
@@ -1052,9 +1052,9 @@
         const heightSpread = 1 + Math.min(airHeight * 0.13, 0.85);
         const turnSquash = 1 + Math.abs(Math.sin(player.rotation.y)) * 0.08;
 
-        characterShadow.position.set(player.position.x, targetSurfaceY + 0.035, player.position.z);
-        characterShadow.scale.set(1.85 * heightSpread * turnSquash, 1.0 * heightSpread, 1);
-        characterShadow.material.opacity = 0.28 * heightFade;
+        characterShadow.position.set(player.position.x, targetSurfaceY + 0.04, player.position.z + 0.22);
+        characterShadow.scale.set(2.15 * heightSpread * turnSquash, 1.18 * heightSpread, 1);
+        characterShadow.material.opacity = 0.38 * heightFade;
         characterShadow.visible = true;
     }
 
