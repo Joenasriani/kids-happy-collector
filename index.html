@@ -91,26 +91,6 @@
             border-radius: 3.5vmin;
         }
 
-        .message-box {
-            position: absolute;
-            top: 110%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 2vmin 5vmin;
-            border-radius: 6vmin;
-            color: rgb(255, 71, 87);
-            font-weight: 900;
-            font-size: 4vmin;
-            display: none;
-            box-shadow: 0 1.5vmin 4vmin rgba(0,0,0,0.2);
-            z-index: 200;
-            border: 0.6vmin solid rgb(255, 71, 87);
-            text-align: center;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
         .notification-alert {
             position: absolute;
             top: 110%;
@@ -316,6 +296,105 @@
             100% { transform: scale(2.5) translate(var(--tx), var(--ty)); opacity: 0; }
         }
 
+
+        .micro-award {
+            position: fixed;
+            left: 0;
+            top: 0;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 160;
+            font-family: 'Luckiest Guy', cursive;
+            font-size: clamp(18px, 4vmin, 34px);
+            letter-spacing: 0.06em;
+            color: white;
+            text-shadow: 0 0.35vmin 0.8vmin rgba(0,0,0,0.22);
+            animation: microAwardFloat 0.82s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+            will-change: transform, opacity;
+        }
+
+        .micro-award.collect {
+            color: rgb(255, 246, 116);
+        }
+
+        .micro-award.stomp {
+            color: rgb(255, 255, 255);
+        }
+
+        .micro-award.damage {
+            color: rgb(255, 232, 232);
+            font-size: clamp(16px, 3.2vmin, 28px);
+        }
+
+        .micro-award.fall {
+            color: rgb(255, 255, 255);
+            font-size: clamp(16px, 3.2vmin, 28px);
+            animation: microAwardFallFloat 1.75s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+        }
+
+        @keyframes microAwardFallFloat {
+            0% { opacity: 0; transform: translate(-50%, -35%) scale(0.75); }
+            12% { opacity: 1; transform: translate(-50%, -55%) scale(1.08); }
+            72% { opacity: 1; transform: translate(-50%, -105%) scale(0.96); }
+            100% { opacity: 0; transform: translate(-50%, -140%) scale(0.86); }
+        }
+
+        @keyframes microAwardFloat {
+            0% { opacity: 0; transform: translate(-50%, -35%) scale(0.75); }
+            16% { opacity: 1; transform: translate(-50%, -55%) scale(1.08); }
+            100% { opacity: 0; transform: translate(-50%, -145%) scale(0.86); }
+        }
+
+        .micro-sparkle {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: clamp(5px, 1.2vmin, 10px);
+            height: clamp(5px, 1.2vmin, 10px);
+            border-radius: 50%;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 0 1.2vmin rgba(255, 246, 116, 0.7);
+            pointer-events: none;
+            z-index: 155;
+            animation: microSparkleBurst 0.68s ease-out forwards;
+            will-change: transform, opacity;
+        }
+
+        .micro-sparkle.soft-red {
+            background: rgba(255, 165, 165, 0.85);
+            box-shadow: 0 0 1vmin rgba(255, 71, 87, 0.45);
+        }
+
+        .micro-sparkle.cloud {
+            background: rgba(255,255,255,0.72);
+            box-shadow: none;
+        }
+
+        @keyframes microSparkleBurst {
+            0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.6); }
+            100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.4); }
+        }
+
+        .soft-impact-ring {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: clamp(26px, 6vmin, 56px);
+            height: clamp(26px, 6vmin, 56px);
+            border-radius: 50%;
+            border: 0.45vmin solid rgba(255, 111, 125, 0.75);
+            background: rgba(255, 71, 87, 0.08);
+            transform: translate(-50%, -50%) scale(0.45);
+            pointer-events: none;
+            z-index: 150;
+            animation: softImpactRing 0.48s ease-out forwards;
+        }
+
+        @keyframes softImpactRing {
+            0% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.45); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.9); }
+        }
+
         .action-btn {
             font-family: 'Luckiest Guy', cursive !important;
             background: linear-gradient(180deg, #2ed573 0%, #26af5c 100%);
@@ -359,6 +438,40 @@
             justify-content: center;
             gap: 2vmin;
         }
+
+
+        .hud-icon-row {
+            display: flex;
+            gap: 1.5vmin;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+        .music-btn {
+            margin-top: 0;
+        }
+        .music-btn.off {
+            opacity: 0.55;
+        }
+        .music-btn .music-symbol {
+            width: 3.5vmin;
+            height: 3.5vmin;
+            display: block;
+            fill: white;
+        }
+        .intro-credits {
+            margin-top: 2.2vmin;
+            font-size: 1.75vmin;
+            line-height: 1.45;
+            opacity: 0.72;
+            letter-spacing: 0.04vmin;
+            text-shadow: 0 0.2vmin 0.5vmin rgba(0,0,0,0.18);
+            pointer-events: none;
+        }
+        .intro-credits strong {
+            font-weight: 900;
+            color: rgba(255,255,255,0.94);
+        }
     </style>
 </head>
 <body>
@@ -380,6 +493,10 @@
     </div>
 
     <button class="start-btn action-btn">PLAY NOW</button>
+    <div class="intro-credits">
+        <div><strong>Game Dev:</strong> ApexInnovate.ae</div>
+        <div><strong>Music:</strong> BombInSound, AlexZavesa</div>
+    </div>
 </div>
 
 <div class="game-over-screen screen-overlay" style="display: none;">
@@ -402,14 +519,18 @@
 
     <div class="score-wrapper">
         <div class="hud-card score-card">PTS: <span id="score-val">0</span></div>
-        <div class="message-box"></div>
         <div class="notification-alert">LAST LIFE: STAY BRAVE! ❤️</div>
     </div>
 
     <div class="hud-column">
         <div class="hud-card">LIVES: <span id="lives-val">3</span></div>
-        <div class="icon-btn fullscreen-btn">
-            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        <div class="hud-icon-row">
+            <div class="icon-btn fullscreen-btn">
+                <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            </div>
+            <div class="icon-btn music-btn" aria-label="Toggle music" title="Toggle music">
+                <svg class="music-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11.1A3.5 3.5 0 1 1 10 11V6h8V3h-6z"/></svg>
+            </div>
         </div>
     </div>
 </div>
@@ -435,6 +556,359 @@
     let lastTime = performance.now();
 
     const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
+
+
+    const AudioFX = (() => {
+        let ctx = null;
+        let master = null;
+        const maxVolume = 0.42;
+
+        function ensure() {
+            if (!ctx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return null;
+                ctx = new AudioContext();
+                master = ctx.createGain();
+                master.gain.value = maxVolume;
+                master.connect(ctx.destination);
+            }
+            if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+            return ctx;
+        }
+
+        function tone(freq, duration, type = 'sine', gain = 0.18, delay = 0, detune = 0) {
+            const ac = ensure();
+            if (!ac) return;
+            const t = ac.currentTime + delay;
+            const osc = ac.createOscillator();
+            const amp = ac.createGain();
+            const filter = ac.createBiquadFilter();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, t);
+            osc.detune.setValueAtTime(detune, t);
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1800, t);
+            filter.Q.setValueAtTime(0.5, t);
+            amp.gain.setValueAtTime(0.0001, t);
+            amp.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), t + 0.025);
+            amp.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+            osc.connect(filter);
+            filter.connect(amp);
+            amp.connect(master);
+            osc.start(t);
+            osc.stop(t + duration + 0.05);
+        }
+
+        function glide(from, to, duration, type = 'sine', gain = 0.16) {
+            const ac = ensure();
+            if (!ac) return;
+            const t = ac.currentTime;
+            const osc = ac.createOscillator();
+            const amp = ac.createGain();
+            const filter = ac.createBiquadFilter();
+            osc.type = type;
+            osc.frequency.setValueAtTime(from, t);
+            osc.frequency.exponentialRampToValueAtTime(to, t + duration);
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1500, t);
+            amp.gain.setValueAtTime(0.0001, t);
+            amp.gain.exponentialRampToValueAtTime(gain, t + 0.03);
+            amp.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+            osc.connect(filter);
+            filter.connect(amp);
+            amp.connect(master);
+            osc.start(t);
+            osc.stop(t + duration + 0.05);
+        }
+
+        function softNoise(duration = 0.18, gain = 0.08, cutoff = 900) {
+            const ac = ensure();
+            if (!ac) return;
+            const buffer = ac.createBuffer(1, ac.sampleRate * duration, ac.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+            const src = ac.createBufferSource();
+            const amp = ac.createGain();
+            const filter = ac.createBiquadFilter();
+            src.buffer = buffer;
+            filter.type = 'lowpass';
+            filter.frequency.value = cutoff;
+            amp.gain.value = gain;
+            src.connect(filter);
+            filter.connect(amp);
+            amp.connect(master);
+            src.start();
+        }
+
+        return {
+            unlock: ensure,
+            click() { tone(520, 0.055, 'triangle', 0.12); tone(780, 0.075, 'sine', 0.08, 0.035); },
+            start() { tone(392, 0.18, 'sine', 0.10); tone(523.25, 0.2, 'sine', 0.10, 0.08); },
+            jump() { glide(220, 720, 0.22, 'triangle', 0.24); tone(980, 0.09, 'sine', 0.10, 0.045); },
+            move() { tone(294, 0.06, 'triangle', 0.045); },
+            collect() { tone(659.25, 0.12, 'sine', 0.16); tone(880, 0.16, 'sine', 0.13, 0.08); tone(1174.66, 0.18, 'triangle', 0.09, 0.16); },
+            overcome() { tone(329.63, 0.12, 'triangle', 0.10); tone(493.88, 0.15, 'triangle', 0.09, 0.08); tone(659.25, 0.18, 'sine', 0.07, 0.16); },
+            lose() { softNoise(0.28, 0.18, 760); glide(260, 120, 0.34, 'triangle', 0.17); tone(196, 0.22, 'sine', 0.12, 0.08); },
+            burstLose() { softNoise(0.22, 0.14, 900); tone(220, 0.16, 'triangle', 0.12); tone(146.83, 0.24, 'sine', 0.09, 0.10); },
+            hurt() { softNoise(0.18, 0.045, 650); glide(220, 150, 0.2, 'sine', 0.05); },
+            fall() {
+                const ac = ensure();
+                if (!ac) return;
+                const t = ac.currentTime;
+                const osc = ac.createOscillator();
+                const amp = ac.createGain();
+                const filter = ac.createBiquadFilter();
+                const delay = ac.createDelay(0.18);
+                const feedback = ac.createGain();
+                const echoAmp = ac.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(620, t);
+                osc.frequency.exponentialRampToValueAtTime(330, t + 0.34);
+                osc.frequency.exponentialRampToValueAtTime(170, t + 0.92);
+                osc.frequency.exponentialRampToValueAtTime(92, t + 1.46);
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(1250, t);
+                filter.frequency.exponentialRampToValueAtTime(420, t + 1.5);
+                filter.Q.setValueAtTime(0.42, t);
+
+                amp.gain.setValueAtTime(0.0001, t);
+                amp.gain.exponentialRampToValueAtTime(0.20, t + 0.04);
+                amp.gain.linearRampToValueAtTime(0.13, t + 0.42);
+                amp.gain.exponentialRampToValueAtTime(0.0001, t + 1.62);
+
+                delay.delayTime.setValueAtTime(0.12, t);
+                feedback.gain.setValueAtTime(0.16, t);
+                echoAmp.gain.setValueAtTime(0.045, t);
+                echoAmp.gain.exponentialRampToValueAtTime(0.0001, t + 1.58);
+
+                osc.connect(filter);
+                filter.connect(amp);
+                filter.connect(delay);
+                delay.connect(feedback);
+                feedback.connect(delay);
+                delay.connect(echoAmp);
+                amp.connect(master);
+                echoAmp.connect(master);
+                osc.start(t);
+                osc.stop(t + 1.68);
+            },
+            heart() { tone(392, 0.22, 'sine', 0.09); tone(523.25, 0.25, 'sine', 0.075, 0.12); tone(659.25, 0.3, 'sine', 0.055, 0.26); },
+            level() { tone(523.25, 0.12, 'sine', 0.08); tone(659.25, 0.12, 'sine', 0.08, 0.09); tone(783.99, 0.2, 'sine', 0.07, 0.18); },
+            win() { tone(523.25, 0.16, 'sine', 0.09); tone(659.25, 0.16, 'sine', 0.09, 0.1); tone(783.99, 0.18, 'sine', 0.08, 0.2); tone(1046.5, 0.28, 'triangle', 0.06, 0.34); },
+            gameOver() { tone(349.23, 0.18, 'sine', 0.07); tone(261.63, 0.24, 'sine', 0.055, 0.16); }
+        };
+    })();
+
+
+
+    const Haptics = (() => {
+        const canVibrate = () => typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+        return {
+            collect() {
+                if (!canVibrate()) return;
+                navigator.vibrate(8);
+            },
+            badEmotion() {
+                if (!canVibrate()) return;
+                navigator.vibrate([90, 35, 130, 35, 180]);
+            }
+        };
+    })();
+
+    const MusicBank = (() => {
+        const tracks = [
+            { title: 'Happy Kids Background Music', artist: 'BombInSound', src: './music/bombinsound-happy-kids-background-music-499554.mp3' },
+            { title: 'Kids Music', artist: 'BombInSound', src: './music/bombinsound-kids-music-499483.mp3' },
+            { title: 'Dance Playful Night', artist: 'AlexZavesa', src: './music/alexzavesa-dance-playful-night-510786.mp3' },
+            { title: 'Cartoon Cartoon Music', artist: 'BombInSound', src: './music/bombinsound-cartoon-cartoon-music-514134.mp3' },
+            { title: 'Happy Ukulele', artist: 'BombInSound', src: './music/bombinsound-happy-ukulele-512480.mp3' },
+            { title: 'Happy Happy Music', artist: 'BombInSound', src: './music/bombinsound-happy-happy-music-490551.mp3' }
+        ];
+        let audio = null;
+        let enabled = true;
+        let currentIndex = -1;
+        let fadeTimer = null;
+        const baseVolume = 0.022;
+
+        function ensureAudio() {
+            if (!audio) {
+                audio = new Audio();
+                audio.loop = true;
+                audio.preload = 'auto';
+                audio.volume = 0;
+            }
+            return audio;
+        }
+
+        function setButtonState() {
+            const btn = document.querySelector('.music-btn');
+            if (!btn) return;
+            btn.classList.toggle('off', !enabled);
+        }
+
+        function fadeTo(target, duration = 550, after = null) {
+            const a = ensureAudio();
+            if (fadeTimer) clearInterval(fadeTimer);
+            const start = a.volume;
+            const startTime = performance.now();
+            fadeTimer = setInterval(() => {
+                const t = Math.min(1, (performance.now() - startTime) / duration);
+                a.volume = start + (target - start) * t;
+                if (t >= 1) {
+                    clearInterval(fadeTimer);
+                    fadeTimer = null;
+                    if (after) after();
+                }
+            }, 40);
+        }
+
+        function playForLevel(lvl) {
+            if (!enabled) return;
+            const a = ensureAudio();
+            const index = Math.max(0, (lvl - 1) % tracks.length);
+            const track = tracks[index];
+            const switchTrack = () => {
+                if (currentIndex !== index) {
+                    currentIndex = index;
+                    a.src = track.src;
+                    a.currentTime = 0;
+                }
+                a.volume = baseVolume;
+                a.play().catch(() => {});
+            };
+            if (!a.paused && currentIndex !== index) fadeTo(0, 350, switchTrack);
+            else switchTrack();
+        }
+
+        function stop() {
+            if (!audio) return;
+            fadeTo(0, 350, () => {
+                if (audio) audio.pause();
+            });
+        }
+
+        function toggle() {
+            enabled = !enabled;
+            setButtonState();
+            if (!enabled) stop();
+            else if (level > 0 && gameActive && !isIntroAnimating) playForLevel(level);
+        }
+
+        function preload() {
+            tracks.forEach((track) => {
+                const probe = new Audio();
+                probe.preload = 'auto';
+                probe.src = track.src;
+            });
+            setButtonState();
+        }
+
+        return { tracks, preload, playForLevel, stop, toggle, setButtonState };
+    })();
+
+
+    const CinematicWind = (() => {
+        const src = './sfx/dragon-studio-winter-wind-402331.mp3';
+        let audio = null;
+        let fadeTimer = null;
+        const peakVolume = 0.025;
+
+        function ensureAudio() {
+            if (!audio) {
+                audio = new Audio(src);
+                audio.loop = false;
+                audio.preload = 'auto';
+                audio.volume = 0;
+            }
+            return audio;
+        }
+
+        function clearFade() {
+            if (fadeTimer) {
+                clearInterval(fadeTimer);
+                fadeTimer = null;
+            }
+        }
+
+        function fadeTo(target, duration = 700, after = null) {
+            const a = ensureAudio();
+            clearFade();
+            const start = a.volume;
+            const startTime = performance.now();
+            fadeTimer = setInterval(() => {
+                const t = Math.min(1, (performance.now() - startTime) / duration);
+                a.volume = start + (target - start) * t;
+                if (t >= 1) {
+                    clearFade();
+                    if (after) after();
+                }
+            }, 40);
+        }
+
+        function playStartPage() {
+            const a = ensureAudio();
+            clearFade();
+            if (!a.paused) return;
+            a.loop = true;
+            a.currentTime = 0;
+            a.volume = 0;
+            a.play().then(() => fadeTo(0.012, 1800)).catch(() => {});
+        }
+
+        function fadeOutStartPage(duration = 900, after = null) {
+            if (!audio) { if (after) after(); return; }
+            fadeTo(0, duration, () => {
+                if (audio) {
+                    audio.pause();
+                    audio.loop = false;
+                    audio.currentTime = 0;
+                }
+                if (after) after();
+            });
+        }
+
+        function playCinematic(totalMs = 4200) {
+            const a = ensureAudio();
+            clearFade();
+            a.pause();
+            a.loop = false;
+            a.currentTime = 0;
+            a.volume = 0;
+            a.play().then(() => {
+                fadeTo(peakVolume, 500);
+                const fadeStart = Math.max(900, totalMs - 2200);
+                setTimeout(() => {
+                    if (!audio || audio.paused) return;
+                    fadeTo(0, 1900, () => {
+                        if (audio) {
+                            audio.pause();
+                            audio.currentTime = 0;
+                        }
+                    });
+                }, fadeStart);
+            }).catch(() => {});
+        }
+
+        function stop() {
+            if (!audio) return;
+            fadeTo(0, 900, () => {
+                if (audio) {
+                    audio.pause();
+                    audio.loop = false;
+                    audio.currentTime = 0;
+                }
+            });
+        }
+
+        function preload() {
+            ensureAudio();
+        }
+
+        return { preload, playStartPage, fadeOutStartPage, playCinematic, stop };
+    })();
+
 
     let hasDustTriggeredH = false;
     function monitorIntroLanding() {
@@ -525,6 +999,7 @@
         keys.left = false;
         keys.right = false;
         keys.up = false;
+        lastMoveDirection = 'none';
     }
 
     function disposeObject(obj) {
@@ -603,6 +1078,7 @@
         } 
         level = lvl; document.getElementById('lvl-val').innerText = level;
         const applySetup = () => {
+            if (!withCinematic) AudioFX.level();
             spawnLevel(level);
             if (player) { 
                 player.visible = true; 
@@ -613,6 +1089,8 @@
             if (withCinematic) { 
                 isIntroAnimating = true; 
                 introProgress = 0;
+                MusicBank.stop();
+                CinematicWind.playCinematic(4200);
                 camera.position.copy(camStart);
                 camera.lookAt(cinematicDoorPos.x, cinematicDoorPos.y, cinematicDoorPos.z);
             } 
@@ -620,6 +1098,7 @@
                 isIntroAnimating = false; 
                 gameActive = true; 
                 levelTransitioning = false;
+                MusicBank.playForLevel(level);
                 camera.position.copy(camEnd); 
                 camera.lookAt(player.position.x, player.position.y + 1, 0); 
             }
@@ -677,12 +1156,155 @@
     function createTextCanvas(text, color, backColor) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 1024; canvas.height = 256; 
-        ctx.fillStyle = backColor; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = 'bold 120px Arial'; 
-        ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-        return new THREE.CanvasTexture(canvas);
+        canvas.width = 1024; canvas.height = 256;
+
+        const safeMarginX = 110;
+        const maxTextWidth = canvas.width - safeMarginX * 2;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2 + 2;
+
+        ctx.fillStyle = backColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = color;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+
+        function measureTracked(label, fontSize, tracking) {
+            ctx.font = `900 ${fontSize}px Arial, sans-serif`;
+            let width = 0;
+            for (let i = 0; i < label.length; i++) {
+                width += ctx.measureText(label[i]).width;
+                if (i < label.length - 1) width += tracking;
+            }
+            return width;
+        }
+
+        function drawTracked(label, x, y, fontSize, tracking) {
+            ctx.font = `900 ${fontSize}px Arial, sans-serif`;
+            let cursor = x;
+            for (let i = 0; i < label.length; i++) {
+                const letter = label[i];
+                ctx.fillText(letter, cursor, y);
+                cursor += ctx.measureText(letter).width + tracking;
+            }
+        }
+
+        let fontSize = 120;
+        let tracking = 3.5;
+        let measured = measureTracked(text, fontSize, tracking);
+
+        while (measured > maxTextWidth && fontSize > 58) {
+            fontSize -= 2;
+            tracking = Math.max(1.1, fontSize * 0.025);
+            measured = measureTracked(text, fontSize, tracking);
+        }
+
+        if (measured > maxTextWidth) {
+            tracking = 0;
+            measured = measureTracked(text, fontSize, tracking);
+        }
+
+        const startX = centerX - measured / 2;
+        drawTracked(text, startX, centerY, fontSize, tracking);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+        return texture;
+    }
+
+
+
+    function worldToScreen(pos) {
+        if (!camera || !renderer || !pos) return null;
+        const projected = pos.clone().project(camera);
+        if (projected.z < -1 || projected.z > 1) return null;
+        const rect = renderer.domElement.getBoundingClientRect();
+        return {
+            x: rect.left + (projected.x + 1) * rect.width / 2,
+            y: rect.top + (-projected.y + 1) * rect.height / 2
+        };
+    }
+
+    function getFeedbackSafeScreenPoint(worldPos, type = 'collect') {
+        const screen = worldToScreen(worldPos);
+        if (!screen) return null;
+        const hud = document.querySelector('.ui-container');
+        const hudBottom = hud ? hud.getBoundingClientRect().bottom : 0;
+        const floatClearance = type === 'fall' ? 88 : 72;
+        const safeTop = Math.min(window.innerHeight - 44, Math.max(28, hudBottom + floatClearance));
+        const safeX = Math.min(window.innerWidth - 24, Math.max(24, screen.x));
+        const safeY = Math.min(window.innerHeight - 28, Math.max(safeTop, screen.y));
+        return { x: safeX, y: safeY };
+    }
+
+    function spawnMicroAward(text, worldPos, type = 'collect') {
+        const screen = getFeedbackSafeScreenPoint(worldPos, type);
+        if (!screen) return;
+        const award = document.createElement('div');
+        award.className = `micro-award ${type}`;
+        award.textContent = text;
+        award.style.left = `${screen.x}px`;
+        award.style.top = `${screen.y}px`;
+        document.body.appendChild(award);
+        setTimeout(() => award.remove(), type === 'fall' ? 1850 : 900);
+    }
+
+    function spawnMicroSparkles(worldPos, mode = 'collect', count = 7) {
+        const screen = getFeedbackSafeScreenPoint(worldPos, mode);
+        if (!screen) return;
+        for (let i = 0; i < count; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'micro-sparkle' + (mode === 'damage' ? ' soft-red' : mode === 'fall' ? ' cloud' : '');
+            const radius = mode === 'fall' ? 34 : 24;
+            const tx = (Math.random() - 0.5) * radius * 2;
+            const ty = (Math.random() - 0.75) * radius * 1.8;
+            sparkle.style.left = `${screen.x}px`;
+            sparkle.style.top = `${screen.y}px`;
+            sparkle.style.setProperty('--tx', `${tx}px`);
+            sparkle.style.setProperty('--ty', `${ty}px`);
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 760);
+        }
+    }
+
+    function spawnSoftImpactRing(worldPos) {
+        const screen = getFeedbackSafeScreenPoint(worldPos, 'damage');
+        if (!screen) return;
+        const ring = document.createElement('div');
+        ring.className = 'soft-impact-ring';
+        ring.style.left = `${screen.x}px`;
+        ring.style.top = `${screen.y}px`;
+        document.body.appendChild(ring);
+        setTimeout(() => ring.remove(), 540);
+    }
+
+    function showCollectFeedback(worldPos) {
+        const pos = worldPos.clone();
+        pos.y += 1.8;
+        spawnMicroAward('+10', pos, 'collect');
+        spawnMicroSparkles(pos, 'collect', 8);
+    }
+
+    function showStompFeedback(worldPos) {
+        const pos = worldPos.clone();
+        pos.y += 1.9;
+        spawnMicroAward('+5', pos, 'stomp');
+        spawnMicroSparkles(pos, 'collect', 9);
+    }
+
+    function showDamageFeedback(worldPos) {
+        const pos = worldPos.clone();
+        pos.y += 1.2;
+        spawnSoftImpactRing(pos);
+        spawnMicroAward('Careful!', pos, 'damage');
+        spawnMicroSparkles(pos, 'damage', 6);
+    }
+
+    function showFallFeedback(worldPos) {
+        const pos = worldPos.clone();
+        pos.y += 1.2;
+        spawnMicroAward('Try Again', pos, 'fall');
+        spawnMicroSparkles(pos, 'fall', 8);
     }
 
     function createExplosion(pos) {
@@ -701,17 +1323,33 @@
         }
     }
 
-    function handleDeath() {
+    function handleDeath(cause = 'generic') {
         if (isDying) return;
         isDying = true; gameActive = false; 
         resetInput();
-        createExplosion(player.position);
-        lives--;
-        document.getElementById('lives-val').innerText = lives;
-        if (lives === 1) showNotificationAlert();
-        else if (lives > 0) popMessage(oopsies[Math.floor(Math.random() * oopsies.length)]);
-        player.visible = false;
-        setTimeout(() => finalizeDeath(), 1200);
+
+        const resolveDeath = () => {
+            if (!isDying || !player) return;
+            if (cause === 'badEmotion') showDamageFeedback(player.position);
+            if (cause === 'fall') showFallFeedback(player.position);
+            createExplosion(player.position);
+            if (cause === 'badEmotion') AudioFX.lose();
+            if (cause === 'fall') AudioFX.burstLose();
+            if (cause !== 'fall' && cause !== 'badEmotion') AudioFX.hurt();
+            if (cause === 'badEmotion') Haptics.badEmotion();
+            lives--;
+            document.getElementById('lives-val').innerText = lives;
+            if (lives === 1) { AudioFX.heart(); showNotificationAlert(); }
+            player.visible = false;
+            setTimeout(() => finalizeDeath(), 1200);
+        };
+
+        if (cause === 'fall') {
+            AudioFX.fall();
+            setTimeout(resolveDeath, 1660);
+        } else {
+            resolveDeath();
+        }
     }
 
     function showNotificationAlert() {
@@ -728,6 +1366,8 @@
     function goHome() { 
         gameActive = false; isIntroAnimating = false; levelTransitioning = false;
         resetInput();
+        MusicBank.stop();
+        CinematicWind.stop();
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
         if(player) player.visible = false;
@@ -736,6 +1376,7 @@
     function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); else document.exitFullscreen(); }
 
     let keys = { left: false, right: false, up: false };
+    let lastMoveDirection = 'none';
 
     function update(dt) {
         for (let i = particles.length - 1; i >= 0; i--) {
@@ -743,7 +1384,7 @@
             p.position.addScaledVector(p.userData.velocity, dt);
             p.userData.velocity.y -= 0.015 * dt; p.userData.life -= 0.025 * dt;
             p.material.opacity = Math.max(0, p.userData.life);
-            if (p.userData.life <= 0) { scene.remove(p); particles.splice(i, 1); }
+            if (p.userData.life <= 0) { scene.remove(p); disposeObject(p); particles.splice(i, 1); }
         }
         if (isIntroAnimating) {
             introProgress += 0.0035 * dt; 
@@ -772,8 +1413,10 @@
 
             if (introProgress >= 1) { 
                 isIntroAnimating = false; 
+                CinematicWind.stop();
                 gameActive = true; 
                 levelTransitioning = false;
+                MusicBank.playForLevel(level);
                 player.rotation.y = 0; 
                 camera.position.copy(camEnd); 
                 camera.lookAt(player.position.x, player.position.y + 1, 0);
@@ -788,6 +1431,9 @@
         }
         if (!gameActive || isDying) { monitorIntroLanding(); return; }
         
+        const activeMoveDirection = keys.left ? 'left' : keys.right ? 'right' : 'none';
+        lastMoveDirection = activeMoveDirection;
+
         if (keys.left) {
             velocityX = -0.3;
             player.rotation.y = THREE.MathUtils.lerp(player.rotation.y, Math.PI, 0.15 * dt);
@@ -820,11 +1466,11 @@
 
         if (!levelTransitioning && door && player.position.distanceTo(door.position) < 4.5) { 
             levelTransitioning = true;
-            if (level >= 10) showGameOver(true); 
+            if (level >= 10) { AudioFX.win(); showGameOver(true); } 
             else startLevelSequence(level + 1, true, true); 
         }
 
-        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; }
+        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; AudioFX.jump(); }
         
         for (let idx = items.length - 1; idx >= 0; idx--) {
             const it = items[idx];
@@ -835,7 +1481,9 @@
                 items.splice(idx, 1); 
                 score += 10; 
                 document.getElementById('score-val').innerText = score; 
-                popMessage(it.text + "! ✨"); 
+                AudioFX.collect();
+                Haptics.collect();
+                showCollectFeedback(it.mesh.position);
             }
         }
 
@@ -858,12 +1506,13 @@
                     disposeObject(en.mesh);
                     enemies.splice(idx, 1); 
                     velocityY = 0.42; 
-                    popMessage("OVERCOME!");
-                } else handleDeath(); 
+                    AudioFX.overcome();
+                    showStompFeedback(en.mesh.position);
+                } else handleDeath('badEmotion'); 
             }
         }
 
-        if (player.position.y < -50) handleDeath();
+        if (player.position.y < -50) handleDeath('fall');
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, player.position.x, 0.1 * dt);
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, player.position.y + 6, 0.1 * dt);
         camera.lookAt(player.position.x, player.position.y + 1, 0);
@@ -872,6 +1521,8 @@
     function showGameOver(win) { 
         gameActive = false; levelTransitioning = false;
         resetInput();
+        MusicBank.stop();
+        if (!win) AudioFX.gameOver();
         const screen = document.querySelector('.game-over-screen'); 
         screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
         document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
@@ -880,6 +1531,8 @@
 
     function restartGame() { 
         resetInput();
+        MusicBank.stop();
+        CinematicWind.stop();
         score = 0; lives = 3; level = 1; 
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
@@ -901,17 +1554,18 @@
     const bind = (sel, k) => { 
         const el = document.querySelector(sel); 
         if (!el) return;
-        el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
+        el.addEventListener('touchstart', (e) => { e.preventDefault(); AudioFX.unlock(); keys[k] = true; }, {passive: false}); 
         el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
-        el.addEventListener('mousedown', () => { keys[k] = true; }); 
+        el.addEventListener('mousedown', () => { AudioFX.unlock(); keys[k] = true; }); 
         el.addEventListener('mouseup', () => { keys[k] = false; }); 
     };
 
     bind('.btn-left', 'left'); bind('.btn-right', 'right'); bind('.btn-jump', 'up');
     
     window.addEventListener('keydown', (e) => { 
-        if(e.code === 'ArrowLeft' || e.key === 'a') keys.left = true; 
-        if(e.code === 'ArrowRight' || e.key === 'd') keys.right = true; 
+        AudioFX.unlock();
+        if(e.code === 'ArrowLeft' || e.key === 'a') { keys.left = true; } 
+        if(e.code === 'ArrowRight' || e.key === 'd') { keys.right = true; } 
         if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; } 
     });
 
@@ -922,8 +1576,12 @@
     });
 
     document.querySelector('.start-btn').onclick = () => { 
+        AudioFX.unlock();
+        AudioFX.click();
+        CinematicWind.fadeOutStartPage(850);
         document.querySelector('.start-screen').style.display = 'none'; 
         init(); 
+        MusicBank.preload();
         restartGameOnlyStats(); 
     };
 
@@ -940,13 +1598,13 @@
     document.querySelector('.home-btn').onclick = goHome;
     document.querySelector('.fullscreen-btn').onclick = toggleFullScreen;
 
-    function popMessage(txt) { 
-        const msg = document.querySelector('.message-box'); 
-        if(msg) { 
-            msg.innerText = txt; 
-            msg.style.display = 'block'; 
-            setTimeout(() => { msg.style.display = 'none'; }, 1500); 
-        } 
+    const musicButton = document.querySelector('.music-btn');
+    if (musicButton) {
+        musicButton.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            AudioFX.unlock();
+            MusicBank.toggle();
+        });
     }
 
     window.addEventListener('resize', () => { 
@@ -957,7 +1615,19 @@
         } 
     });
 
-    window.onload = function() { animate(performance.now()); }
+    function tryStartPageWindOnce() {
+        CinematicWind.playStartPage();
+        window.removeEventListener('pointerdown', tryStartPageWindOnce);
+        window.removeEventListener('touchstart', tryStartPageWindOnce);
+    }
+
+    window.onload = function() { 
+        MusicBank.setButtonState(); 
+        CinematicWind.preload(); 
+        window.addEventListener('pointerdown', tryStartPageWindOnce, { once: true });
+        window.addEventListener('touchstart', tryStartPageWindOnce, { once: true, passive: true });
+        animate(performance.now()); 
+    }
 </script>
 </body>
 </html>
