@@ -45,7 +45,6 @@
             width: 7vmin;
             height: 7vmin;
             background: var(--glass);
-            backdrop-filter: none;
             border: 0.3vmin solid rgba(255,255,255,0.4);
             border-radius: 50%;
             display: flex;
@@ -61,7 +60,6 @@
 
         .hud-card {
             background: var(--glass);
-            backdrop-filter: none;
             padding: 1.5vmin 3vmin;
             border-radius: 3.5vmin;
             border: 0.4vmin solid rgba(255,255,255,0.4);
@@ -182,7 +180,6 @@
             width: 14vmin;
             height: 14vmin;
             background: var(--glass);
-            backdrop-filter: none;
             border: 0.4vmin solid rgba(255,255,255,0.6);
             border-radius: 50%;
             display: flex;
@@ -432,7 +429,7 @@
     let platforms = [], items = [], enemies = [], clouds = [], particles = [];
     let score = 0, lives = 3, level = 1;
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
-    let isIntroAnimating = false, introProgress = 0;
+    let isIntroAnimating = false, introProgress = 0, levelTransitioning = false;
     let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
@@ -489,9 +486,7 @@
         sun.castShadow = true;
         scene.add(sun);
         createPlayer();
-        startLevelSequence(1, true, true);
         for(let i=0; i<30; i++) spawnCloud();
-        animate(performance.now());
     }
 
     function createPlayer() {
@@ -526,11 +521,31 @@
         return group;
     }
 
+    function resetInput() {
+        keys.left = false;
+        keys.right = false;
+        keys.up = false;
+    }
+
+    function disposeObject(obj) {
+        if (!obj) return;
+        obj.traverse?.((child) => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                const materials = Array.isArray(child.material) ? child.material : [child.material];
+                materials.forEach((mat) => {
+                    if (mat.map) mat.map.dispose();
+                    mat.dispose();
+                });
+            }
+        });
+    }
+
     function spawnLevel(lvl) {
-        platforms.forEach(p => scene.remove(p));
-        items.forEach(it => scene.remove(it.mesh));
-        enemies.forEach(en => scene.remove(en.mesh));
-        if (door) scene.remove(door);
+        platforms.forEach(p => { scene.remove(p); disposeObject(p); });
+        items.forEach(it => { scene.remove(it.mesh); disposeObject(it.mesh); });
+        enemies.forEach(en => { scene.remove(en.mesh); disposeObject(en.mesh); });
+        if (door) { scene.remove(door); disposeObject(door); door = null; }
         platforms = []; items = []; enemies = [];
         const segments = 5 + (lvl * 5);
         const verticalClimb = lvl * 4.5;
@@ -580,10 +595,11 @@
     }
 
     function startLevelSequence(lvl, withCinematic = true, showPopup = true) {
-        gameActive = false; isIntroAnimating = false;
+        gameActive = false; isIntroAnimating = false; levelTransitioning = true;
+        resetInput();
         if (player) {
             player.visible = false;
-            player.rotation.y = -Math.PI / 2; // Fixed: Face Camera directly
+            player.rotation.y = -Math.PI / 2;
         } 
         level = lvl; document.getElementById('lvl-val').innerText = level;
         const applySetup = () => {
@@ -591,7 +607,7 @@
             if (player) { 
                 player.visible = true; 
                 player.position.set(0, 2, 0); 
-                player.rotation.y = -Math.PI / 2; // Fixed: Face Camera directly
+                player.rotation.y = -Math.PI / 2;
             }
             velocityY = 0; velocityX = 0;
             if (withCinematic) { 
@@ -603,6 +619,7 @@
             else { 
                 isIntroAnimating = false; 
                 gameActive = true; 
+                levelTransitioning = false;
                 camera.position.copy(camEnd); 
                 camera.lookAt(player.position.x, player.position.y + 1, 0); 
             }
@@ -687,6 +704,7 @@
     function handleDeath() {
         if (isDying) return;
         isDying = true; gameActive = false; 
+        resetInput();
         createExplosion(player.position);
         lives--;
         document.getElementById('lives-val').innerText = lives;
@@ -708,7 +726,8 @@
     }
 
     function goHome() { 
-        gameActive = false; isIntroAnimating = false; 
+        gameActive = false; isIntroAnimating = false; levelTransitioning = false;
+        resetInput();
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
         if(player) player.visible = false;
@@ -754,6 +773,7 @@
             if (introProgress >= 1) { 
                 isIntroAnimating = false; 
                 gameActive = true; 
+                levelTransitioning = false;
                 player.rotation.y = 0; 
                 camera.position.copy(camEnd); 
                 camera.lookAt(player.position.x, player.position.y + 1, 0);
@@ -798,25 +818,29 @@
             }
         });
 
-        if (door && player.position.distanceTo(door.position) < 4.5) { 
+        if (!levelTransitioning && door && player.position.distanceTo(door.position) < 4.5) { 
+            levelTransitioning = true;
             if (level >= 10) showGameOver(true); 
             else startLevelSequence(level + 1, true, true); 
         }
 
         if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; }
         
-        items.forEach((it, idx) => {
+        for (let idx = items.length - 1; idx >= 0; idx--) {
+            const it = items[idx];
             it.mesh.position.y = it.baseY + Math.sin(Date.now() * 0.005) * 0.5;
             if (player.position.distanceTo(it.mesh.position) < 3.0) { 
                 scene.remove(it.mesh); 
+                disposeObject(it.mesh);
                 items.splice(idx, 1); 
                 score += 10; 
                 document.getElementById('score-val').innerText = score; 
                 popMessage(it.text + "! ✨"); 
             }
-        });
+        }
 
-        enemies.forEach((en, idx) => {
+        for (let idx = enemies.length - 1; idx >= 0; idx--) {
+            const en = enemies[idx];
             en.mesh.position.x += en.dir * en.speed * dt;
             en.mesh.position.y = en.surfaceY + 1.1; 
             const halfPlatformWidth = en.platform.geometry.parameters.width / 2;
@@ -831,12 +855,13 @@
             if (new THREE.Box3().setFromObject(player).intersectsBox(new THREE.Box3().setFromObject(en.mesh))) { 
                 if (velocityY < -0.05 && player.position.y > en.mesh.position.y + 0.5) { 
                     scene.remove(en.mesh); 
+                    disposeObject(en.mesh);
                     enemies.splice(idx, 1); 
                     velocityY = 0.42; 
                     popMessage("OVERCOME!");
                 } else handleDeath(); 
             }
-        });
+        }
 
         if (player.position.y < -50) handleDeath();
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, player.position.x, 0.1 * dt);
@@ -845,7 +870,8 @@
     }
 
     function showGameOver(win) { 
-        gameActive = false; 
+        gameActive = false; levelTransitioning = false;
+        resetInput();
         const screen = document.querySelector('.game-over-screen'); 
         screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
         document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
@@ -853,6 +879,7 @@
     }
 
     function restartGame() { 
+        resetInput();
         score = 0; lives = 3; level = 1; 
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
@@ -873,6 +900,7 @@
 
     const bind = (sel, k) => { 
         const el = document.querySelector(sel); 
+        if (!el) return;
         el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[k] = true; }, {passive: false}); 
         el.addEventListener('touchend', (e) => { e.preventDefault(); keys[k] = false; }, {passive: false}); 
         el.addEventListener('mousedown', () => { keys[k] = true; }); 
@@ -900,6 +928,7 @@
     };
 
     function restartGameOnlyStats() { 
+        resetInput();
         score = 0; lives = 3; level = 1; 
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
