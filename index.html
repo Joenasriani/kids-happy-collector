@@ -423,20 +423,20 @@
 
         .instruction-box {
             background: rgba(0, 0, 0, 0.2);
-            padding: 3vmin;
-            border-radius: 4vmin;
-            max-width: 80vmin;
+            padding: 2vmin 2.4vmin;
+            border-radius: 3vmin;
+            max-width: 68vmin;
             text-align: center;
-            margin-bottom: 1vmin;
+            margin-bottom: 0.7vmin;
         }
 
         .instruction-item {
-            font-size: 3.5vmin;
-            margin: 1vmin 0;
+            font-size: 2.75vmin;
+            margin: 0.65vmin 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 2vmin;
+            gap: 1.3vmin;
         }
 
 
@@ -474,6 +474,25 @@
         .intro-credits strong {
             font-weight: 900;
             color: rgba(255,255,255,0.94);
+        }
+
+
+        /* Start page spacing polish: keep title/mini-hero unchanged, lower the info card and button, pin credits as footer. */
+        .start-screen .instruction-box {
+            position: relative;
+            top: 4.8vmin;
+        }
+        .start-screen .start-btn {
+            position: relative;
+            top: 6.8vmin;
+        }
+        .start-screen .intro-credits {
+            position: absolute;
+            left: 50%;
+            bottom: max(2.2vmin, calc(env(safe-area-inset-bottom) + 1.2vmin));
+            transform: translateX(-50%);
+            margin-top: 0;
+            width: min(90vw, 80vmin);
         }
     </style>
 </head>
@@ -554,7 +573,7 @@
     let platforms = [], items = [], enemies = [], clouds = [], particles = [];
     let score = 0, lives = 3, level = 1;
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
-    let fallCueStarted = false, fallCueStartTime = 0, lastGroundCenterY = 2;
+    let fallCueStarted = false, fallCueStartTime = 0, lastGroundCenterY = 2, lowestPlatformSurfaceY = Infinity;
     let isIntroAnimating = false, introProgress = 0, levelTransitioning = false;
     let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
     let cinematicDoorPos = new THREE.Vector3(); 
@@ -1083,18 +1102,49 @@
         });
     }
 
+    function getProfileGap(lvl, i, segments) {
+        const t = i / segments;
+        const base = 4.9 + (lvl * 0.22);
+        let shape = 0;
+        if (lvl === 1) shape = Math.sin(i * 0.8) * 0.15;
+        else if (lvl === 2) shape = Math.sin(i * 1.1) * 0.35;
+        else if (lvl === 3) shape = (i % 3 === 0 ? 0.35 : -0.15) + Math.sin(i * 0.6) * 0.2;
+        else if (lvl === 4) shape = (i % 4 === 0 ? 0.55 : i % 4 === 1 ? -0.25 : 0.15);
+        else if (lvl === 5) shape = Math.sin(t * Math.PI * 2) * 0.45 + (t > 0.45 && t < 0.7 ? -0.25 : 0.15);
+        else if (lvl === 6) shape = (i % 5 === 0 ? 0.55 : i % 2 === 0 ? -0.2 : 0.25);
+        else if (lvl === 7) shape = (i % 4 === 2 ? 0.65 : -0.05) + Math.sin(i * 0.55) * 0.2;
+        else if (lvl === 8) shape = Math.sin(t * Math.PI * 4) * 0.55;
+        else if (lvl === 9) shape = (i % 6 < 2 ? 0.55 : i % 6 < 4 ? -0.15 : 0.25);
+        else shape = (i % 7 === 3 ? 0.65 : i % 5 === 0 ? -0.25 : 0.2) + Math.sin(t * Math.PI * 3) * 0.25;
+        return Math.max(4.75, Math.min(7.35, base + shape));
+    }
+
+    function getProfileY(lvl, i, segments, verticalClimb) {
+        const t = i / segments;
+        const climb = verticalClimb * t;
+        if (lvl === 1) return climb * 0.65 + Math.sin(i * 0.6) * 0.35;
+        if (lvl === 2) return climb * 0.75 + Math.sin(t * Math.PI * 2) * 1.0;
+        if (lvl === 3) return climb * 0.82 + Math.sin(t * Math.PI * 3) * 1.25;
+        if (lvl === 4) return climb + Math.floor(t * 5) * 0.45 - Math.sin(t * Math.PI * 2) * 0.45;
+        if (lvl === 5) return climb * 0.95 - Math.sin(t * Math.PI) * 3.0 + Math.sin(t * Math.PI * 3) * 0.6;
+        if (lvl === 6) return climb * 0.9 + (i % 4 < 2 ? 0.85 : -0.65);
+        if (lvl === 7) return climb * 0.78 + Math.sin(i * 0.85) * 1.45;
+        if (lvl === 8) return climb * 0.88 + Math.sin(t * Math.PI * 4) * 2.0;
+        if (lvl === 9) return climb + Math.sin(t * Math.PI * 5) * 1.55 + (i % 5 === 0 ? -0.7 : 0.35);
+        return climb + Math.floor(t * 6) * 0.35 + Math.sin(t * Math.PI * 3) * 1.15;
+    }
+
     function spawnLevel(lvl) {
         platforms.forEach(p => { scene.remove(p); disposeObject(p); });
         items.forEach(it => { scene.remove(it.mesh); disposeObject(it.mesh); });
         enemies.forEach(en => { scene.remove(en.mesh); disposeObject(en.mesh); });
         if (door) { scene.remove(door); disposeObject(door); door = null; }
         platforms = []; items = []; enemies = [];
+        lowestPlatformSurfaceY = Infinity;
         const segments = 5 + (lvl * 5);
         const verticalClimb = lvl * 4.5;
         
         const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
-        const rawSpacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92;
-        const spacing = Math.min(rawSpacing, platformWidth + 5.8 + (lvl * 0.2));
         const maxStepUp = 2.95;
         const maxStepDown = 3.25;
         
@@ -1107,36 +1157,46 @@
 
         addPlatform(0, -1, 35, 0x2ed573);
         let lastY = -1;
+        let currentX = 0;
+        let prevWidth = 35;
         const goodEmotions = ["BRAVERY", "JOY", "LOVE", "HOPE", "PEACE", "KINDNESS", "CALM", "PRIDE", "TRUST", "HAPPINESS"];
         const badEmotions = ["ANGER", "GREED", "JEALOUSY", "RUDENESS", "ENVY", "HATE", "DESPAIR"];
         
         let consecutiveEmpty = 0;
 
         for (let i = 1; i < segments; i++) {
-            const x = i * spacing;
-            let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.8));
+            const gap = getProfileGap(lvl, i, segments);
+            currentX += (prevWidth / 2) + (platformWidth / 2) + gap;
+            prevWidth = platformWidth;
+            let currentY = getProfileY(lvl, i, segments, verticalClimb);
             if (currentY - lastY > maxStepUp) currentY = lastY + maxStepUp;
             else if (lastY - currentY > maxStepDown) currentY = lastY - maxStepDown;
             lastY = currentY;
-            const p = addPlatform(x, currentY, platformWidth, 0x7bed9f);
+            const p = addPlatform(currentX, currentY, platformWidth, 0x7bed9f);
             
             if (selectedEnemyIndices.includes(i)) {
                 spawnEnemy(p, badEmotions, enemySpeed);
                 consecutiveEmpty = 0;
             } else {
                 if (Math.random() > 0.15 || consecutiveEmpty >= 1 || i === 1) {
-                    spawnGoodDeed(x + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
+                    spawnGoodDeed(currentX + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
                     consecutiveEmpty = 0;
                 } else {
                     consecutiveEmpty++;
                 }
             }
         }
-        const finalX = segments * spacing;
+        const finalGap = getProfileGap(lvl, segments, segments);
+        const finalX = currentX + (platformWidth / 2) + 10 + finalGap;
         let finalY = verticalClimb + 2;
+        if (lvl === 5) finalY = Math.max(lastY + 1.2, verticalClimb * 0.7);
+        else if (lvl === 7) finalY = Math.max(lastY + 0.4, verticalClimb * 0.65);
+        else if (lvl === 8) finalY = Math.max(lastY + 1.0, verticalClimb * 0.75);
+        else if (lvl === 10) finalY = Math.max(lastY + 1.5, verticalClimb * 0.85);
         if (finalY - lastY > maxStepUp) finalY = lastY + maxStepUp;
         else if (lastY - finalY > maxStepDown) finalY = lastY - maxStepDown;
         addPlatform(finalX, finalY, 20, 0x2ed573);
+        if (!Number.isFinite(lowestPlatformSurfaceY)) lowestPlatformSurfaceY = -1;
         door = createDoorMesh(); door.position.set(finalX, finalY + 4, 0); scene.add(door);
         cinematicDoorPos.copy(door.position);
         camStart.set(door.position.x + 30, door.position.y + 15, 60); 
@@ -1195,6 +1255,7 @@
     function addPlatform(x, y, w, color) {
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, 1.5, 10), new THREE.MeshStandardMaterial({ color: color }));
         mesh.position.set(x, y - 0.75, 0); mesh.receiveShadow = true; scene.add(mesh);
+        lowestPlatformSurfaceY = Math.min(lowestPlatformSurfaceY, y);
         platforms.push(mesh); return mesh;
     }
 
@@ -1540,7 +1601,9 @@
             }
         });
 
-        if (!groundedThisFrame && velocityY < -0.04 && player.position.y < lastGroundCenterY - 0.18) {
+        const playerBottomForFallCue = player.position.y - (0.62 * player.scale.y);
+        const passedBelowLowestPlatform = Number.isFinite(lowestPlatformSurfaceY) && playerBottomForFallCue < lowestPlatformSurfaceY - 0.35;
+        if (!groundedThisFrame && velocityY < -0.04 && passedBelowLowestPlatform) {
             startFallCue();
         }
 
