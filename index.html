@@ -214,7 +214,7 @@
             z-index: 10;
             left: 2.8vmin; 
             top: -150vh;
-            animation: introHeroSequence 18s linear infinite;
+            animation: introHeroSequence 10s linear infinite;
             transform-origin: bottom center;
             opacity: 1;
             filter: none;
@@ -227,7 +227,7 @@
             height: 1.2vmin;
             top: 1.5vmin;
             border-radius: 0.2vmin;
-            animation: eyeBlink 18s linear infinite;
+            animation: eyeBlink 10s linear infinite;
         }
         .mini-eye.left { left: 1.2vmin; }
         .mini-eye.right { right: 1.2vmin; }
@@ -459,6 +459,9 @@
             display: block;
             fill: white;
         }
+        .music-btn .music-off-icon { display: none; }
+        .music-btn.off .music-on-icon { display: none; }
+        .music-btn.off .music-off-icon { display: block; }
         .intro-credits {
             margin-top: 2.2vmin;
             font-size: 1.75vmin;
@@ -528,8 +531,9 @@
             <div class="icon-btn fullscreen-btn">
                 <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
             </div>
-            <div class="icon-btn music-btn" aria-label="Toggle music" title="Toggle music">
-                <svg class="music-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11.1A3.5 3.5 0 1 1 10 11V6h8V3h-6z"/></svg>
+            <div class="icon-btn music-btn" aria-label="Music on" title="Music on">
+                <svg class="music-symbol music-on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11.1A3.5 3.5 0 1 1 10 11V6h8V3h-6z"/></svg>
+                <svg class="music-symbol music-off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11.1A3.5 3.5 0 1 1 10 11V6h8V3h-6z"/><path d="M3.7 3.1 21 20.4l-1.4 1.4L2.3 4.5z"/></svg>
             </div>
         </div>
     </div>
@@ -546,16 +550,15 @@
 </div>
 
 <script>
-    let scene, camera, renderer, player, door;
+    let scene, camera, renderer, player, door, characterShadow;
     let platforms = [], items = [], enemies = [], clouds = [], particles = [];
     let score = 0, lives = 3, level = 1;
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
+    let fallCueStarted = false, fallCueStartTime = 0, lastGroundCenterY = 2;
     let isIntroAnimating = false, introProgress = 0, levelTransitioning = false;
     let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
-
-    const oopsies = ["OH NO!", "STAY CAREFUL!", "OOPS!", "WATCH OUT!", "TRY AGAIN!"];
 
 
     const AudioFX = (() => {
@@ -645,7 +648,6 @@
             click() { tone(520, 0.055, 'triangle', 0.12); tone(780, 0.075, 'sine', 0.08, 0.035); },
             start() { tone(392, 0.18, 'sine', 0.10); tone(523.25, 0.2, 'sine', 0.10, 0.08); },
             jump() { glide(220, 720, 0.22, 'triangle', 0.24); tone(980, 0.09, 'sine', 0.10, 0.045); },
-            move() { tone(294, 0.06, 'triangle', 0.045); },
             collect() { tone(659.25, 0.12, 'sine', 0.16); tone(880, 0.16, 'sine', 0.13, 0.08); tone(1174.66, 0.18, 'triangle', 0.09, 0.16); },
             overcome() { tone(329.63, 0.12, 'triangle', 0.10); tone(493.88, 0.15, 'triangle', 0.09, 0.08); tone(659.25, 0.18, 'sine', 0.07, 0.16); },
             lose() { softNoise(0.28, 0.18, 760); glide(260, 120, 0.34, 'triangle', 0.17); tone(196, 0.22, 'sine', 0.12, 0.08); },
@@ -730,6 +732,7 @@
         let enabled = true;
         let currentIndex = -1;
         let fadeTimer = null;
+        let preloadLinks = [];
         const baseVolume = 0.022;
 
         function ensureAudio() {
@@ -746,6 +749,8 @@
             const btn = document.querySelector('.music-btn');
             if (!btn) return;
             btn.classList.toggle('off', !enabled);
+            btn.setAttribute('aria-label', enabled ? 'Music on' : 'Music off');
+            btn.setAttribute('title', enabled ? 'Music on' : 'Music off');
         }
 
         function fadeTo(target, duration = 550, after = null) {
@@ -797,11 +802,16 @@
         }
 
         function preload() {
-            tracks.forEach((track) => {
-                const probe = new Audio();
-                probe.preload = 'auto';
-                probe.src = track.src;
-            });
+            if (!preloadLinks.length) {
+                preloadLinks = tracks.map((track) => {
+                    const link = document.createElement('link');
+                    link.rel = 'preload';
+                    link.as = 'audio';
+                    link.href = track.src;
+                    document.head.appendChild(link);
+                    return link;
+                });
+            }
             setButtonState();
         }
 
@@ -847,28 +857,6 @@
             }, 40);
         }
 
-        function playStartPage() {
-            const a = ensureAudio();
-            clearFade();
-            if (!a.paused) return;
-            a.loop = true;
-            a.currentTime = 0;
-            a.volume = 0;
-            a.play().then(() => fadeTo(0.012, 1800)).catch(() => {});
-        }
-
-        function fadeOutStartPage(duration = 900, after = null) {
-            if (!audio) { if (after) after(); return; }
-            fadeTo(0, duration, () => {
-                if (audio) {
-                    audio.pause();
-                    audio.loop = false;
-                    audio.currentTime = 0;
-                }
-                if (after) after();
-            });
-        }
-
         function playCinematic(totalMs = 4200) {
             const a = ensureAudio();
             clearFade();
@@ -906,7 +894,7 @@
             ensureAudio();
         }
 
-        return { preload, playStartPage, fadeOutStartPage, playCinematic, stop };
+        return { preload, playCinematic, stop };
     })();
 
 
@@ -960,6 +948,7 @@
         sun.castShadow = true;
         scene.add(sun);
         createPlayer();
+        createCharacterShadow();
         for(let i=0; i<30; i++) spawnCloud();
     }
 
@@ -984,6 +973,72 @@
         scene.add(player);
     }
 
+
+    function createCharacterShadow() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createRadialGradient(128, 128, 14, 128, 128, 118);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.42)');
+        gradient.addColorStop(0.45, 'rgba(0, 0, 0, 0.22)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 256, 256);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        const material = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            opacity: 0.28,
+            depthWrite: false
+        });
+        characterShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+        characterShadow.rotation.x = -Math.PI / 2;
+        characterShadow.renderOrder = 5;
+        characterShadow.visible = false;
+        scene.add(characterShadow);
+    }
+
+    function updateCharacterShadow() {
+        if (!characterShadow || !player || !player.visible || !gameActive || isDying) {
+            if (characterShadow) characterShadow.visible = false;
+            return;
+        }
+
+        let targetPlatform = null;
+        let targetSurfaceY = -Infinity;
+        for (const p of platforms) {
+            const params = p.geometry.parameters;
+            const halfW = params.width / 2;
+            const halfD = params.depth / 2;
+            const surfaceY = p.position.y + (params.height / 2);
+            const insideX = player.position.x >= p.position.x - halfW && player.position.x <= p.position.x + halfW;
+            const insideZ = player.position.z >= p.position.z - halfD && player.position.z <= p.position.z + halfD;
+            const belowPlayer = surfaceY <= player.position.y + 0.15;
+            if (insideX && insideZ && belowPlayer && surfaceY > targetSurfaceY) {
+                targetPlatform = p;
+                targetSurfaceY = surfaceY;
+            }
+        }
+
+        if (!targetPlatform) {
+            characterShadow.visible = false;
+            return;
+        }
+
+        const playerBottomY = player.position.y - (0.62 * player.scale.y);
+        const airHeight = Math.max(0, playerBottomY - targetSurfaceY);
+        const heightFade = THREE.MathUtils.clamp(1 - (airHeight / 6.5), 0.18, 1);
+        const heightSpread = 1 + Math.min(airHeight * 0.13, 0.85);
+        const turnSquash = 1 + Math.abs(Math.sin(player.rotation.y)) * 0.08;
+
+        characterShadow.position.set(player.position.x, targetSurfaceY + 0.035, player.position.z);
+        characterShadow.scale.set(1.85 * heightSpread * turnSquash, 1.0 * heightSpread, 1);
+        characterShadow.material.opacity = 0.28 * heightFade;
+        characterShadow.visible = true;
+    }
+
     function createDoorMesh() {
         const group = new THREE.Group();
         const frame = new THREE.Mesh(new THREE.BoxGeometry(4.0, 6.0, 0.8), new THREE.MeshStandardMaterial({ color: 0x5d4037 }));
@@ -995,11 +1050,23 @@
         return group;
     }
 
+    function startFallCue() {
+        if (fallCueStarted) return;
+        fallCueStarted = true;
+        fallCueStartTime = performance.now();
+        AudioFX.fall();
+    }
+
+    function resetFallCueState() {
+        fallCueStarted = false;
+        fallCueStartTime = 0;
+        lastGroundCenterY = player ? player.position.y : 2;
+    }
+
     function resetInput() {
         keys.left = false;
         keys.right = false;
         keys.up = false;
-        lastMoveDirection = 'none';
     }
 
     function disposeObject(obj) {
@@ -1026,7 +1093,10 @@
         const verticalClimb = lvl * 4.5;
         
         const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
-        const spacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92; 
+        const rawSpacing = (platformWidth + 7 + (lvl * 1.1)) * 0.92;
+        const spacing = Math.min(rawSpacing, platformWidth + 5.8 + (lvl * 0.2));
+        const maxStepUp = 2.95;
+        const maxStepDown = 3.25;
         
         let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.2) + 1;
         const enemySpeed = 0.03 + (lvl * 0.012);
@@ -1045,7 +1115,8 @@
         for (let i = 1; i < segments; i++) {
             const x = i * spacing;
             let currentY = (i / segments) * verticalClimb + (Math.sin(i * 0.5) * (lvl * 0.8));
-            if (Math.abs(currentY - lastY) < 2.2) currentY += 2.8;
+            if (currentY - lastY > maxStepUp) currentY = lastY + maxStepUp;
+            else if (lastY - currentY > maxStepDown) currentY = lastY - maxStepDown;
             lastY = currentY;
             const p = addPlatform(x, currentY, platformWidth, 0x7bed9f);
             
@@ -1062,8 +1133,11 @@
             }
         }
         const finalX = segments * spacing;
-        addPlatform(finalX, verticalClimb + 2, 20, 0x2ed573);
-        door = createDoorMesh(); door.position.set(finalX, verticalClimb + 6, 0); scene.add(door);
+        let finalY = verticalClimb + 2;
+        if (finalY - lastY > maxStepUp) finalY = lastY + maxStepUp;
+        else if (lastY - finalY > maxStepDown) finalY = lastY - maxStepDown;
+        addPlatform(finalX, finalY, 20, 0x2ed573);
+        door = createDoorMesh(); door.position.set(finalX, finalY + 4, 0); scene.add(door);
         cinematicDoorPos.copy(door.position);
         camStart.set(door.position.x + 30, door.position.y + 15, 60); 
         camEnd.set(0, 2 + 6, 22);
@@ -1075,7 +1149,8 @@
         if (player) {
             player.visible = false;
             player.rotation.y = -Math.PI / 2;
-        } 
+        }
+        if (characterShadow) characterShadow.visible = false; 
         level = lvl; document.getElementById('lvl-val').innerText = level;
         const applySetup = () => {
             if (!withCinematic) AudioFX.level();
@@ -1084,6 +1159,7 @@
                 player.visible = true; 
                 player.position.set(0, 2, 0); 
                 player.rotation.y = -Math.PI / 2;
+                resetFallCueState();
             }
             velocityY = 0; velocityX = 0;
             if (withCinematic) { 
@@ -1341,12 +1417,15 @@
             document.getElementById('lives-val').innerText = lives;
             if (lives === 1) { AudioFX.heart(); showNotificationAlert(); }
             player.visible = false;
+            if (characterShadow) characterShadow.visible = false;
             setTimeout(() => finalizeDeath(), 1200);
         };
 
         if (cause === 'fall') {
-            AudioFX.fall();
-            setTimeout(resolveDeath, 1660);
+            startFallCue();
+            const elapsed = performance.now() - fallCueStartTime;
+            const remaining = Math.max(0, 1660 - elapsed);
+            setTimeout(resolveDeath, remaining);
         } else {
             resolveDeath();
         }
@@ -1371,12 +1450,12 @@
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
         if(player) player.visible = false;
+        if(characterShadow) characterShadow.visible = false;
     }
 
     function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); else document.exitFullscreen(); }
 
     let keys = { left: false, right: false, up: false };
-    let lastMoveDirection = 'none';
 
     function update(dt) {
         for (let i = particles.length - 1; i >= 0; i--) {
@@ -1390,11 +1469,8 @@
             introProgress += 0.0035 * dt; 
             const easing = introProgress < 0.5 ? 4 * introProgress * introProgress * introProgress : 1 - Math.pow(-2 * introProgress + 2, 3) / 2;
             
-            // Default look at camera (Rotation -PI/2 aligns local +X to global +Z if cam is at +Z)
-            // Note: Camera is at global +Z, so to face it, we rotate such that eyes point out.
             player.rotation.y = -Math.PI / 2; 
 
-            // Blink timing shifted slightly later for visibility after landing
             const blink1 = introProgress > 0.75 && introProgress < 0.78;
             const blink2 = introProgress > 0.82 && introProgress < 0.85;
             
@@ -1404,10 +1480,8 @@
                 player.userData.eyes.forEach(eye => eye.scale.y = 1.0);
             }
 
-            // Turn logic (between 0.92 and 1.0)
             if (introProgress > 0.92) {
                 const turnEase = (introProgress - 0.92) / 0.08;
-                // PI/2 is Facing Right (The Path)
                 player.rotation.y = THREE.MathUtils.lerp(-Math.PI / 2, 0, turnEase);
             }
 
@@ -1431,9 +1505,6 @@
         }
         if (!gameActive || isDying) { monitorIntroLanding(); return; }
         
-        const activeMoveDirection = keys.left ? 'left' : keys.right ? 'right' : 'none';
-        lastMoveDirection = activeMoveDirection;
-
         if (keys.left) {
             velocityX = -0.3;
             player.rotation.y = THREE.MathUtils.lerp(player.rotation.y, Math.PI, 0.15 * dt);
@@ -1452,6 +1523,7 @@
         player.scale.y = THREE.MathUtils.lerp(player.scale.y, Math.max(0.95, Math.min(1.05, targetScaleY)), 0.15 * dt);
         player.scale.x = player.scale.z = 1 / Math.sqrt(player.scale.y);
         
+        let groundedThisFrame = false;
         platforms.forEach(p => {
             const pBox = new THREE.Box3().setFromObject(p);
             const playerBox = new THREE.Box3().setFromObject(player);
@@ -1460,9 +1532,19 @@
                     player.position.y = p.position.y + 1.35; 
                     velocityY = 0; 
                     isJumping = false; 
+                    groundedThisFrame = true;
+                    fallCueStarted = false;
+                    fallCueStartTime = 0;
+                    lastGroundCenterY = player.position.y;
                 } 
             }
         });
+
+        if (!groundedThisFrame && velocityY < -0.04 && player.position.y < lastGroundCenterY - 0.18) {
+            startFallCue();
+        }
+
+        updateCharacterShadow();
 
         if (!levelTransitioning && door && player.position.distanceTo(door.position) < 4.5) { 
             levelTransitioning = true;
@@ -1506,6 +1588,8 @@
                     disposeObject(en.mesh);
                     enemies.splice(idx, 1); 
                     velocityY = 0.42; 
+                    score += 5;
+                    document.getElementById('score-val').innerText = score;
                     AudioFX.overcome();
                     showStompFeedback(en.mesh.position);
                 } else handleDeath('badEmotion'); 
@@ -1541,6 +1625,7 @@
         document.querySelector('.start-screen').style.display = 'flex'; 
         gameActive = false; 
         if(player) player.visible = false; 
+        if(characterShadow) characterShadow.visible = false;
     }
 
     function animate(currentTime) { 
@@ -1578,7 +1663,6 @@
     document.querySelector('.start-btn').onclick = () => { 
         AudioFX.unlock();
         AudioFX.click();
-        CinematicWind.fadeOutStartPage(850);
         document.querySelector('.start-screen').style.display = 'none'; 
         init(); 
         MusicBank.preload();
@@ -1600,8 +1684,12 @@
 
     const musicButton = document.querySelector('.music-btn');
     if (musicButton) {
-        musicButton.addEventListener('pointerdown', (e) => {
+        let lastMusicToggleTime = 0;
+        musicButton.addEventListener('click', (e) => {
             e.preventDefault();
+            const now = performance.now();
+            if (now - lastMusicToggleTime < 250) return;
+            lastMusicToggleTime = now;
             AudioFX.unlock();
             MusicBank.toggle();
         });
@@ -1615,17 +1703,10 @@
         } 
     });
 
-    function tryStartPageWindOnce() {
-        CinematicWind.playStartPage();
-        window.removeEventListener('pointerdown', tryStartPageWindOnce);
-        window.removeEventListener('touchstart', tryStartPageWindOnce);
-    }
 
     window.onload = function() { 
         MusicBank.setButtonState(); 
         CinematicWind.preload(); 
-        window.addEventListener('pointerdown', tryStartPageWindOnce, { once: true });
-        window.addEventListener('touchstart', tryStartPageWindOnce, { once: true, passive: true });
         animate(performance.now()); 
     }
 </script>
