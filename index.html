@@ -56,7 +56,7 @@
             pointer-events: auto;
         }
         .icon-btn:active { transform: scale(0.9); }
-        .icon-btn svg { width: 4vmin; height: 4vmin; fill: white; }
+        .icon-btn svg { width: 4vmin; height: 4vmin; fill: none; stroke: white; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; }
 
         .hud-card {
             background: var(--glass);
@@ -73,6 +73,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .hud-card.stat-card {
+            width: clamp(92px, 19vmin, 172px);
+            height: clamp(36px, 7.4vmin, 68px);
+            padding: 0 clamp(12px, 2.4vmin, 26px);
+            box-sizing: border-box;
         }
 
         .score-wrapper {
@@ -180,6 +187,44 @@
         .btn:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.9); }
         .jump-btn { width: 26vmin; border-radius: 6vmin; font-weight: 900; font-size: 5vmin; }
 
+
+
+        /* Touch-control usability patch: larger left/right controller pads, same arrow glyph size. */
+        @media (pointer: coarse) {
+            .controls .ctrl-group:first-child {
+                /* Move left/right controls farther left while preserving a safe screen edge margin. */
+                transform: translateX(clamp(-78px, -10.5vmin, -40px));
+                gap: 3.5vmin;
+            }
+
+            .controls .ctrl-group:first-child .btn {
+                width: clamp(66px, 18vmin, 108px);
+                height: clamp(66px, 18vmin, 108px);
+                font-size: 6vmin;
+            }
+
+            .controls .ctrl-group:last-child .jump-btn {
+                width: clamp(66px, 18vmin, 108px);
+                height: clamp(66px, 18vmin, 108px);
+                border-radius: 50%;
+                font-size: clamp(15px, 3.8vmin, 24px);
+                letter-spacing: -0.02em;
+            }
+        }
+
+        /* Portrait mobile control comfort patch: larger jump pad and slight right shift, landscape untouched. */
+        @media (pointer: coarse) and (orientation: portrait) {
+            .controls .ctrl-group:last-child {
+                transform: translateX(clamp(14px, 4.2vmin, 30px));
+            }
+
+            .controls .ctrl-group:last-child .jump-btn {
+                width: clamp(82px, 23vmin, 132px);
+                height: clamp(82px, 23vmin, 132px);
+                font-size: clamp(17px, 4.6vmin, 28px);
+            }
+        }
+
         .screen-overlay {
             position: fixed;
             inset: 0;
@@ -227,23 +272,25 @@
         .mini-eye {
             position: absolute;
             background: rgb(47, 53, 66);
-            width: 1.2vmin;
-            height: 1.2vmin;
-            top: 1.5vmin;
-            border-radius: 0.2vmin;
+            /* Match gameplay character proportions: small square eyes on the yellow cube face. */
+            width: 0.92vmin;
+            height: 0.92vmin;
+            top: 1.82vmin;
+            border-radius: 0.16vmin;
             animation: eyeBlink 10s linear infinite;
         }
-        .mini-eye.left { left: 1.2vmin; }
-        .mini-eye.right { right: 1.2vmin; }
+        .mini-eye.left { left: 1.46vmin; }
+        .mini-eye.right { right: 1.46vmin; }
 
         .mini-mouth {
             position: absolute;
-            width: 2.2vmin;
-            height: 1.1vmin;
-            border: 0.4vmin solid rgb(47, 53, 66);
+            /* Closer to the in-game torus smile: compact, rounded, and lower on the face. */
+            width: 1.38vmin;
+            height: 0.68vmin;
+            border: 0.28vmin solid rgb(47, 53, 66);
             border-top: none;
-            border-radius: 0 0 1.2vmin 1.2vmin;
-            bottom: 1vmin;
+            border-radius: 0 0 1.1vmin 1.1vmin;
+            bottom: 1.38vmin;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -456,21 +503,49 @@
             justify-content: center;
             pointer-events: auto;
         }
-        .music-btn {
+        .music-btn, .sfx-btn {
             margin-top: 0;
         }
-        .music-btn.off {
+        .music-btn.off, .sfx-btn.off {
             opacity: 0.55;
         }
         .music-btn .music-symbol {
             width: 3.5vmin;
             height: 3.5vmin;
             display: block;
-            fill: white;
+            fill: none;
+            stroke: white;
+            stroke-width: 1.85;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
         .music-btn .music-off-icon { display: none; }
         .music-btn.off .music-on-icon { display: none; }
         .music-btn.off .music-off-icon { display: block; }
+        .sfx-btn {
+            position: relative;
+        }
+        .sfx-btn .sfx-symbol {
+            width: 3.5vmin;
+            height: 3.5vmin;
+            display: block;
+            fill: none;
+            stroke: white;
+            stroke-width: 1.85;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .sfx-btn::after {
+            content: '';
+            position: absolute;
+            width: 4.4vmin;
+            height: 0.35vmin;
+            border-radius: 999px;
+            background: white;
+            transform: rotate(-38deg) scaleX(0);
+            transition: transform 0.15s ease;
+        }
+        .sfx-btn.off::after { transform: rotate(-38deg) scaleX(1); }
         .intro-credits {
             margin-top: 2.2vmin;
             font-size: 1.75vmin;
@@ -534,7 +609,7 @@
     <div class="instruction-box">
         <div class="instruction-item">✨ Collect: Yellow blocks = Good Emotions</div>
         <div class="instruction-item">🚫 Avoid: Red blocks = Bad Emotions</div>
-        <div class="instruction-item">❤️ Warning: 3 lives to beat level 10</div>
+        <div class="instruction-item">❤️ Warning: 3 lives to beat level 20</div>
     </div>
 
     <button class="start-btn action-btn">PLAY NOW</button>
@@ -556,26 +631,31 @@
 
 <div class="ui-container">
     <div class="hud-column">
-        <div class="hud-card">LVL: <span id="lvl-val">1</span></div>
-        <div class="icon-btn home-btn">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <div class="hud-card stat-card">LVL: <span id="lvl-val">1</span></div>
+        <div class="hud-icon-row left-hud-icon-row">
+            <div class="icon-btn home-btn">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.5 12 4l8.5 7.5"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></svg>
+            </div>
+            <div class="icon-btn fullscreen-btn">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H4v4"/><path d="M16 4h4v4"/><path d="M20 16v4h-4"/><path d="M4 16v4h4"/><path d="M4 4l5 5"/><path d="M20 4l-5 5"/><path d="M20 20l-5-5"/><path d="M4 20l5-5"/></svg>
+            </div>
         </div>
     </div>
 
     <div class="score-wrapper">
         <div class="hud-card score-card">PTS: <span id="score-val">0</span></div>
-        <div class="notification-alert">LAST LIFE: STAY BRAVE! ❤️</div>
+        <div class="notification-alert">LAST LIFE:<br>STAY BRAVE!</div>
     </div>
 
     <div class="hud-column">
-        <div class="hud-card">LIVES: <span id="lives-val">3</span></div>
+        <div class="hud-card stat-card">LIVES: <span id="lives-val">3</span></div>
         <div class="hud-icon-row">
-            <div class="icon-btn fullscreen-btn">
-                <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-            </div>
             <div class="icon-btn music-btn" aria-label="Music on" title="Music on">
-                <svg class="music-symbol music-on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11.1A3.5 3.5 0 1 1 10 11V6h8V3h-6z"/></svg>
-                <svg class="music-symbol music-off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11.1A3.5 3.5 0 1 1 10 11V6h8V3h-6z"/><path d="M3.7 3.1 21 20.4l-1.4 1.4L2.3 4.5z"/></svg>
+                <svg class="music-symbol music-on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17.5a3 3 0 1 1-2-2.83V6l10-2v9.5"/><path d="M10 8.2l8-1.6"/><path d="M18 13.5a3 3 0 1 1-2-2.83"/></svg>
+                <svg class="music-symbol music-off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17.5a3 3 0 1 1-2-2.83V6l10-2v9.5"/><path d="M10 8.2l8-1.6"/><path d="M18 13.5a3 3 0 1 1-2-2.83"/><path d="M4 4l16 16"/></svg>
+            </div>
+            <div class="icon-btn sfx-btn" aria-label="Sound effects on" title="Sound effects on">
+                <svg class="sfx-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 14.5H8l4.5 4V5.5L8 9.5H4.5z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
             </div>
         </div>
     </div>
@@ -593,11 +673,16 @@
 
 <script>
     let scene, camera, renderer, player, door, characterShadow;
-    let platforms = [], items = [], enemies = [], clouds = [], particles = [], levelDecorations = [], ambientDecorations = [];
+    let platforms = [], items = [], enemies = [], buttons = [], gates = [], clouds = [], particles = [], levelDecorations = [], ambientDecorations = [];
+    let starField = null;
     let score = 0, lives = 3, level = 1;
     let velocityY = 0, velocityX = 0, isJumping = false, gameActive = false, isDying = false;
     let fallCueStarted = false, fallCueStartTime = 0, lastGroundCenterY = 2, lowestPlatformSurfaceY = Infinity;
+    const FALL_SFX_LOWEST_PLATFORM_MARGIN = 0.25;
+    let groundedPlatform = null;
     let isIntroAnimating = false, introProgress = 0, levelTransitioning = false;
+    let doorArrivalTransition = null;
+    const DOOR_ARRIVAL_DURATION_MS = 560;
     let camStart = new THREE.Vector3(), camEnd = new THREE.Vector3();
     let cinematicDoorPos = new THREE.Vector3(); 
     let lastTime = performance.now();
@@ -608,6 +693,7 @@
     let cameraZoomUnlocked = false;
     let pinchZoomStartDistance = null;
     let pinchZoomStartCameraDistance = CAMERA_DEFAULT_ZOOM;
+    let portraitGameplayZoom = { active: false, elapsed: 0, duration: 2600, from: CAMERA_DEFAULT_ZOOM, to: CAMERA_DEFAULT_ZOOM };
     const PLAYER_BASE_HALF_HEIGHT = 0.6;
     const PLAYER_STAND_CLEARANCE = 0.018;
 
@@ -615,6 +701,7 @@
     const AudioFX = (() => {
         let ctx = null;
         let master = null;
+        let enabled = true;
         const maxVolume = 0.42;
 
         function ensure() {
@@ -630,7 +717,30 @@
             return ctx;
         }
 
+        function setButtonState() {
+            const btn = document.querySelector('.sfx-btn');
+            if (!btn) return;
+            btn.classList.toggle('off', !enabled);
+            btn.setAttribute('aria-label', enabled ? 'Sound effects on' : 'Sound effects off');
+            btn.setAttribute('title', enabled ? 'Sound effects on' : 'Sound effects off');
+        }
+
+        function setEnabled(nextEnabled) {
+            enabled = !!nextEnabled;
+            setButtonState();
+        }
+
+        function toggle() {
+            setEnabled(!enabled);
+            return enabled;
+        }
+
+        function isEnabled() {
+            return enabled;
+        }
+
         function tone(freq, duration, type = 'sine', gain = 0.18, delay = 0, detune = 0) {
+            if (!enabled) return;
             const ac = ensure();
             if (!ac) return;
             const t = ac.currentTime + delay;
@@ -654,6 +764,7 @@
         }
 
         function glide(from, to, duration, type = 'sine', gain = 0.16) {
+            if (!enabled) return;
             const ac = ensure();
             if (!ac) return;
             const t = ac.currentTime;
@@ -676,6 +787,7 @@
         }
 
         function softNoise(duration = 0.18, gain = 0.08, cutoff = 900) {
+            if (!enabled) return;
             const ac = ensure();
             if (!ac) return;
             const buffer = ac.createBuffer(1, ac.sampleRate * duration, ac.sampleRate);
@@ -696,6 +808,10 @@
 
         return {
             unlock: ensure,
+            toggle,
+            setEnabled,
+            isEnabled,
+            setButtonState,
             click() { tone(520, 0.055, 'triangle', 0.12); tone(780, 0.075, 'sine', 0.08, 0.035); },
             start() { tone(392, 0.18, 'sine', 0.10); tone(523.25, 0.2, 'sine', 0.10, 0.08); },
             jump() { glide(220, 720, 0.22, 'triangle', 0.24); tone(980, 0.09, 'sine', 0.10, 0.045); },
@@ -705,6 +821,7 @@
             burstLose() { softNoise(0.22, 0.14, 900); tone(220, 0.16, 'triangle', 0.12); tone(146.83, 0.24, 'sine', 0.09, 0.10); },
             hurt() { softNoise(0.18, 0.045, 650); glide(220, 150, 0.2, 'sine', 0.05); },
             fall() {
+                if (!enabled) return;
                 const ac = ensure();
                 if (!ac) return;
                 const t = ac.currentTime;
@@ -874,7 +991,8 @@
         const src = './sfx/dragon-studio-winter-wind-402331.mp3';
         let audio = null;
         let fadeTimer = null;
-        const peakVolume = 0.025;
+        let enabled = true;
+        const peakVolume = 0.075;
 
         function ensureAudio() {
             if (!audio) {
@@ -909,6 +1027,7 @@
         }
 
         function playCinematic(totalMs = 4200) {
+            if (!enabled) return;
             const a = ensureAudio();
             clearFade();
             a.pause();
@@ -941,11 +1060,16 @@
             });
         }
 
+        function setEnabled(nextEnabled) {
+            enabled = !!nextEnabled;
+            if (!enabled) stop();
+        }
+
         function preload() {
             ensureAudio();
         }
 
-        return { preload, playCinematic, stop };
+        return { preload, playCinematic, stop, setEnabled };
     })();
 
 
@@ -980,10 +1104,72 @@
         }
     }
 
+
+    function createSkyGradientTexture(topColor, bottomColor, midColor = null) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, topColor);
+        if (midColor) gradient.addColorStop(0.55, midColor);
+        gradient.addColorStop(1, bottomColor);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.magFilter = THREE.LinearFilter;
+        tex.minFilter = THREE.LinearFilter;
+        return tex;
+    }
+
+    function ensureNightStars() {
+        if (starField) return;
+        const starCount = 420;
+        const positions = new Float32Array(starCount * 3);
+        const colors = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount; i++) {
+            const idx = i * 3;
+            positions[idx] = (Math.random() - 0.5) * 900;
+            positions[idx + 1] = 8 + Math.random() * 48;
+            positions[idx + 2] = -160 - Math.random() * 180;
+            const tint = 0.75 + Math.random() * 0.25;
+            colors[idx] = tint;
+            colors[idx + 1] = tint;
+            colors[idx + 2] = 1;
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const mat = new THREE.PointsMaterial({ size: 1.55, vertexColors: true, transparent: true, opacity: 0.9, sizeAttenuation: true, depthWrite: false });
+        starField = new THREE.Points(geo, mat);
+        starField.visible = false;
+        scene.add(starField);
+    }
+
+    function applySkyForLevel(lvl) {
+        if (!scene) return;
+        let texture;
+        if (lvl === 4) {
+            texture = createSkyGradientTexture('#5d3b92', '#ff9b55', '#ff6d6d');
+        } else if (lvl === 5 || lvl === 6) {
+            texture = createSkyGradientTexture('#061436', '#263a80', '#101c50');
+        } else if (lvl === 7) {
+            texture = createSkyGradientTexture('#5f89ff', '#ffd58a', '#ff9f73');
+        } else {
+            texture = createSkyGradientTexture('#70a1ff', '#91ccff', '#7db7ff');
+        }
+        if (scene.background && scene.background.isTexture) scene.background.dispose();
+        scene.background = texture;
+        const isNightSky = (lvl === 5 || lvl === 6);
+        ensureNightStars();
+        if (starField) starField.visible = isNightSky;
+        clouds.forEach(cloud => { cloud.visible = !isNightSky; });
+    }
+
     function init() {
         if (renderer) return;
         scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x70a1ff);
+        scene.background = createSkyGradientTexture('#70a1ff', '#91ccff', '#7db7ff', '#7db7ff');
         scene.fog = null;
         camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 5000);
         camera.position.set(0, 6, CAMERA_DEFAULT_ZOOM);
@@ -1256,7 +1442,8 @@
         }
 
         deco.position.set(platform.position.x, surfaceY + 0.02, platform.position.z);
-        deco.userData = { decorative: true, randomizedIslandGreenery: true };
+        deco.userData = { decorative: true, randomizedIslandGreenery: true, parentPlatform: platform };
+        platform.userData.decoration = deco;
         scene.add(deco);
         levelDecorations.push(deco);
     }
@@ -1428,6 +1615,68 @@
         keys.up = false;
     }
 
+    function clearDoorArrivalTransition() {
+        doorArrivalTransition = null;
+    }
+
+    function beginDoorArrivalTransition() {
+        if (doorArrivalTransition || levelTransitioning || !player || !door) return;
+        levelTransitioning = true;
+        gameActive = false;
+        resetInput();
+        velocityX = 0;
+        velocityY = 0;
+        isJumping = false;
+        groundedPlatform = null;
+        if (level >= 20) AudioFX.win();
+        doorArrivalTransition = {
+            elapsed: 0,
+            duration: DOOR_ARRIVAL_DURATION_MS,
+            nextLevel: level + 1,
+            isFinal: level >= 20,
+            cameraStart: camera ? camera.position.clone() : null
+        };
+    }
+
+    function updateDoorArrivalTransition(dt) {
+        if (!doorArrivalTransition) return;
+        doorArrivalTransition.elapsed += dt * 16.66;
+        const t = Math.min(1, doorArrivalTransition.elapsed / doorArrivalTransition.duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+
+        if (player) {
+            player.visible = true;
+            player.rotation.y = THREE.MathUtils.lerp(player.rotation.y, 0, Math.min(1, 0.18 * dt));
+            player.scale.y = THREE.MathUtils.lerp(player.scale.y, 1, Math.min(1, 0.22 * dt));
+            player.scale.x = player.scale.z = 1 / Math.sqrt(player.scale.y);
+        }
+        if (characterShadow) {
+            characterShadow.visible = true;
+            updateCharacterShadow();
+        }
+
+        if (camera && player && door) {
+            const cameraStart = doorArrivalTransition.cameraStart || camera.position;
+            const targetCamera = new THREE.Vector3(
+                player.position.x + THREE.MathUtils.clamp(door.position.x - player.position.x, -3, 3) * 0.25,
+                player.position.y + 6,
+                cameraZoomDistance
+            );
+            camera.position.lerpVectors(cameraStart, targetCamera, eased * 0.35);
+            const lookX = THREE.MathUtils.lerp(player.position.x, door.position.x, eased * 0.35);
+            const lookY = THREE.MathUtils.lerp(player.position.y + 1, door.position.y, eased * 0.18);
+            camera.lookAt(lookX, lookY, 0);
+        }
+
+        if (t >= 1) {
+            const nextLevel = doorArrivalTransition.nextLevel;
+            const isFinal = doorArrivalTransition.isFinal;
+            clearDoorArrivalTransition();
+            if (isFinal) showGameOver(true);
+            else startLevelSequence(nextLevel, true, true);
+        }
+    }
+
     function disposeObject(obj) {
         if (!obj) return;
         obj.traverse?.((child) => {
@@ -1442,86 +1691,599 @@
         });
     }
 
-    function getProfileGap(lvl, i, segments) {
+
+
+
+    const LEVEL_LENGTH_TARGETS = [0, 85, 128, 192, 288, 432, 648, 972, 1458, 2187, 3281, 3600, 3900, 4200, 4500, 4800, 5100, 5400, 5700, 6000, 6300];
+    const LEVEL_BLUEPRINT_CACHE = {};
+
+    function pushPlatformSpec(list, spec) {
+        list.push({
+            w: Number(spec.w.toFixed ? spec.w.toFixed(2) : spec.w),
+            g: Number(spec.g.toFixed ? spec.g.toFixed(2) : spec.g),
+            y: Number(spec.y.toFixed ? spec.y.toFixed(2) : spec.y),
+            ...(spec.m ? { m: spec.m } : {}),
+            ...(spec.o ? { o: spec.o } : {})
+        });
+    }
+
+    function generateLevelBlueprint(lvl) {
+        if (LEVEL_BLUEPRINT_CACHE[lvl]) return LEVEL_BLUEPRINT_CACHE[lvl];
+
+        const names = {
+            1: 'Welcome Meadow Gaps',
+            2: 'Lift Step Playground',
+            3: 'Pop-Up Stone Islands',
+            4: 'Sunset Curved Bridge Canyon',
+            5: 'Night Rope Bridge Sliders',
+            6: 'Stone Gate Tier Climb',
+            7: 'Sunrise Dynamic Island Chain',
+            8: 'Button Bridge Adventure',
+            9: 'Pendulum Gate Expedition',
+            10: 'Final Rich Adventure Tower',
+            11: 'Gate Garden Switchback',
+            12: 'Pop-Up Canyon Timing',
+            13: 'Pop-Up Orchard Steps',
+            14: 'Pendulum Bridge Crossing',
+            15: 'Raised Stair Workshop',
+            16: 'Rope Gate Expedition',
+            17: 'Cloud Lift Labyrinth',
+            18: 'Pendulum Timing Trial',
+            19: 'Smart Switchback Climb',
+            20: 'Grand Adventure Summit'
+        };
+
+        const targetLength = LEVEL_LENGTH_TARGETS[lvl] || (85 * Math.pow(1.5, lvl - 1));
+        const platforms = [];
+        let routeLength = 0;
+        let y = -1;
+        let i = 0;
+
+        function add(w, g, nextY, m, o) {
+            i++;
+            const stepUp = Math.min(2.55, Math.max(-2.85, nextY - y));
+            y = Number((y + stepUp).toFixed(2));
+
+            // Dynamic moving blocks must stay visibly separate from neighboring static blocks.
+            // For horizontal and pendulum motion, the platform center shifts by amp, so the
+            // stored edge-to-edge gap must be larger than amp by a small visual safety gap.
+            if (m && (m.type === 'horizontal' || m.type === 'pendulum')) {
+                const visualSafetyGap = 2.75;
+                const requiredMotionGap = Number((Math.max(0, m.amp || 0) + visualSafetyGap).toFixed(2));
+                g = Math.max(g, requiredMotionGap);
+                if (platforms.length) {
+                    const prev = platforms[platforms.length - 1];
+                    prev.g = Number(Math.max(prev.g || 0, requiredMotionGap).toFixed(2));
+                }
+            } else if (m || (o && ['popup', 'crumble', 'raiseStep', 'gateButton'].includes(o.type))) {
+                const visualSafetyGap = 1.35;
+                g = Math.max(g, visualSafetyGap);
+                if (platforms.length) {
+                    const prev = platforms[platforms.length - 1];
+                    prev.g = Number(Math.max(prev.g || 0, visualSafetyGap).toFixed(2));
+                }
+            }
+
+            pushPlatformSpec(platforms, { w, g, y, m, o });
+            routeLength += Math.max(0, w) + Math.max(0, g);
+        }
+
+        function rest(w = 23, g = 4.8, dy = 0) { add(w, g, y + dy); }
+        function gap(w = 14, g = 5.2, dy = 0) { add(w, g, y + dy); }
+        function stone(w = 8.4, g = 5.4, dy = 0) { add(w, g, y + dy); }
+        function rise(n = 3, step = 0.68) { for (let s = 0; s < n; s++) add(10.6 - Math.min(1.7, lvl * 0.1), 4.95, y + step); }
+        function descend(n = 3, step = 0.68) { for (let s = 0; s < n; s++) add(10.6 - Math.min(1.4, lvl * 0.09), 4.95, y - step); }
+        function slider(extra = 0, dy = 0, phase = i * 0.81) {
+            const amp = Math.min(7.3, 5.45 + lvl * 0.14 + extra * 0.38);
+            const speed = Math.min(1.36, 0.86 + lvl * 0.045 + extra * 0.04);
+            const bridgeGap = Math.min(10.6, 8.55 + lvl * 0.14 + extra * 0.34);
+            add(7.0, bridgeGap, y + dy, { type: 'horizontal', amp, speed, phase });
+        }
+        function lift(extra = 0, dy = 0.95, phase = i * 0.73) {
+            const amp = Math.min(4.95, 3.45 + lvl * 0.055 + extra * 0.22);
+            // Faster and taller up/down motion: readable, but now clearly a required timing lift.
+            const speed = Math.min(1.95, 1.36 + lvl * 0.032 + extra * 0.03);
+            add(8.2, 5.75 + extra * 0.22, y + dy, { type: 'vertical', amp, speed, phase });
+        }
+        function popUp(w = 8.0, g = 5.45, dy = 0, phase = i * 0.77) { add(w, g, y + dy, null, { type: 'popup', phase, speed: 0.84 + lvl * 0.026 }); }
+        function crumble(w = 8.8, g = 5.25, dy = 0) {
+            // Sudden drop/crumbling blocks are intentionally disabled.
+            // Keep the route length and platform rhythm, but create a normal stable green stone instead.
+            add(w, g, y + dy);
+        }
+        function raiseStep(w = 8.2, g = 5.0, dy = 1.05) { add(w, g, y + dy, null, { type: 'raiseStep' }); }
+        function gateButton(w = 19, g = 5.2, dy = 0) { add(w, g, y + dy, null, { type: 'gateButton' }); }
+        function pendulum(extra = 0, dy = 0.1, phase = i * 0.64) {
+            const amp = Math.min(6.8, 4.65 + lvl * 0.16 + extra * 0.34);
+            const speed = Math.min(1.16, 0.66 + lvl * 0.04 + extra * 0.03);
+            add(8.0, 7.35 + extra * 0.48, y + dy, { type: 'pendulum', amp, speed, phase });
+        }
+        function mixedStones(count = 4) { for (let s = 0; s < count; s++) stone(7.8 + (s % 2) * 1.8, 5.15 + (s % 3) * 0.3, (s % 2 ? 0.48 : -0.34)); }
+        function waveLifts(count = 3) { for (let s = 0; s < count; s++) lift(s * 0.34, s % 2 ? -0.35 : 0.9, i * 0.68 + s * 1.15); }
+        function movingStair(count = 3) { for (let s = 0; s < count; s++) lift(0.22 + s * 0.18, 0.58 + s * 0.14, i * 0.61 + s * 0.92); }
+        function sliderBridgePair(extra = 0) { slider(extra, 0.04, i * 0.52 + 0.4); rest(13.5, 5.15, 0.1); slider(extra + 0.25, -0.04, i * 0.52 + 2.2); }
+        function sliderBridgeChain(count = 2, extra = 0) { for (let s = 0; s < count; s++) { slider(extra + s * 0.2, s % 2 ? -0.2 : 0.15, i * 0.44 + s * 1.6); rest(12.8 + (s % 2) * 3, 5.1, s % 2 ? 0.15 : -0.05); } }
+        function curvedBridge(count = 5, amp = 1.05) {
+            for (let s = 0; s < count; s++) {
+                const t = count === 1 ? 0 : s / (count - 1);
+                const arc = Math.sin(t * Math.PI) * amp;
+                stone(7.2 + (s % 2) * 0.8, 4.95, arc - (s === count - 1 ? 0.2 : 0));
+            }
+        }
+        function ropeBridge(count = 6) {
+            rest(16, 5.0, 0.65);
+            for (let s = 0; s < count; s++) {
+                const t = count === 1 ? 0 : s / (count - 1);
+                const sag = -Math.sin(t * Math.PI) * 1.35;
+                stone(6.6 + (s % 2) * 0.6, 4.9, sag);
+            }
+            rest(16, 5.0, 0.65);
+        }
+        function tierSection(levels = 3) { for (let s = 0; s < levels; s++) { rest(14 + s * 2, 4.9, 0.55); lift(0.25 + s * 0.2, 0.85); } rest(20, 4.9, 0.2); }
+        function gatePuzzle() { rest(18, 5.0, 0.0); gateButton(20, 5.2, 0.0); rest(18, 5.0, 0.1); }
+        function stairButtonPuzzle() { rest(16, 4.9, 0.0); raiseStep(8.2, 5.0, 1.0); rest(18, 5.0, 0.45); }
+        function normalizeVerticalLiftProgression() {
+            // Up/down bricks should feel clearly dynamic: lower trough, higher peak, faster loop.
+            // Their following platform is lifted into a true upper-tier target, so the next block
+            // is only practical from the lift near its high point, not from the previous static block.
+            const minAmp = Math.min(4.95, 3.65 + lvl * 0.045);
+            const minSpeed = Math.min(1.95, 1.42 + lvl * 0.026);
+            const topExitDrop = 0.52;
+            const minRiseFromPrevious = 2.95;
+            for (let idx = 0; idx < platforms.length - 1; idx++) {
+                const spec = platforms[idx];
+                if (!spec || !spec.m || spec.m.type !== 'vertical') continue;
+                spec.m.amp = Number(Math.max(spec.m.amp || 0, minAmp).toFixed(2));
+                spec.m.speed = Number(Math.max(spec.m.speed || 0, minSpeed).toFixed(2));
+
+                const next = platforms[idx + 1];
+                if (!next) continue;
+                const prev = platforms[idx - 1];
+                const previousStaticY = prev ? prev.y : spec.y - 0.8;
+                const desiredNextY = Math.max(
+                    spec.y + spec.m.amp - topExitDrop,
+                    previousStaticY + minRiseFromPrevious
+                );
+                const delta = Number((desiredNextY - next.y).toFixed(2));
+                if (delta > 0.05) {
+                    for (let j = idx + 1; j < platforms.length; j++) {
+                        platforms[j].y = Number((platforms[j].y + delta).toFixed(2));
+                    }
+                    y = Number((y + delta).toFixed(2));
+                }
+                // Keep the lift separated horizontally from static blocks even when it moves faster.
+                spec.g = Number(Math.max(spec.g || 0, 5.75).toFixed(2));
+                next.g = Number(Math.max(next.g || 0, 4.95).toFixed(2));
+            }
+        }
+        function adventureMix(rank = 1) {
+            slider(rank * 0.18, 0.1);
+            lift(rank * 0.18, 0.8);
+            popUp(8.0, 5.35, rank % 2 ? 0.2 : -0.15);
+            if (rank >= 2) crumble(8.8, 5.25, rank % 2 ? -0.1 : 0.15);
+            if (rank >= 3) gatePuzzle();
+            if (rank >= 4) pendulum(rank * 0.1, 0.1);
+            rest(18, 5.1, 0.1);
+        }
+
+
+        function enforceDynamicSafetyGaps() {
+            const visibleGap = 2.75;
+            const motionReach = (spec) => {
+                if (!spec || !spec.m) return 0;
+                if (spec.m.type === 'horizontal' || spec.m.type === 'pendulum') return Math.max(0, spec.m.amp || 0);
+                return 0;
+            };
+            for (let idx = 0; idx < platforms.length - 1; idx++) {
+                const a = platforms[idx];
+                const b = platforms[idx + 1];
+                const requiredIncomingGapForB = motionReach(a) + motionReach(b) + visibleGap;
+                // In spawnLevel(), spec.g is consumed as the incoming gap before the current platform.
+                // Therefore the safe gap between platform A and platform B must be stored on B, not A.
+                b.g = Number(Math.max(b.g || 0, requiredIncomingGapForB).toFixed(2));
+            }
+        }
+
+        function extendedAdventureFiller(rank = 1) {
+            if (rank % 5 === 0) { gatePuzzle(); slider(0.9 + rank * 0.05, 0.1); lift(0.75 + rank * 0.04, 0.95); rest(22, 5.2, 0.12); }
+            else if (rank % 5 === 1) { ropeBridge(5); pendulum(0.55 + rank * 0.04, 0.08); rest(22, 5.2, 0.1); }
+            else if (rank % 5 === 2) { popUp(8.3, 5.45, 0.05); crumble(8.8, 5.35, -0.08); slider(0.85 + rank * 0.04, 0.08); rest(22, 5.15, 0.1); }
+            else if (rank % 5 === 3) { stairButtonPuzzle(); rise(2, 0.55); lift(0.85 + rank * 0.04, 0.95); rest(22, 5.15, 0.1); }
+            else { curvedBridge(5, 1.15); slider(0.95 + rank * 0.04, 0.1); gatePuzzle(); rest(22, 5.2, 0.08); }
+        }
+
+        // Levels 11-20 are authored as smarter adventure rooms.
+        // Each room is one readable obstacle idea. Keep 4-8 rooms per level.
+        function safeLanding(w = 24, dy = 0.0) { rest(w, 5.05, dy); }
+        function gateRoom(rank = 1) { safeLanding(20, 0.0); gatePuzzle(); safeLanding(18, 0.12); }
+        function crumbleRoom(count = 2) { safeLanding(18, 0.0); for (let s = 0; s < count; s++) { crumble(8.8, 5.25, s % 2 ? 0.18 : -0.12); } safeLanding(20, 0.12); }
+        function popRoom(count = 2) { safeLanding(18, 0.0); for (let s = 0; s < count; s++) { popUp(8.4, 5.35, s % 2 ? 0.25 : -0.15, i * 0.77 + s * 1.35); } safeLanding(20, 0.1); }
+        function pendulumRoom(count = 1, rank = 1) { safeLanding(18, 0.0); for (let s = 0; s < count; s++) { pendulum(0.35 + rank * 0.1 + s * 0.12, s % 2 ? -0.05 : 0.12, i * 0.64 + s * 1.55); } safeLanding(20, 0.08); }
+        function raiseRoom(rank = 1) { safeLanding(20, 0.0); raiseStep(8.4, 5.1, 0.95 + Math.min(0.35, rank * 0.05)); safeLanding(18, 5.05, 0.45); }
+        function sliderRoom(count = 2, rank = 1) { safeLanding(18, 0.0); for (let s = 0; s < count; s++) { slider(1.0 + rank * 0.12 + s * 0.15, s % 2 ? -0.08 : 0.12, i * 0.52 + s * 1.7); safeLanding(13.5, s % 2 ? 0.08 : -0.03); } safeLanding(20, 0.1); }
+        function liftRoom(count = 2, rank = 1) { safeLanding(18, 0.0); for (let s = 0; s < count; s++) { lift(0.75 + rank * 0.12 + s * 0.12, 0.85 + s * 0.12, i * 0.73 + s * 1.15); } safeLanding(22, 0.18); }
+        function ropeGateRoom(rank = 1) { ropeBridge(5 + (rank % 2)); gatePuzzle(); safeLanding(22, 0.12); }
+        function switchbackRoom(rank = 1) { descend(2, 0.52); slider(1.0 + rank * 0.08, 0.12); lift(0.8 + rank * 0.08, 0.95); rise(2, 0.55); safeLanding(20, 0.08); }
+
+        if (lvl === 1) {
+            rest(26, 4.6, 0.0); gap(18, 5.0, 0.05); rest(24, 4.7, -0.05); gap(16, 5.0, 0.15); rest(28, 4.7, 0.0);
+            while (routeLength < targetLength) { gap(18, 4.95, 0.15); rest(25, 4.7, -0.1); }
+        } else if (lvl === 2) {
+            rise(2, 0.55); lift(0.0, 0.75); rest(19, 4.9, 0.1); slider(0.0, 0.05); rest(22, 4.9, 0.0); rise(2, 0.55);
+            while (routeLength < targetLength) { gap(13, 5.0, 0.0); lift(0.1, 0.65); rest(18, 4.9, 0.12); }
+        } else if (lvl === 3) {
+            mixedStones(3); popUp(8.4, 5.3, 0.15); rest(16, 5.0, 0.1); curvedBridge(4, 0.8); slider(0.15, 0.0); rest(19, 5.0, 0.1);
+            while (routeLength < targetLength) { mixedStones(3); popUp(8.0, 5.35, -0.05); slider(0.25, 0.1); rest(18, 4.95, 0.15); }
+        } else if (lvl === 4) {
+            descend(3, 0.65); curvedBridge(5, 1.25); crumble(8.8, 5.2, -0.1); rest(18, 4.9, -0.05); lift(0.25, 0.95); rise(2, 0.62); popUp(8.2, 5.35, 0.1); rest(22, 5.0, 0.0);
+            while (routeLength < targetLength) { descend(2, 0.56); curvedBridge(4, 1.0); crumble(8.5, 5.25, -0.05); lift(0.3, 0.95); rise(2, 0.6); rest(20, 4.9, 0.0); }
+        } else if (lvl === 5) {
+            rest(20, 4.9, 0.0); ropeBridge(5); sliderBridgeChain(2, 0.55); crumble(8.8, 5.25, -0.1); rest(24, 5.0, 0.05);
+            while (routeLength < targetLength) { ropeBridge(4); sliderBridgeChain(2, 0.65); popUp(8.0, 5.35, 0.1); mixedStones(2); rest(22, 5.0, 0.0); }
+        } else if (lvl === 6) {
+            rise(2, 0.68); gatePuzzle(); stairButtonPuzzle(); tierSection(2); movingStair(3); rest(18, 5.1, 0.2);
+            while (routeLength < targetLength) { gatePuzzle(); lift(0.45, 0.95); stairButtonPuzzle(); movingStair(3); rise(2, 0.6); rest(18, 5.1, 0.1); }
+        } else if (lvl === 7) {
+            curvedBridge(5, 1.25); sliderBridgeChain(2, 0.75); popUp(8.0, 5.4, -0.15); lift(0.45, 0.9); gatePuzzle(); rest(20, 5.0, 0.0);
+            while (routeLength < targetLength) { mixedStones(3); slider(0.85, 0.25); lift(0.45, 0.85); crumble(8.6, 5.35, -0.25); gatePuzzle(); rest(20, 5.0, 0.1); }
+        } else if (lvl === 8) {
+            waveLifts(3); ropeBridge(5); stairButtonPuzzle(); crumble(8.6, 5.3, -0.1); popUp(8.0, 5.4, 0.15); gatePuzzle(); rest(20, 5.1, 0.0);
+            while (routeLength < targetLength) { waveLifts(2); sliderBridgeChain(2, 0.95); stairButtonPuzzle(); crumble(8.3, 5.35, -0.1); gatePuzzle(); mixedStones(3); rest(18, 5.1, 0.05); }
+        } else if (lvl === 9) {
+            pendulum(0.35, 0.1); gatePuzzle(); ropeBridge(6); sliderBridgeChain(2, 1.05); waveLifts(2); crumble(8.4, 5.3, 0.0); rest(20, 5.0, 0.1);
+            while (routeLength < targetLength) { pendulum(0.45, 0.1); gatePuzzle(); slider(1.15, 0.05); lift(0.75, 0.95); popUp(8.0, 5.45, -0.1); crumble(8.4, 5.3, 0.0); curvedBridge(4, 1.1); rest(18, 5.0, 0.0); }
+        } else if (lvl === 10) {
+            rise(2, 0.7); gatePuzzle(); lift(0.85, 1.1); pendulum(0.55, 0.1); sliderBridgeChain(2, 1.25); stairButtonPuzzle(); ropeBridge(6); movingStair(3); rest(18, 5.1, 0.2);
+            while (routeLength < targetLength) { gatePuzzle(); lift(0.95, 1.05); pendulum(0.65, 0.1); rise(2, 0.62); sliderBridgeChain(2, 1.35); popUp(8.0, 5.45, 0.15); crumble(8.4, 5.3, -0.05); stairButtonPuzzle(); curvedBridge(5, 1.2); waveLifts(2); rest(18, 5.1, 0.2); }
+        } else if (lvl === 11) {
+            // 4 obstacles: gate, slider, stable stones, lift switchback.
+            gateRoom(1); sliderRoom(1, 1); crumbleRoom(2); switchbackRoom(1);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(11 + fill);
+        } else if (lvl === 12) {
+            // 5 obstacles: pop-up timing, stable stepping-stone chain, gate, lift pair, slider exit.
+            popRoom(2); crumbleRoom(2); gateRoom(2); liftRoom(2, 2); sliderRoom(1, 2);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(12 + fill);
+        } else if (lvl === 13) {
+            // 5 obstacles: raised step, popup stairs, curved bridge, gate, stable stepping-stone finish.
+            raiseRoom(2); popRoom(3); curvedBridge(5, 1.35); gateRoom(2); crumbleRoom(2);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(13 + fill);
+        } else if (lvl === 14) {
+            // 6 obstacles: pendulum, slider, gate, rope bridge, lift, stable stones.
+            pendulumRoom(1, 3); sliderRoom(2, 3); gateRoom(3); ropeBridge(6); liftRoom(2, 3); crumbleRoom(2);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(14 + fill);
+        } else if (lvl === 15) {
+            // 6 obstacles: stair builder, gate, wave lifts, pop-up, slider, raised step.
+            raiseRoom(3); gateRoom(3); waveLifts(3); popRoom(2); sliderRoom(2, 3); raiseRoom(4);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(15 + fill);
+        } else if (lvl === 16) {
+            // 7 obstacles: rope gate expedition with alternating timing rooms.
+            ropeGateRoom(4); sliderRoom(2, 4); popRoom(3); gateRoom(4); liftRoom(2, 4); crumbleRoom(3); pendulumRoom(1, 4);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(16 + fill);
+        } else if (lvl === 17) {
+            // 7 obstacles: vertical lab with lifts, gates, raised stairs, and timed islands.
+            liftRoom(3, 5); raiseRoom(5); gateRoom(5); popRoom(3); switchbackRoom(5); sliderRoom(2, 5); crumbleRoom(3);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(17 + fill);
+        } else if (lvl === 18) {
+            // 8 obstacles: advanced timing without adding new controls.
+            pendulumRoom(1, 6); crumbleRoom(3); gateRoom(6); sliderRoom(2, 6); popRoom(3); liftRoom(3, 6); ropeGateRoom(6); raiseRoom(6);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(18 + fill);
+        } else if (lvl === 19) {
+            // 8 obstacles: smart switchback climb, each room has a rest landing.
+            switchbackRoom(7); gateRoom(7); pendulumRoom(2, 7); sliderRoom(2, 7); raiseRoom(7); crumbleRoom(3); popRoom(3); liftRoom(3, 7);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(19 + fill);
+        } else if (lvl === 20) {
+            // 8 obstacles: final summit; mixed, readable, and always separated by landings.
+            gateRoom(8); liftRoom(3, 8); pendulumRoom(2, 8); sliderRoom(3, 8); raiseRoom(8); popRoom(3); crumbleRoom(3); ropeGateRoom(8);
+            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(20 + fill);
+        } else {
+            gateRoom(8); liftRoom(2, 8); sliderRoom(2, 8); safeLanding(24, 0.0);
+        }
+
+        normalizeVerticalLiftProgression();
+        enforceDynamicSafetyGaps();
+        if (platforms.length && platforms[platforms.length - 1].m) rest(22, 5.0, 0.0);
+        const finalGap = Math.min(6.4, 5.0 + lvl * 0.12);
+        const finalY = y + (lvl >= 6 ? 0.45 : 0.15);
+        const blueprint = { name: names[lvl] || `Level ${lvl}`, targetLength, finalY, finalGap, platforms };
+        LEVEL_BLUEPRINT_CACHE[lvl] = blueprint;
+        return blueprint;
+    }
+
+    const LEVEL_BLUEPRINTS = new Proxy({}, {
+        get(_target, prop) {
+            const lvl = Number(prop);
+            return Number.isInteger(lvl) && lvl >= 1 && lvl <= 20 ? generateLevelBlueprint(lvl) : undefined;
+        }
+    });
+
+    function getLevelBlueprint(lvl) {
+        return generateLevelBlueprint(lvl);
+    }
+
+    function getLevelPlatformSpec(lvl, i) {
+        const bp = getLevelBlueprint(lvl);
+        return bp && bp.platforms ? bp.platforms[i - 1] || null : null;
+    }
+
+    function getPlatformWidth(lvl, i, segments, baseWidth) {
+        const spec = getLevelPlatformSpec(lvl, i);
+        if (spec && Number.isFinite(spec.w)) return spec.w;
+        const motion = getPlatformMotion(lvl, i, segments);
         const t = i / segments;
-        const base = 4.9 + (lvl * 0.22);
+        let width = baseWidth;
+
+        // Make level silhouettes read differently: short stepping stones, long rest islands,
+        // and visibly smaller dynamic blocks. Collision still uses the returned width.
+        if (motion) {
+            if (motion.type === 'horizontal') return Math.max(7.2, Math.min(10.5, baseWidth * 0.55));
+            if (motion.type === 'vertical') return Math.max(8.0, Math.min(11.5, baseWidth * 0.62));
+        }
+
+        if (lvl === 1) width += (i % 4 === 0 ? 2.2 : 0.8);
+        else if (lvl === 2) width += (i % 5 === 2 ? -2.0 : i % 5 === 4 ? 2.0 : 0.4);
+        else if (lvl === 3) width += (i % 6 === 3 ? -2.8 : i % 4 === 0 ? 2.5 : -0.2);
+        else if (lvl === 4) width += (i % 7 === 4 ? -2.6 : i % 5 === 0 ? 2.8 : 0.2);
+        else if (lvl === 5) width += (t > 0.34 && t < 0.62 ? -2.4 : i % 6 === 0 ? 2.4 : -0.4);
+        else if (lvl === 6) width += (i % 6 === 3 ? 3.0 : i % 3 === 1 ? -2.1 : 0.3);
+        else if (lvl === 7) width += (i % 5 === 1 ? -2.7 : i % 8 === 0 ? 2.6 : -0.8);
+        else if (lvl === 8) width += (Math.sin(t * Math.PI * 4) > 0.6 ? -2.4 : i % 6 === 0 ? 2.6 : -0.6);
+        else if (lvl === 9) width += (i % 7 < 2 ? 2.4 : i % 7 === 4 ? -2.8 : -0.7);
+        else width += (i % 8 === 4 ? -3.0 : i % 5 === 0 ? 2.8 : -0.8);
+
+        const minWidth = lvl >= 8 ? 8.8 : lvl >= 6 ? 9.8 : lvl >= 4 ? 10.8 : 13.2;
+        return Math.max(minWidth, Math.min(30, width));
+    }
+
+    function makePlatformMotion(type, amplitude, speed, phase) {
+        return { type, amplitude, speed, phase };
+    }
+
+    function getDynamicIndices(lvl, segments) {
+        const bp = getLevelBlueprint(lvl);
+        if (bp && bp.platforms) return bp.platforms.map((spec, idx) => spec.m ? idx + 1 : -1).filter(i => i > 0);
+        const q = (n) => Math.max(2, Math.min(segments - 2, Math.floor(segments * n)));
+        const map = {
+            1: [],
+            2: [],
+            3: [q(0.52)],
+            4: [q(0.42), q(0.68)],
+            5: [q(0.28), q(0.50), q(0.72)],
+            6: [q(0.22), q(0.38), q(0.58), q(0.78)],
+            7: [q(0.18), q(0.34), q(0.50), q(0.66), q(0.82)],
+            8: [q(0.16), q(0.30), q(0.44), q(0.58), q(0.72), q(0.86)],
+            9: [q(0.14), q(0.27), q(0.40), q(0.53), q(0.66), q(0.79), q(0.90)],
+            10: [q(0.12), q(0.24), q(0.36), q(0.48), q(0.60), q(0.72), q(0.84), q(0.92)]
+        };
+        return [...new Set(map[lvl] || [])];
+    }
+
+    function getPlatformMotion(lvl, i, segments) {
+        const spec = getLevelPlatformSpec(lvl, i);
+        if (spec && spec.m) {
+            return makePlatformMotion(spec.m.type, spec.m.amp, spec.m.speed, spec.m.phase ?? (lvl * 0.47 + i * 0.83));
+        }
+        if (getLevelBlueprint(lvl)) return null;
+        if (lvl < 3 || i <= 1 || i >= segments - 1) return null;
+        const indices = getDynamicIndices(lvl, segments);
+        const slot = indices.indexOf(i);
+        if (slot === -1) return null;
+        const phase = lvl * 0.47 + i * 0.83;
+
+        // Alternate strong, readable movement types so the player can actually notice and use them.
+        const horizontalFirst = lvl === 3 || lvl === 6 || lvl === 7 || lvl === 9;
+        const useHorizontal = horizontalFirst ? slot % 2 === 0 : slot % 2 === 1;
+        if (useHorizontal) {
+            const amp = Math.min(3.05, 2.05 + lvl * 0.10);
+            return makePlatformMotion('horizontal', amp, 0.54 + (slot % 3) * 0.045, phase);
+        }
+        const amp = Math.min(4.25, 3.30 + lvl * 0.08);
+        return makePlatformMotion('vertical', amp, 1.42 + (slot % 3) * 0.10, phase + 0.7);
+    }
+
+    function getProfileGap(lvl, i, segments) {
+        const bp = getLevelBlueprint(lvl);
+        const spec = getLevelPlatformSpec(lvl, i);
+        if (spec && Number.isFinite(spec.g)) return spec.g;
+        if (bp && i >= segments) return bp.finalGap || 5.8;
+        const motion = getPlatformMotion(lvl, i, segments);
+        const nextMotion = getPlatformMotion(lvl, i + 1, segments);
+        const t = i / segments;
+        let base = 4.8 + (lvl * 0.20);
         let shape = 0;
-        if (lvl === 1) shape = Math.sin(i * 0.8) * 0.15;
-        else if (lvl === 2) shape = Math.sin(i * 1.1) * 0.35;
-        else if (lvl === 3) shape = (i % 3 === 0 ? 0.35 : -0.15) + Math.sin(i * 0.6) * 0.2;
-        else if (lvl === 4) shape = (i % 4 === 0 ? 0.55 : i % 4 === 1 ? -0.25 : 0.15);
-        else if (lvl === 5) shape = Math.sin(t * Math.PI * 2) * 0.45 + (t > 0.45 && t < 0.7 ? -0.25 : 0.15);
-        else if (lvl === 6) shape = (i % 5 === 0 ? 0.55 : i % 2 === 0 ? -0.2 : 0.25);
-        else if (lvl === 7) shape = (i % 4 === 2 ? 0.65 : -0.05) + Math.sin(i * 0.55) * 0.2;
-        else if (lvl === 8) shape = Math.sin(t * Math.PI * 4) * 0.55;
-        else if (lvl === 9) shape = (i % 6 < 2 ? 0.55 : i % 6 < 4 ? -0.15 : 0.25);
-        else shape = (i % 7 === 3 ? 0.65 : i % 5 === 0 ? -0.25 : 0.2) + Math.sin(t * Math.PI * 3) * 0.25;
-        return Math.max(4.75, Math.min(7.35, base + shape));
+
+        if (lvl === 1) shape = Math.sin(i * 0.8) * 0.12;
+        else if (lvl === 2) shape = (i % 4 === 0 ? 0.35 : -0.10) + Math.sin(i * 0.7) * 0.20;
+        else if (lvl === 3) shape = (motion || nextMotion ? 0.95 : (i % 3 === 0 ? 0.30 : -0.20));
+        else if (lvl === 4) shape = (motion || nextMotion ? 1.10 : i % 4 === 1 ? -0.20 : 0.22);
+        else if (lvl === 5) shape = Math.sin(t * Math.PI * 2) * 0.35 + (motion || nextMotion ? 1.20 : -0.05);
+        else if (lvl === 6) shape = (motion || nextMotion ? 1.30 : i % 5 === 0 ? 0.45 : -0.15);
+        else if (lvl === 7) shape = (motion || nextMotion ? 1.45 : i % 4 === 2 ? 0.55 : -0.10);
+        else if (lvl === 8) shape = Math.sin(t * Math.PI * 4) * 0.40 + (motion || nextMotion ? 1.35 : 0.05);
+        else if (lvl === 9) shape = (motion || nextMotion ? 1.45 : i % 6 < 2 ? 0.45 : -0.10);
+        else shape = (motion || nextMotion ? 1.50 : i % 7 === 3 ? 0.55 : -0.05);
+
+        // Large enough to show island separation, but still within the player jump envelope.
+        return Math.max(4.65, Math.min(7.45, base + shape));
     }
 
     function getProfileY(lvl, i, segments, verticalClimb) {
+        const spec = getLevelPlatformSpec(lvl, i);
+        if (spec && Number.isFinite(spec.y)) return spec.y;
         const t = i / segments;
         const climb = verticalClimb * t;
-        if (lvl === 1) return climb * 0.65 + Math.sin(i * 0.6) * 0.35;
-        if (lvl === 2) return climb * 0.75 + Math.sin(t * Math.PI * 2) * 1.0;
-        if (lvl === 3) return climb * 0.82 + Math.sin(t * Math.PI * 3) * 1.25;
-        if (lvl === 4) return climb + Math.floor(t * 5) * 0.45 - Math.sin(t * Math.PI * 2) * 0.45;
-        if (lvl === 5) return climb * 0.95 - Math.sin(t * Math.PI) * 3.0 + Math.sin(t * Math.PI * 3) * 0.6;
-        if (lvl === 6) return climb * 0.9 + (i % 4 < 2 ? 0.85 : -0.65);
-        if (lvl === 7) return climb * 0.78 + Math.sin(i * 0.85) * 1.45;
-        if (lvl === 8) return climb * 0.88 + Math.sin(t * Math.PI * 4) * 2.0;
-        if (lvl === 9) return climb + Math.sin(t * Math.PI * 5) * 1.55 + (i % 5 === 0 ? -0.7 : 0.35);
-        return climb + Math.floor(t * 6) * 0.35 + Math.sin(t * Math.PI * 3) * 1.15;
+        if (lvl === 1) return climb * 0.55 + Math.sin(i * 0.6) * 0.25;
+        if (lvl === 2) return climb * 0.66 + Math.sin(t * Math.PI * 2) * 1.05;
+        if (lvl === 3) return climb * 0.72 + (i % 5 === 2 ? 1.25 : 0) + Math.sin(t * Math.PI * 2) * 0.65;
+        if (lvl === 4) return climb * 0.80 + Math.floor(t * 4) * 0.85 - Math.sin(t * Math.PI * 2) * 0.45;
+        if (lvl === 5) return climb * 0.86 - Math.sin(t * Math.PI) * 3.6 + Math.sin(t * Math.PI * 3) * 0.50;
+        if (lvl === 6) return climb * 0.86 + (i % 6 < 3 ? 1.55 : -1.10);
+        if (lvl === 7) return climb * 0.76 + Math.sin(i * 0.85) * 1.85 + (i % 7 === 4 ? 1.1 : 0);
+        if (lvl === 8) return climb * 0.82 + Math.sin(t * Math.PI * 4) * 2.35;
+        if (lvl === 9) return climb * 0.92 + Math.sin(t * Math.PI * 5) * 1.85 + (i % 5 === 0 ? -1.0 : 0.45);
+        return climb * 0.95 + Math.floor(t * 7) * 0.45 + Math.sin(t * Math.PI * 3) * 1.45;
+    }
+
+    function getDesignedEnemyIndices(lvl, segments) {
+        const desired = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.15) + 1;
+        const indices = [];
+        for (let i = 2; i < segments - 1 && indices.length < desired; i++) {
+            if (getPlatformMotion(lvl, i, segments)) continue;
+            const roll = seededJitter(lvl * 601 + i * 97, 3);
+            const rhythmHit = (lvl <= 3 && i % 4 === 0) ||
+                              (lvl >= 4 && lvl <= 6 && i % 5 === 2) ||
+                              (lvl >= 7 && i % 6 === 3);
+            if (rhythmHit || roll > 0.78) indices.push(i);
+        }
+        for (let i = 2; i < segments - 1 && indices.length < desired; i++) {
+            if (!indices.includes(i) && !getPlatformMotion(lvl, i, segments)) indices.push(i);
+        }
+        return indices.slice(0, desired);
+    }
+
+    function attachPlatformMotion(platform, motion) {
+        if (!platform || !motion) return;
+        platform.userData.motion = {
+            type: motion.type,
+            amplitude: motion.amplitude,
+            speed: motion.speed,
+            phase: motion.phase,
+            baseX: platform.position.x,
+            baseMeshY: platform.position.y,
+            baseSurfaceY: getPlatformSurfaceY(platform),
+            lastX: platform.position.x,
+            lastSurfaceY: getPlatformSurfaceY(platform)
+        };
+        platform.userData.deltaX = 0;
+        platform.userData.deltaY = 0;
+    }
+
+    function updateMovingPlatforms(dt) {
+        const now = performance.now() * 0.001;
+        platforms.forEach((platform) => {
+            const motion = platform.userData?.motion;
+            platform.userData.deltaX = 0;
+            platform.userData.deltaY = 0;
+            if (!motion) return;
+
+            const oldX = platform.position.x;
+            const oldSurfaceY = getPlatformSurfaceY(platform);
+            platform.userData.previousSurfaceY = oldSurfaceY;
+            const offset = Math.sin(now * motion.speed + motion.phase) * motion.amplitude;
+
+            if (motion.type === 'horizontal') {
+                platform.position.x = motion.baseX + offset;
+                platform.position.y = motion.baseMeshY;
+                platform.userData.surfaceY = motion.baseSurfaceY;
+            } else if (motion.type === 'vertical') {
+                platform.position.x = motion.baseX;
+                platform.position.y = motion.baseMeshY + offset;
+                platform.userData.surfaceY = motion.baseSurfaceY + offset;
+            } else if (motion.type === 'pendulum') {
+                const swing = Math.sin(now * motion.speed + motion.phase);
+                const hang = 0.72 * (1 - Math.cos(now * motion.speed + motion.phase));
+                platform.position.x = motion.baseX + swing * motion.amplitude;
+                platform.position.y = motion.baseMeshY - hang;
+                platform.userData.surfaceY = motion.baseSurfaceY - hang;
+            }
+
+            const newSurfaceY = getPlatformSurfaceY(platform);
+            const dx = platform.position.x - oldX;
+            const dy = newSurfaceY - oldSurfaceY;
+            platform.userData.deltaX = dx;
+            platform.userData.deltaY = dy;
+
+            if (platform.userData.decoration) {
+                platform.userData.decoration.position.x += dx;
+                platform.userData.decoration.position.y += dy;
+            }
+
+            if (groundedPlatform === platform && player && player.visible && gameActive && !isIntroAnimating && !isDying && !isJumping) {
+                player.position.x += dx;
+                player.position.y += dy;
+            }
+        });
+    }
+
+    function getCurrentLowestPlatformSurfaceY() {
+        if (!platforms.length) return lowestPlatformSurfaceY;
+        let lowest = Infinity;
+        platforms.forEach((platform) => {
+            lowest = Math.min(lowest, getPlatformSurfaceY(platform));
+        });
+        return Number.isFinite(lowest) ? lowest : lowestPlatformSurfaceY;
+    }
+
+    function getCurrentLowestPlatformBottomY() {
+        if (!platforms.length) return Number.isFinite(lowestPlatformSurfaceY) ? lowestPlatformSurfaceY - 1.5 : -Infinity;
+        let lowestBottom = Infinity;
+        platforms.forEach((platform) => {
+            if (platform.userData?.inactive) return;
+            const params = platform.geometry?.parameters || { height: 1.5 };
+            lowestBottom = Math.min(lowestBottom, getPlatformSurfaceY(platform) - (params.height || 1.5));
+        });
+        if (Number.isFinite(lowestBottom)) return lowestBottom;
+        return Number.isFinite(lowestPlatformSurfaceY) ? lowestPlatformSurfaceY - 1.5 : -Infinity;
     }
 
     function spawnLevel(lvl) {
         platforms.forEach(p => { scene.remove(p); disposeObject(p); });
         items.forEach(it => { scene.remove(it.mesh); disposeObject(it.mesh); });
         enemies.forEach(en => { scene.remove(en.mesh); disposeObject(en.mesh); });
+        buttons.forEach(btn => { scene.remove(btn.mesh); disposeObject(btn.mesh); });
+        gates.forEach(gate => { scene.remove(gate.mesh); disposeObject(gate.mesh); });
         levelDecorations.forEach(deco => { scene.remove(deco); disposeObject(deco); });
         levelDecorations = [];
         if (door) { scene.remove(door); disposeObject(door); door = null; }
-        platforms = []; items = []; enemies = [];
+        platforms = []; items = []; enemies = []; buttons = []; gates = [];
+        applySkyForLevel(lvl);
+        groundedPlatform = null;
         lowestPlatformSurfaceY = Infinity;
-        const segments = 5 + (lvl * 5);
-        const verticalClimb = lvl * 4.5;
+        const levelBlueprint = getLevelBlueprint(lvl);
+        const segments = levelBlueprint ? levelBlueprint.platforms.length + 1 : 5 + (lvl * 5);
+        const verticalClimb = levelBlueprint ? levelBlueprint.finalY : lvl * 4.5;
         
-        const platformWidth = Math.max(10, 26 - (lvl * 1.6)); 
+        const basePlatformWidth = Math.max(10, 26 - (lvl * 1.6)); 
         const maxStepUp = 2.95;
         const maxStepDown = 3.25;
         
-        let enemyCount = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.2) + 1;
         const enemySpeed = 0.03 + (lvl * 0.012);
         
-        const possibleIndices = [];
-        for (let j = 1; j < segments - 1; j++) possibleIndices.push(j);
-        const selectedEnemyIndices = possibleIndices.sort(() => Math.random() - 0.5).slice(0, enemyCount);
+        const selectedEnemyIndices = getDesignedEnemyIndices(lvl, segments);
 
         addPlatform(0, -1, 35, 0x2ed573, 0);
         let lastY = -1;
         let currentX = 0;
         let prevWidth = 35;
+        let lastPlatformWidth = 35;
         const goodEmotions = ["BRAVERY", "JOY", "LOVE", "HOPE", "PEACE", "KINDNESS", "CALM", "PRIDE", "TRUST", "HAPPINESS"];
         const badEmotions = ["ANGER", "GREED", "JEALOUSY", "RUDENESS", "ENVY", "HATE", "DESPAIR"];
         
         let consecutiveEmpty = 0;
 
         for (let i = 1; i < segments; i++) {
+            const currentWidth = getPlatformWidth(lvl, i, segments, basePlatformWidth);
             const gap = getProfileGap(lvl, i, segments);
-            currentX += (prevWidth / 2) + (platformWidth / 2) + gap;
-            prevWidth = platformWidth;
+            currentX += (prevWidth / 2) + (currentWidth / 2) + gap;
+            prevWidth = currentWidth;
+            lastPlatformWidth = currentWidth;
             let currentY = getProfileY(lvl, i, segments, verticalClimb);
             if (currentY - lastY > maxStepUp) currentY = lastY + maxStepUp;
             else if (lastY - currentY > maxStepDown) currentY = lastY - maxStepDown;
             lastY = currentY;
-            const p = addPlatform(currentX, currentY, platformWidth, 0x2ed573, i);
+            const motion = getPlatformMotion(lvl, i, segments);
+            const p = addPlatform(currentX, currentY, currentWidth, 0x2ed573, i, motion);
+            const spec = getLevelPlatformSpec(lvl, i);
+            if (spec && spec.o) setupSpecialObstacle(p, spec.o, i, lvl);
+            const isDynamicPlatform = !!motion || !!(spec && spec.o && ['popup', 'crumble', 'raiseStep', 'gateButton'].includes(spec.o.type));
             
-            if (selectedEnemyIndices.includes(i)) {
+            if (selectedEnemyIndices.includes(i) && !isDynamicPlatform) {
                 spawnEnemy(p, badEmotions, enemySpeed);
                 consecutiveEmpty = 0;
             } else {
-                if (Math.random() > 0.15 || consecutiveEmpty >= 1 || i === 1) {
-                    spawnGoodDeed(currentX + (Math.random() - 0.5) * 4, currentY + 6.0, goodEmotions);
+                const collectibleRoll = seededJitter(lvl * 977 + i * 41, 5);
+                if (!isDynamicPlatform && (collectibleRoll > 0.22 || consecutiveEmpty >= 1 || i === 1)) {
+                    const offset = (seededJitter(lvl * 131 + i * 17, 6) - 0.5) * Math.min(4, currentWidth * 0.35);
+                    spawnGoodDeed(currentX + offset, currentY + 6.0, goodEmotions);
                     consecutiveEmpty = 0;
                 } else {
                     consecutiveEmpty++;
@@ -1529,28 +2291,71 @@
             }
         }
         const finalGap = getProfileGap(lvl, segments, segments);
-        const finalX = currentX + (platformWidth / 2) + 10 + finalGap;
-        let finalY = verticalClimb + 2;
-        if (lvl === 5) finalY = Math.max(lastY + 1.2, verticalClimb * 0.7);
-        else if (lvl === 7) finalY = Math.max(lastY + 0.4, verticalClimb * 0.65);
-        else if (lvl === 8) finalY = Math.max(lastY + 1.0, verticalClimb * 0.75);
-        else if (lvl === 10) finalY = Math.max(lastY + 1.5, verticalClimb * 0.85);
+        const finalX = currentX + (lastPlatformWidth / 2) + 10 + finalGap;
+        let finalY = levelBlueprint && Number.isFinite(levelBlueprint.finalY) ? levelBlueprint.finalY : verticalClimb + 2;
+        if (!levelBlueprint) {
+            if (lvl === 5) finalY = Math.max(lastY + 1.2, verticalClimb * 0.7);
+            else if (lvl === 7) finalY = Math.max(lastY + 0.4, verticalClimb * 0.65);
+            else if (lvl === 8) finalY = Math.max(lastY + 1.0, verticalClimb * 0.75);
+            else if (lvl === 10) finalY = Math.max(lastY + 1.5, verticalClimb * 0.85);
+        }
         if (finalY - lastY > maxStepUp) finalY = lastY + maxStepUp;
         else if (lastY - finalY > maxStepDown) finalY = lastY - maxStepDown;
         addPlatform(finalX, finalY, 20, 0x2ed573, segments);
         if (!Number.isFinite(lowestPlatformSurfaceY)) lowestPlatformSurfaceY = -1;
-        door = createDoorMesh(); addDoorGlow(door); door.position.set(finalX, finalY + 4, 0); scene.add(door);
+        door = createDoorMesh(); addDoorGlow(door); door.position.set(finalX, finalY + 3, -2.2); scene.add(door);
         cinematicDoorPos.copy(door.position);
         camStart.set(door.position.x + 30, door.position.y + 15, 60); 
         camEnd.set(0, 2 + 6, CAMERA_DEFAULT_ZOOM);
     }
 
+    let introWatchdogTimer = null;
+
+    function clearIntroWatchdog() {
+        if (introWatchdogTimer) {
+            clearTimeout(introWatchdogTimer);
+            introWatchdogTimer = null;
+        }
+    }
+
+    function finishIntroAndStartGameplay() {
+        clearIntroWatchdog();
+        isIntroAnimating = false;
+        CinematicWind.stop();
+        gameActive = true;
+        levelTransitioning = false;
+        MusicBank.playForLevel(level);
+        if (player) player.rotation.y = 0;
+        if (!applyPortraitGameplayStartCamera()) {
+            camera.position.copy(camEnd);
+            camera.lookAt(player.position.x, player.position.y + 1, 0);
+            startPortraitGameplayZoomOut();
+        }
+    }
+
+    function startIntroWatchdog() {
+        clearIntroWatchdog();
+        introWatchdogTimer = setTimeout(() => {
+            if (isIntroAnimating && levelTransitioning && !gameActive) {
+                console.warn('Happy Collector intro watchdog: cinematic did not finish in time, forcing gameplay start.');
+                finishIntroAndStartGameplay();
+            }
+        }, 7200);
+    }
+
     function startLevelSequence(lvl, withCinematic = true, showPopup = true) {
+        clearIntroWatchdog();
+        clearDoorArrivalTransition();
         gameActive = false; isIntroAnimating = false; levelTransitioning = true;
         cameraZoomUnlocked = false;
         cameraZoomDistance = CAMERA_DEFAULT_ZOOM;
+        portraitGameplayZoom.active = false;
+        portraitGameplayZoom.elapsed = 0;
+        portraitGameplayZoom.from = CAMERA_DEFAULT_ZOOM;
+        portraitGameplayZoom.to = CAMERA_DEFAULT_ZOOM;
         pinchZoomStartDistance = null;
         resetInput();
+        groundedPlatform = null;
         if (player) {
             player.visible = false;
             player.rotation.y = -Math.PI / 2;
@@ -1574,14 +2379,17 @@
                 CinematicWind.playCinematic(4200);
                 camera.position.copy(camStart);
                 camera.lookAt(cinematicDoorPos.x, cinematicDoorPos.y, cinematicDoorPos.z);
+                startIntroWatchdog();
             } 
             else { 
                 isIntroAnimating = false; 
                 gameActive = true; 
                 levelTransitioning = false;
                 MusicBank.playForLevel(level);
-                camera.position.copy(camEnd); 
-                camera.lookAt(player.position.x, player.position.y + 1, 0); 
+                if (!applyPortraitGameplayStartCamera()) {
+                    camera.position.copy(camEnd); 
+                    camera.lookAt(player.position.x, player.position.y + 1, 0); 
+                }
             }
         };
         if (showPopup) {
@@ -1604,7 +2412,7 @@
         return platform.position.y + (params.height / 2);
     }
 
-    function addPlatform(x, y, w, color, decoIndex = -1) {
+    function addPlatform(x, y, w, color, decoIndex = -1, motion = null) {
         const geometry = createSoftGreenPlatformGeometry(w, 1.5, 10, Math.floor(x * 10 + y * 20 + w));
         geometry.computeBoundingBox();
         const visualTopOffset = geometry.boundingBox ? geometry.boundingBox.max.y : 0.75;
@@ -1616,9 +2424,212 @@
         mesh.receiveShadow = true;
         scene.add(mesh);
         lowestPlatformSurfaceY = Math.min(lowestPlatformSurfaceY, y);
+        if (motion) attachPlatformMotion(mesh, motion);
         platforms.push(mesh);
         if (decoIndex >= 0) decoratePlatform(mesh, decoIndex, level);
         return mesh;
+    }
+
+
+    function createButtonMesh(color = 0xff4757) {
+        const group = new THREE.Group();
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.15, 0.24, 24), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45 }));
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.92, 0.32, 24), new THREE.MeshStandardMaterial({ color, roughness: 0.35 }));
+        base.position.y = 0.12;
+        cap.position.y = 0.40;
+        group.add(base, cap);
+        group.castShadow = true;
+        group.receiveShadow = true;
+        return group;
+    }
+
+    function createGateMesh() {
+        const group = new THREE.Group();
+        const mat = new THREE.MeshStandardMaterial({ color: 0x8f9aa3, roughness: 0.62 });
+        const postMat = new THREE.MeshStandardMaterial({ color: 0x5f6a72, roughness: 0.72 });
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(1.25, 5.4, 8.2), mat);
+        slab.position.y = 2.7;
+        const left = new THREE.Mesh(new THREE.BoxGeometry(0.35, 5.7, 0.35), postMat);
+        const right = left.clone();
+        left.position.set(0, 2.85, -4.25);
+        right.position.set(0, 2.85, 4.25);
+        const lintel = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.62, 8.75), postMat);
+        lintel.position.set(0, 5.72, 0);
+        group.add(slab, left, right, lintel);
+        group.castShadow = true;
+        group.receiveShadow = true;
+        return group;
+    }
+
+    function addCrackMarks(platform) {
+        const group = new THREE.Group();
+        const mat = new THREE.MeshBasicMaterial({ color: 0x145a32, transparent: true, opacity: 0.68 });
+        const w = Math.max(3.2, platform.userData.collisionWidth * 0.5);
+        for (let i = 0; i < 4; i++) {
+            const geo = new THREE.BoxGeometry(w * (0.18 + i * 0.07), 0.035, 0.07);
+            const mark = new THREE.Mesh(geo, mat);
+            mark.position.set((i - 1.5) * 0.72, 0.04, (i % 2 ? -1 : 1) * 1.4);
+            mark.rotation.y = (i % 2 ? -0.45 : 0.45);
+            group.add(mark);
+        }
+        group.visible = false;
+        group.position.set(platform.position.x, getPlatformSurfaceY(platform) + 0.035, platform.position.z);
+        scene.add(group);
+        levelDecorations.push(group);
+        platform.userData.cracks = group;
+    }
+
+    function removePlatformDecoration(platform) {
+        if (!platform || !platform.userData || !platform.userData.decoration) return;
+        const deco = platform.userData.decoration;
+        scene.remove(deco);
+        disposeObject(deco);
+        levelDecorations = levelDecorations.filter(item => item !== deco);
+        platform.userData.decoration = null;
+    }
+
+    function setupSpecialObstacle(platform, obstacle, index, lvl) {
+        if (!platform || !obstacle) return;
+        // Drop/disappear/transform platforms must not leave flowers, herbs, or roses floating.
+        // Plain up-down moving platforms keep their decoration because updateMovingPlatforms carries it with the platform.
+        if (['popup', 'crumble', 'raiseStep'].includes(obstacle.type)) {
+            removePlatformDecoration(platform);
+        }
+        platform.userData.obstacle = {
+            type: obstacle.type,
+            state: 'idle',
+            timer: 0,
+            phase: obstacle.phase || index * 0.71,
+            speed: obstacle.speed || 0.9,
+            baseMeshY: platform.position.y,
+            baseSurfaceY: getPlatformSurfaceY(platform),
+            hiddenDrop: 3.4,
+            linked: null
+        };
+        if (obstacle.type === 'popup') {
+            platform.userData.obstacle.hiddenDrop = 3.6;
+        } else if (obstacle.type === 'crumble') {
+            addCrackMarks(platform);
+        } else if (obstacle.type === 'raiseStep') {
+            const button = createButtonMesh(0x2f80ff);
+            const surfaceY = getPlatformSurfaceY(platform);
+            const previousPlatform = platforms.length >= 2 ? platforms[platforms.length - 2] : null;
+            if (previousPlatform) {
+                const prevSurfaceY = getPlatformSurfaceY(previousPlatform);
+                const prevHalfW = (previousPlatform.userData?.collisionWidth || 14) / 2;
+                button.position.set(previousPlatform.position.x + Math.max(0, prevHalfW - 2.8), prevSurfaceY + 0.08, 0);
+            } else {
+                button.position.set(platform.position.x - Math.max(5.4, platform.userData.collisionWidth * 0.72), surfaceY + 0.08, 0);
+            }
+            scene.add(button);
+            buttons.push({ mesh: button, type: 'raiseStep', target: platform, active: false });
+            platform.userData.obstacle.state = 'lowered';
+            platform.userData.obstacle.loweredY = platform.position.y - 2.1;
+            platform.userData.obstacle.loweredSurfaceY = surfaceY - 2.1;
+            platform.userData.obstacle.raisedMeshY = platform.position.y;
+            platform.userData.obstacle.raisedSurfaceY = surfaceY;
+            platform.position.y = platform.userData.obstacle.loweredY;
+            platform.userData.surfaceY = platform.userData.obstacle.loweredSurfaceY;
+        } else if (obstacle.type === 'gateButton') {
+            const surfaceY = getPlatformSurfaceY(platform);
+            const button = createButtonMesh(0xff4757);
+            button.position.set(platform.position.x - platform.userData.collisionWidth * 0.28, surfaceY + 0.08, 0);
+            scene.add(button);
+            const gate = createGateMesh();
+            gate.position.set(platform.position.x + platform.userData.collisionWidth * 0.34, surfaceY, 0);
+            scene.add(gate);
+            const gateData = { mesh: gate, platform, open: false, closedY: surfaceY, openY: surfaceY + 6.6, halfWidth: 1.0, halfHeight: 2.9 };
+            gates.push(gateData);
+            buttons.push({ mesh: button, type: 'gate', gate: gateData, active: false });
+        }
+    }
+
+    function updateSpecialObstacles(dt) {
+        const now = performance.now() * 0.001;
+        platforms.forEach(platform => {
+            const obs = platform.userData?.obstacle;
+            if (!obs) return;
+            if (obs.type === 'popup') {
+                const wave = Math.sin(now * obs.speed + obs.phase);
+                const visible = wave > -0.18;
+                const reveal = THREE.MathUtils.clamp((wave + 0.18) / 0.38, 0, 1);
+                const eased = reveal * reveal * (3 - 2 * reveal);
+                const oldSurfaceY = getPlatformSurfaceY(platform);
+                platform.position.y = obs.baseMeshY - obs.hiddenDrop * (1 - eased);
+                platform.userData.surfaceY = obs.baseSurfaceY - obs.hiddenDrop * (1 - eased);
+                platform.userData.inactive = !visible;
+                const dy = getPlatformSurfaceY(platform) - oldSurfaceY;
+                platform.userData.deltaY = dy;
+            } else if (obs.type === 'crumble') {
+                if (groundedPlatform === platform && obs.state === 'idle' && gameActive && !isIntroAnimating) {
+                    obs.state = 'cracking';
+                    obs.timer = 0;
+                    if (platform.userData.cracks) platform.userData.cracks.visible = true;
+                }
+                if (obs.state === 'cracking') {
+                    obs.timer += dt / 60;
+                    if (platform.material) platform.material.emissive = new THREE.Color(obs.timer % 0.18 < 0.09 ? 0x113b18 : 0x000000);
+                    if (obs.timer > 0.85) {
+                        obs.state = 'fallen';
+                        obs.timer = 0;
+                        platform.userData.inactive = true;
+                        platform.visible = false;
+                        if (platform.userData.cracks) platform.userData.cracks.visible = false;
+                    }
+                } else if (obs.state === 'fallen') {
+                    obs.timer += dt / 60;
+                    if (obs.timer > 2.2) {
+                        obs.state = 'idle';
+                        obs.timer = 0;
+                        platform.userData.inactive = false;
+                        platform.visible = true;
+                        if (platform.material) platform.material.emissive = new THREE.Color(0x000000);
+                    }
+                }
+                if (platform.userData.cracks) platform.userData.cracks.position.set(platform.position.x, getPlatformSurfaceY(platform) + 0.04, platform.position.z);
+            } else if (obs.type === 'raiseStep') {
+                const targetY = obs.state === 'raised' ? obs.raisedMeshY : obs.loweredY;
+                const targetSurface = obs.state === 'raised' ? obs.raisedSurfaceY : obs.loweredSurfaceY;
+                platform.position.y = THREE.MathUtils.lerp(platform.position.y, targetY, 0.12 * dt);
+                platform.userData.surfaceY = THREE.MathUtils.lerp(getPlatformSurfaceY(platform), targetSurface, 0.12 * dt);
+                platform.userData.inactive = false;
+            }
+        });
+
+        buttons.forEach(btn => {
+            if (!player || !gameActive || isIntroAnimating) return;
+            const dx = Math.abs(player.position.x - btn.mesh.position.x);
+            const dy = Math.abs((player.position.y - PLAYER_BASE_HALF_HEIGHT) - btn.mesh.position.y);
+            const pressed = dx < 2.15 && dy < 2.2;
+            if (pressed && !btn.active) {
+                btn.active = true;
+                btn.mesh.scale.y = 0.45;
+                if (btn.type === 'raiseStep' && btn.target?.userData?.obstacle) btn.target.userData.obstacle.state = 'raised';
+                if (btn.type === 'gate' && btn.gate) btn.gate.open = true;
+                AudioFX.collect();
+            }
+        });
+
+        gates.forEach(gate => {
+            const targetY = gate.open ? gate.openY : gate.closedY;
+            gate.mesh.position.y = THREE.MathUtils.lerp(gate.mesh.position.y, targetY, 0.11 * dt);
+        });
+    }
+
+    function resolveGateCollisions() {
+        if (!player || !gameActive || isIntroAnimating || isDying) return;
+        for (const gate of gates) {
+            if (gate.open) continue;
+            const gx = gate.mesh.position.x;
+            const surfaceY = gate.platform ? getPlatformSurfaceY(gate.platform) : gate.closedY;
+            const playerFeet = player.position.y - PLAYER_BASE_HALF_HEIGHT;
+            const nearX = Math.abs(player.position.x - gx) < 1.02;
+            const inGateY = playerFeet < surfaceY + 5.2 && player.position.y > surfaceY - 0.4;
+            if (nearX && inGateY) {
+                player.position.x = gx - Math.sign(velocityX || 1) * 1.05;
+                velocityX = 0;
+            }
+        }
     }
 
     function spawnGoodDeed(x, y, list) {
@@ -1828,6 +2839,7 @@
     function handleDeath(cause = 'generic') {
         if (isDying) return;
         isDying = true; gameActive = false; 
+        groundedPlatform = null;
         resetInput();
 
         const resolveDeath = () => {
@@ -1868,9 +2880,12 @@
 
     function goHome() { 
         gameActive = false; isIntroAnimating = false; levelTransitioning = false;
+        groundedPlatform = null;
         resetInput();
         MusicBank.stop();
         CinematicWind.stop();
+        clearIntroWatchdog();
+        clearDoorArrivalTransition();
         document.querySelector('.start-screen').style.display = 'flex'; 
         document.querySelector('.game-over-screen').style.display = 'none'; 
         if(player) player.visible = false;
@@ -1882,11 +2897,74 @@
     let keys = { left: false, right: false, up: false };
 
 
+    function isMobilePortraitGameplayViewport() {
+        const w = Math.min(window.innerWidth || 0, document.documentElement.clientWidth || 0);
+        const h = Math.min(window.innerHeight || 0, document.documentElement.clientHeight || 0);
+        const portrait = h > w || (window.matchMedia && window.matchMedia('(orientation: portrait)').matches);
+        const coarseTouch = window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : ('ontouchstart' in window);
+        return w > 0 && h > 0 && portrait && coarseTouch && w <= 700;
+    }
+
+    function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function getPortraitFirstBlockZoomDistance() {
+        if (!isMobilePortraitGameplayViewport() || !camera || !platforms.length) return CAMERA_DEFAULT_ZOOM;
+        const firstPlatform = platforms.reduce((closest, platform) => {
+            return Math.abs(platform.position.x) < Math.abs(closest.position.x) ? platform : closest;
+        }, platforms[0]);
+
+        const firstWidth = Math.max(18, firstPlatform.userData && firstPlatform.userData.collisionWidth ? firstPlatform.userData.collisionWidth : 18);
+        const safeAspect = Math.max(0.28, camera.aspect || (window.innerWidth / Math.max(1, window.innerHeight)));
+        const fovRad = THREE.MathUtils.degToRad(camera.fov);
+        const requiredDistance = (firstWidth * 2.15) / (2 * Math.tan(fovRad / 2) * safeAspect);
+        return THREE.MathUtils.clamp(Math.max(58, requiredDistance), CAMERA_DEFAULT_ZOOM + 22, 88);
+    }
+
+    function applyPortraitGameplayStartCamera() {
+        if (!isMobilePortraitGameplayViewport() || !camera || !player) return false;
+        const targetZoom = getPortraitFirstBlockZoomDistance();
+        portraitGameplayZoom.active = false;
+        portraitGameplayZoom.elapsed = 0;
+        portraitGameplayZoom.from = targetZoom;
+        portraitGameplayZoom.to = targetZoom;
+        cameraZoomDistance = targetZoom;
+        camera.position.set(player.position.x, player.position.y + 6, targetZoom);
+        camera.lookAt(player.position.x, player.position.y + 1, 0);
+        return true;
+    }
+
+    function startPortraitGameplayZoomOut() {
+        if (!isMobilePortraitGameplayViewport() || !camera || !platforms.length) return;
+        const targetZoom = getPortraitFirstBlockZoomDistance();
+        portraitGameplayZoom.active = targetZoom > camera.position.z + 1;
+        portraitGameplayZoom.elapsed = 0;
+        portraitGameplayZoom.duration = 3400;
+        portraitGameplayZoom.from = camera.position.z;
+        portraitGameplayZoom.to = targetZoom;
+        cameraZoomDistance = portraitGameplayZoom.from;
+    }
+
+    function updatePortraitGameplayZoom(dt) {
+        if (!portraitGameplayZoom.active) return;
+        if (!isMobilePortraitGameplayViewport()) {
+            portraitGameplayZoom.active = false;
+            return;
+        }
+        portraitGameplayZoom.elapsed += dt;
+        const t = Math.min(1, portraitGameplayZoom.elapsed / portraitGameplayZoom.duration);
+        const eased = easeInOutCubic(t);
+        cameraZoomDistance = THREE.MathUtils.lerp(portraitGameplayZoom.from, portraitGameplayZoom.to, eased);
+        if (t >= 1) portraitGameplayZoom.active = false;
+    }
+
     function unlockCameraZoomAfterMovement() {
         if (gameActive && !isIntroAnimating && !isDying) cameraZoomUnlocked = true;
     }
 
     function setCameraZoomDistance(nextDistance) {
+        portraitGameplayZoom.active = false;
         cameraZoomDistance = THREE.MathUtils.clamp(nextDistance, CAMERA_MIN_ZOOM, CAMERA_MAX_ZOOM);
     }
 
@@ -1905,6 +2983,12 @@
             p.material.opacity = Math.max(0, p.userData.life);
             if (p.userData.life <= 0) { scene.remove(p); disposeObject(p); particles.splice(i, 1); }
         }
+        if (doorArrivalTransition) {
+            updateDoorArrivalTransition(dt);
+            return;
+        }
+        updateMovingPlatforms(dt);
+        updateSpecialObstacles(dt);
         updateDecorations(dt);
         if (isIntroAnimating) {
             introProgress += 0.0035 * dt; 
@@ -1927,14 +3011,7 @@
             }
 
             if (introProgress >= 1) { 
-                isIntroAnimating = false; 
-                CinematicWind.stop();
-                gameActive = true; 
-                levelTransitioning = false;
-                MusicBank.playForLevel(level);
-                player.rotation.y = 0; 
-                camera.position.copy(camEnd); 
-                camera.lookAt(player.position.x, player.position.y + 1, 0);
+                finishIntroAndStartGameplay();
             }
             else { 
                 camera.position.lerpVectors(camStart, camEnd, easing); 
@@ -1957,6 +3034,7 @@
         }
 
         player.position.x += velocityX * dt;
+        resolveGateCollisions();
         let gravityScale = 0.022; 
         velocityY -= gravityScale * dt;
         player.position.y += velocityY * dt;
@@ -1966,6 +3044,7 @@
         
         let groundedThisFrame = false;
         platforms.forEach(p => {
+            if (p.userData?.inactive) return;
             const surfaceY = getPlatformSurfaceY(p);
             const halfW = (p.userData?.collisionWidth || p.geometry?.parameters?.width || 10) / 2;
             const halfD = (p.userData?.collisionDepth || p.geometry?.parameters?.depth || 10) / 2;
@@ -1973,33 +3052,39 @@
             const withinZ = Math.abs(player.position.z - p.position.z) <= halfD + 0.52;
             const playerHalfHeight = (PLAYER_BASE_HALF_HEIGHT + PLAYER_STAND_CLEARANCE) * player.scale.y;
             const playerBottom = player.position.y - playerHalfHeight;
-            const crossingTopSurface = playerBottom <= surfaceY && player.position.y > surfaceY - 0.85;
+            const platformDeltaY = p.userData?.deltaY || 0;
+            const verticalLandingWindow = p.userData?.motion?.type === 'vertical'
+                ? Math.max(1.35, Math.abs(platformDeltaY) + 1.15)
+                : 0.85;
+            const crossingTopSurface = playerBottom <= surfaceY && player.position.y > surfaceY - verticalLandingWindow;
             if (withinX && withinZ && velocityY <= 0 && crossingTopSurface) {
                 player.position.y = surfaceY + playerHalfHeight;
                 velocityY = 0;
                 isJumping = false;
                 groundedThisFrame = true;
+                groundedPlatform = p;
                 fallCueStarted = false;
                 fallCueStartTime = 0;
                 lastGroundCenterY = player.position.y;
             }
         });
+        if (!groundedThisFrame && velocityY < -0.005) groundedPlatform = null;
 
         const playerBottomForFallCue = player.position.y - ((PLAYER_BASE_HALF_HEIGHT + PLAYER_STAND_CLEARANCE) * player.scale.y);
-        const passedBelowLowestPlatform = Number.isFinite(lowestPlatformSurfaceY) && playerBottomForFallCue < lowestPlatformSurfaceY - 0.35;
-        if (!groundedThisFrame && velocityY < -0.04 && passedBelowLowestPlatform) {
+        const lowestPlatformBottomY = getCurrentLowestPlatformBottomY();
+        const passedBelowLowestPlatformBottom = Number.isFinite(lowestPlatformBottomY) && playerBottomForFallCue < lowestPlatformBottomY - FALL_SFX_LOWEST_PLATFORM_MARGIN;
+        if (!groundedThisFrame && velocityY < -0.04 && passedBelowLowestPlatformBottom) {
             startFallCue();
         }
 
         updateCharacterShadow();
 
-        if (!levelTransitioning && door && player.position.distanceTo(door.position) < 4.5) { 
-            levelTransitioning = true;
-            if (level >= 10) { AudioFX.win(); showGameOver(true); } 
-            else startLevelSequence(level + 1, true, true); 
+        if (!levelTransitioning && door && player.position.distanceTo(door.position) < 4.5) {
+            beginDoorArrivalTransition();
+            return;
         }
 
-        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; AudioFX.jump(); }
+        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; groundedPlatform = null; AudioFX.jump(); }
         
         for (let idx = items.length - 1; idx >= 0; idx--) {
             const it = items[idx];
@@ -2020,7 +3105,7 @@
             const en = enemies[idx];
             en.mesh.position.x += en.dir * en.speed * dt;
             en.mesh.position.y = en.surfaceY + 1.1; 
-            const halfPlatformWidth = en.platform.geometry.parameters.width / 2;
+            const halfPlatformWidth = ((en.platform.userData && en.platform.userData.collisionWidth) || en.platform.geometry.parameters.width) / 2;
             const halfEnemyWidth = en.width / 2; 
             const margin = 0.1;
             const relativeX = en.mesh.position.x - en.platform.position.x;
@@ -2043,7 +3128,10 @@
             }
         }
 
+        // Preserve original fall-death timing: SFX is gated by the lowest-platform threshold,
+        // but explosion / Try Again remains delayed until the player falls deep below the level.
         if (player.position.y < -50) handleDeath('fall');
+        updatePortraitGameplayZoom(dt);
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, player.position.x, 0.1 * dt);
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, player.position.y + 6, 0.1 * dt);
         camera.position.z = THREE.MathUtils.lerp(camera.position.z, cameraZoomDistance, 0.12 * dt);
@@ -2051,6 +3139,7 @@
     }
 
     function showGameOver(win) { 
+        clearDoorArrivalTransition();
         gameActive = false; levelTransitioning = false;
         resetInput();
         MusicBank.stop();
@@ -2062,9 +3151,12 @@
     }
 
     function restartGame() { 
+        groundedPlatform = null;
         resetInput();
         MusicBank.stop();
         CinematicWind.stop();
+        clearIntroWatchdog();
+        clearDoorArrivalTransition();
         score = 0; lives = 3; level = 1; 
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
@@ -2118,7 +3210,9 @@
     };
 
     function restartGameOnlyStats() { 
+        groundedPlatform = null;
         resetInput();
+        clearDoorArrivalTransition();
         score = 0; lives = 3; level = 1; 
         document.getElementById('score-val').innerText = score; 
         document.getElementById('lives-val').innerText = lives; 
@@ -2140,6 +3234,20 @@
             lastMusicToggleTime = now;
             AudioFX.unlock();
             MusicBank.toggle();
+        });
+    }
+
+    const sfxButton = document.querySelector('.sfx-btn');
+    if (sfxButton) {
+        let lastSfxToggleTime = 0;
+        sfxButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const now = performance.now();
+            if (now - lastSfxToggleTime < 250) return;
+            lastSfxToggleTime = now;
+            AudioFX.unlock();
+            const sfxEnabled = AudioFX.toggle();
+            CinematicWind.setEnabled(sfxEnabled);
         });
     }
 
@@ -2180,6 +3288,7 @@
 
     window.onload = function() { 
         MusicBank.setButtonState(); 
+        AudioFX.setButtonState();
         CinematicWind.preload(); 
         animate(performance.now()); 
     }
