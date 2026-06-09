@@ -15,9 +15,34 @@
     <meta name="twitter:title" content="Happy Collector - Good Habits Adventure">
     <meta name="twitter:description" content="A cheerful 3D HTML5 platformer with Good Habit collectibles, floating islands, glass bricks, moving platforms, and a glowing door goal.">
     <title>Happy Collector - Good Habits Adventure | 3D Browser Platformer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Local Three.js r128 bundled for itch.io/offline reliability. -->
+    <script src="./libs/three.r128.min.js"></script>
     <style>
+
+        @font-face {
+            font-family: 'Luckiest Guy';
+            src: url('./fonts/LuckiestGuy-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Amatic SC';
+            src: url('./fonts/AmaticSC-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Amatic SC';
+            src: url('./fonts/AmaticSC-Bold.ttf') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
             --primary: rgba(255, 230, 0, 1);
             --danger: rgba(255, 71, 87, 1);
@@ -142,7 +167,7 @@
             color: white;
             padding: clamp(8px, 1.5vmin, 14px) clamp(20px, 5vmin, 48px);
             border-radius: 4vmin;
-            font-family: 'Luckiest Guy', cursive;
+            font-family: 'Luckiest Guy', 'Arial Black', cursive;
             font-size: clamp(18px, 4vmin, 34px);
             line-height: 1.08;
             display: none;
@@ -175,7 +200,7 @@
 
         .level-popup.active { display: flex; }
         .level-popup.active h2 {
-            font-family: 'Luckiest Guy', cursive;
+            font-family: 'Luckiest Guy', 'Arial Black', cursive;
             font-size: 15vmin;
             color: white;
             text-shadow: 1.2vmin 1.2vmin 0px rgb(255, 71, 87);
@@ -316,7 +341,7 @@
         }
 
         h1 {
-            font-family: 'Luckiest Guy', cursive;
+            font-family: 'Luckiest Guy', 'Arial Black', cursive;
             font-size: 12vmin;
             margin: 0;
             letter-spacing: 0.5vmin;
@@ -426,7 +451,7 @@
             transform: translate(-50%, -50%);
             pointer-events: none;
             z-index: 160;
-            font-family: 'Luckiest Guy', cursive;
+            font-family: 'Luckiest Guy', 'Arial Black', cursive;
             font-size: clamp(18px, 4vmin, 34px);
             letter-spacing: 0.06em;
             color: white;
@@ -523,7 +548,7 @@
         }
 
         .action-btn {
-            font-family: 'Luckiest Guy', cursive !important;
+            font-family: 'Luckiest Guy', 'Arial Black', cursive !important;
             background: linear-gradient(180deg, #2ed573 0%, #26af5c 100%);
             color: white;
             border: none;
@@ -579,7 +604,7 @@
         }
 
         .secret-levels-title {
-            font-family: 'Luckiest Guy', cursive;
+            font-family: 'Luckiest Guy', 'Arial Black', cursive;
             margin: 0;
             font-size: clamp(34px, 8vmin, 82px);
             letter-spacing: 0.06em;
@@ -607,7 +632,7 @@
             border: none;
             cursor: pointer;
             color: white;
-            font-family: 'Luckiest Guy', cursive;
+            font-family: 'Luckiest Guy', 'Arial Black', cursive;
             text-shadow: 0 0.25vmin 0.5vmin rgba(0,0,0,0.2);
             box-shadow: 0 0.65vmin 0 rgba(27,122,64,0.92), 0 1.25vmin 2.4vmin rgba(0,0,0,0.22);
             transition: transform 0.12s ease, box-shadow 0.12s ease;
@@ -2032,11 +2057,11 @@
             13: 'Button Garden Run',
             14: 'Pendulum Picnic Crossing',
             15: 'Raised Stair Workshop',
-            16: 'Rope Gate Expedition',
+            16: 'Bad Habit Patrol Park',
             17: 'Cloud Lift Labyrinth',
-            18: 'Pendulum Timing Trial',
-            19: 'Smart Switchback Climb',
-            20: 'Grand Adventure Summit'
+            18: 'Glass Habit Trial',
+            19: 'Switchback Sky Garden',
+            20: 'Good Habit Summit'
         };
 
         const targetLength = LEVEL_LENGTH_TARGETS[lvl] || (85 * Math.pow(1.5, lvl - 1));
@@ -2381,25 +2406,158 @@
             raiseRoom(8);
             safeLanding(34, 0.04);
         } else if (lvl === 16) {
-            // 7 obstacles: rope gate expedition with alternating timing rooms.
-            ropeGateRoom(4); sliderRoom(2, 4); popRoom(3); gateRoom(4); liftRoom(2, 4); crumbleRoom(3); pendulumRoom(1, 4);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(16 + fill);
+            // Bad Habit Patrol Park: authored Level 16 sequence.
+            // Goal: make enemy patrol fairness the identity with safe approach islands, clear timing corridors,
+            // optional Good Habit rewards, and no blind enemy landings.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
+            safeLanding(32, 0.0);
+            curvedBridge(5, 0.82);
+            safeLanding(30, 0.02); // patrol corridor 1
+            ropeBridge(5);
+            gateRoom(6);
+            safeLanding(32, 0.04); // patrol corridor 2
+            sliderRoom(1, 6);
+            safeLanding(30, 0.05); // patrol corridor 3
+            liftRoom(1, 6);
+            safeLanding(32, 0.05); // patrol corridor 4
+            crumbleRoom(2);
+            safeLanding(30, 0.04); // patrol corridor 5
+            pendulumRoom(1, 6);
+            ropeBridge(5);
+            safeLanding(32, 0.05); // patrol corridor 6
+            gateRoom(6);
+            sliderRoom(1, 6);
+            safeLanding(34, 0.04); // final fair guarded exit corridor
         } else if (lvl === 17) {
-            // 7 obstacles: vertical lab with lifts, gates, raised stairs, and timed islands.
-            liftRoom(3, 5); raiseRoom(5); gateRoom(5); popRoom(3); switchbackRoom(5); sliderRoom(2, 5); crumbleRoom(3);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(17 + fill);
+            // Cloud Lift Labyrinth: authored Level 17 sequence.
+            // Goal: make vertical lift timing the identity with clear ride-up moments, safe landings,
+            // no blind lift exits, no elevator clipping, and no generic filler chain.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, patrol slowdown,
+            // secret LEVELS menu, fall logic, death timing, and door logic.
+            safeLanding(32, 0.0);
+            curvedBridge(5, 0.78);
+            liftRoom(2, 7);
+            safeLanding(28, 0.05);
+            liftRoom(1, 7);
+            gateRoom(7);
+            safeLanding(26, 0.04);
+            liftRoom(2, 8);
+            ropeBridge(5);
+            safeLanding(26, 0.05);
+            crumbleRoom(2);
+            liftRoom(1, 8);
+            safeLanding(28, 0.06);
+            sliderRoom(1, 7);
+            liftRoom(2, 9);
+            safeLanding(28, 0.05);
+            pendulumRoom(1, 7);
+            raiseRoom(7);
+            safeLanding(28, 0.04);
+            liftRoom(1, 9);
+            gateRoom(7);
+            ropeBridge(5);
+            liftRoom(1, 10);
+            safeLanding(36, 0.04);
         } else if (lvl === 18) {
-            // 8 obstacles: advanced timing without adding new controls.
-            pendulumRoom(1, 6); crumbleRoom(3); gateRoom(6); sliderRoom(2, 6); popRoom(3); liftRoom(3, 6); ropeGateRoom(6); raiseRoom(6);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(18 + fill);
+            // Glass Habit Trial: authored Level 18 sequence.
+            // Goal: make glass-brick commitment the identity with visible safe rest islands between every fragile beat.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, patrol slowdown,
+            // secret LEVELS menu, fall logic, death timing, and door logic.
+            safeLanding(32, 0.0);
+            curvedBridge(5, 0.72);
+            crumbleRoom(2);
+            safeLanding(28, 0.06);
+            gateRoom(8);
+            crumbleRoom(2);
+            ropeBridge(5);
+            safeLanding(26, 0.05);
+            sliderRoom(1, 8);
+            crumbleRoom(3);
+            safeLanding(28, 0.08);
+            liftRoom(1, 8);
+            pendulumRoom(1, 8);
+            safeLanding(28, 0.06);
+            crumbleRoom(2);
+            gateRoom(8);
+            safeLanding(28, 0.05);
+            crumbleRoom(3);
+            raiseRoom(8);
+            ropeBridge(5);
+            safeLanding(28, 0.06);
+            sliderRoom(1, 8);
+            crumbleRoom(2);
+            liftRoom(1, 9);
+            pendulumRoom(1, 9);
+            safeLanding(38, 0.04);
         } else if (lvl === 19) {
-            // 8 obstacles: smart switchback climb, each room has a rest landing.
-            switchbackRoom(7); gateRoom(7); pendulumRoom(2, 7); sliderRoom(2, 7); raiseRoom(7); crumbleRoom(3); popRoom(3); liftRoom(3, 7);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(19 + fill);
+            // Switchback Sky Garden: authored Level 19 sequence.
+            // Goal: make layered left/right switchback rhythm the identity with clear rest islands,
+            // readable gates, no generic filler, no pop-up/falling path bricks, and a fair door approach.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, patrol slowdown,
+            // secret LEVELS menu, fall logic, death timing, and door logic.
+            safeLanding(34, 0.0);
+            curvedBridge(5, 0.68);
+            switchbackRoom(8);
+            safeLanding(28, 0.05);
+            gateRoom(9);
+            sliderRoom(1, 9);
+            safeLanding(28, 0.04);
+            switchbackRoom(9);
+            ropeBridge(5);
+            liftRoom(1, 9);
+            safeLanding(28, 0.05);
+            raiseRoom(9);
+            pendulumRoom(1, 9);
+            safeLanding(30, 0.06);
+            switchbackRoom(10);
+            crumbleRoom(2);
+            safeLanding(30, 0.07);
+            gateRoom(9);
+            sliderRoom(1, 10);
+            ropeBridge(5);
+            liftRoom(1, 10);
+            safeLanding(30, 0.05);
+            pendulumRoom(1, 10);
+            raiseRoom(10);
+            safeLanding(40, 0.04);
         } else if (lvl === 20) {
-            // 8 obstacles: final summit; mixed, readable, and always separated by landings.
-            gateRoom(8); liftRoom(3, 8); pendulumRoom(2, 8); sliderRoom(3, 8); raiseRoom(8); popRoom(3); crumbleRoom(3); ropeGateRoom(8);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(20 + fill);
+            // Good Habit Summit: authored final Level 20 sequence.
+            // Goal: readable final mix of all approved mechanics with safe rests,
+            // no generic filler, no pop-up/falling path bricks, and a celebratory door approach.
+            // Systems unchanged: physics, controls, camera, UI, audio, glass behavior, patrol slowdown,
+            // secret LEVELS menu, fall logic, death timing, and door transition remain untouched.
+            safeLanding(36, 0.0);
+            curvedBridge(5, 0.66);
+            gateRoom(10);
+            safeLanding(30, 0.05);
+            sliderRoom(1, 10);
+            ropeBridge(5);
+            safeLanding(30, 0.04);
+            liftRoom(1, 10);
+            raiseRoom(10);
+            safeLanding(30, 0.05);
+            pendulumRoom(1, 10);
+            crumbleRoom(2);
+            safeLanding(32, 0.06);
+            gateRoom(10);
+            sliderRoom(1, 11);
+            liftRoom(1, 11);
+            safeLanding(32, 0.05);
+            switchbackRoom(10);
+            ropeBridge(5);
+            safeLanding(32, 0.05);
+            crumbleRoom(3);
+            raiseRoom(11);
+            pendulumRoom(1, 11);
+            safeLanding(34, 0.05);
+            gateRoom(11);
+            sliderRoom(1, 12);
+            liftRoom(1, 12);
+            safeLanding(34, 0.04);
+            pendulumRoom(1, 12);
+            crumbleRoom(2);
+            ropeBridge(6);
+            safeLanding(46, 0.03);
         } else {
             gateRoom(8); liftRoom(2, 8); sliderRoom(2, 8); safeLanding(24, 0.0);
         }
@@ -2549,6 +2707,17 @@
     }
 
     function getDesignedEnemyIndices(lvl, segments) {
+        if (lvl === 16) {
+            // Bad Habit Patrol Park uses authored enemy corridors only.
+            // Keep enemies on wide static platforms with safe approach/exit space, not on blind landings or dynamic blocks.
+            const preferred = [7, 20, 25, 29, 34, 45, 55];
+            return preferred.filter((idx) => {
+                const spec = getLevelPlatformSpec(lvl, idx);
+                return idx > 1 && idx < segments - 1 &&
+                       !getPlatformMotion(lvl, idx, segments) &&
+                       !(spec && spec.o);
+            });
+        }
         const desired = lvl === 1 ? 2 : lvl === 2 ? 3 : Math.floor(lvl * 1.15) + 1;
         const indices = [];
         for (let i = 2; i < segments - 1 && indices.length < desired; i++) {
@@ -3125,6 +3294,47 @@
         items.push({ mesh, text, baseY: y });
     }
 
+    function getEnemyPatrolConfig(platform, enemyWidth, baseSpeed) {
+        const platformWidth = (platform.userData && platform.userData.collisionWidth) || platform.geometry.parameters.width;
+        const halfPlatformWidth = platformWidth / 2;
+        const halfEnemyWidth = enemyWidth / 2;
+        const margin = 0.1;
+        const limit = Math.max(0, halfPlatformWidth - halfEnemyWidth - margin);
+        const patrolSpan = limit * 2;
+        let speedScale = 1.0;
+        let edgePauseDuration = 0.08;
+        let shortPatrolMode = false;
+
+        // Short platforms make enemies flip left/right too quickly at normal speed.
+        // Keep the enemy on its platform, but make that specific patrol slow and readable.
+        if (patrolSpan <= 2.5) {
+            speedScale = 0.16;
+            edgePauseDuration = 0.65;
+            shortPatrolMode = true;
+        } else if (patrolSpan <= 5.0) {
+            speedScale = 0.28;
+            edgePauseDuration = 0.50;
+            shortPatrolMode = true;
+        } else if (patrolSpan <= 7.0) {
+            speedScale = 0.45;
+            edgePauseDuration = 0.34;
+            shortPatrolMode = true;
+        } else if (patrolSpan <= 10.0) {
+            speedScale = 0.68;
+            edgePauseDuration = 0.18;
+            shortPatrolMode = true;
+        }
+
+        return {
+            speed: baseSpeed * speedScale,
+            limit,
+            patrolSpan,
+            edgePauseDuration,
+            edgePauseTimer: 0,
+            shortPatrolMode
+        };
+    }
+
     function spawnEnemy(platform, list, speed) {
         const text = list[Math.floor(Math.random() * list.length)];
         const texData = createTextCanvas(text, '#5A0000', 'rgb(255, 77, 77)');
@@ -3133,7 +3343,8 @@
         const platformSurfaceY = getPlatformSurfaceY(platform);
         mesh.position.set(platform.position.x, platformSurfaceY + 1.1, 0);
         mesh.castShadow = true; addEnemyMoodParticles(mesh); scene.add(mesh);
-        enemies.push({ mesh, platform, dir: 1, speed: speed, surfaceY: platformSurfaceY, width: dynamicWidth });
+        const patrolConfig = getEnemyPatrolConfig(platform, dynamicWidth, speed);
+        enemies.push({ mesh, platform, dir: 1, speed: patrolConfig.speed, surfaceY: platformSurfaceY, width: dynamicWidth, patrolConfig });
     }
 
     function spawnCloud() {
@@ -3594,16 +3805,22 @@
 
         for (let idx = enemies.length - 1; idx >= 0; idx--) {
             const en = enemies[idx];
-            en.mesh.position.x += en.dir * en.speed * dt;
-            en.mesh.position.y = en.surfaceY + 1.1; 
-            const halfPlatformWidth = ((en.platform.userData && en.platform.userData.collisionWidth) || en.platform.geometry.parameters.width) / 2;
-            const halfEnemyWidth = en.width / 2; 
-            const margin = 0.1;
+            const patrolConfig = en.patrolConfig || getEnemyPatrolConfig(en.platform, en.width, en.speed || 0.03);
+            en.patrolConfig = patrolConfig;
+            en.mesh.position.y = en.surfaceY + 1.1;
+            if (patrolConfig.edgePauseTimer > 0) {
+                patrolConfig.edgePauseTimer = Math.max(0, patrolConfig.edgePauseTimer - (dt / 60));
+            } else if (patrolConfig.limit > 0) {
+                en.mesh.position.x += en.dir * en.speed * dt;
+            } else {
+                en.mesh.position.x = en.platform.position.x;
+            }
             const relativeX = en.mesh.position.x - en.platform.position.x;
-            const limit = halfPlatformWidth - halfEnemyWidth - margin;
+            const limit = patrolConfig.limit;
             if (Math.abs(relativeX) > limit) { 
                 en.dir *= -1; 
-                en.mesh.position.x = en.platform.position.x + Math.sign(relativeX) * limit; 
+                en.mesh.position.x = en.platform.position.x + Math.sign(relativeX || en.dir) * limit;
+                patrolConfig.edgePauseTimer = patrolConfig.edgePauseDuration;
             }
             if (new THREE.Box3().setFromObject(player).intersectsBox(new THREE.Box3().setFromObject(en.mesh))) { 
                 if (velocityY < -0.05 && player.position.y > en.mesh.position.y + 0.5) { 
