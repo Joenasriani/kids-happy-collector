@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Happy Collector</title>
+    <meta name="description" content="Happy Collector is a cheerful 3D browser platformer about collecting Good Habit blocks, avoiding Bad Habit blocks, riding moving island platforms, cracking glass bricks, and reaching the glowing door.">
+    <meta name="keywords" content="Happy Collector, Good Habits Adventure, browser game, HTML5 game, Three.js game, 3D platformer, kids game, family friendly game, cheerful platformer, mobile browser game, itch.io game, indie game, good habits, positive game, jumping game, collectible platformer">
+    <meta name="author" content="Joe Nasr">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Happy Collector - Good Habits Adventure">
+    <meta property="og:description" content="Collect Good Habits, avoid Bad Habits, ride floating green islands, crack glass bricks, and reach the glowing door in a cheerful 3D browser platformer.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Happy Collector">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Happy Collector - Good Habits Adventure">
+    <meta name="twitter:description" content="A cheerful 3D HTML5 platformer with Good Habit collectibles, floating islands, glass bricks, moving platforms, and a glowing door goal.">
+    <title>Happy Collector - Good Habits Adventure | 3D Browser Platformer</title>
     <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
@@ -537,6 +548,116 @@
         .action-btn:hover { animation-play-state: paused; transform: scale(1.1); box-shadow: 0 1.5vmin 0 #1b7a40, 0 3vmin 6vmin rgba(0,0,0,0.4); }
         .action-btn:active { transform: translateY(1vmin) scale(1); box-shadow: 0 0.2vmin 0 #1b7a40; }
 
+
+        .secret-levels-menu {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2200;
+            padding: clamp(14px, 4vmin, 42px);
+            box-sizing: border-box;
+            background: radial-gradient(circle at top, rgba(112, 161, 255, 0.96), rgba(77, 101, 218, 0.96) 48%, rgba(176, 106, 179, 0.96));
+            color: white;
+            text-align: center;
+            pointer-events: auto;
+        }
+
+        .secret-levels-menu.open { display: flex; }
+
+        .secret-levels-panel {
+            width: min(92vw, 860px);
+            max-height: min(86vh, 760px);
+            overflow: auto;
+            padding: clamp(18px, 4vmin, 34px);
+            border-radius: clamp(22px, 5vmin, 46px);
+            background: rgba(255,255,255,0.18);
+            border: clamp(2px, 0.45vmin, 5px) solid rgba(255,255,255,0.42);
+            box-shadow: 0 2vmin 8vmin rgba(0,0,0,0.26);
+            backdrop-filter: blur(14px);
+        }
+
+        .secret-levels-title {
+            font-family: 'Luckiest Guy', cursive;
+            margin: 0;
+            font-size: clamp(34px, 8vmin, 82px);
+            letter-spacing: 0.06em;
+            text-shadow: 0 0.55vmin 1vmin rgba(0,0,0,0.22);
+        }
+
+        .secret-levels-subtitle {
+            margin: 1vmin auto 2.2vmin;
+            max-width: 62ch;
+            font-size: clamp(13px, 2.25vmin, 18px);
+            line-height: 1.35;
+            opacity: 0.92;
+            font-weight: 800;
+        }
+
+        .secret-levels-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: clamp(8px, 1.7vmin, 16px);
+            margin-top: clamp(12px, 2.5vmin, 22px);
+        }
+
+        .secret-level-btn,
+        .secret-levels-close {
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-family: 'Luckiest Guy', cursive;
+            text-shadow: 0 0.25vmin 0.5vmin rgba(0,0,0,0.2);
+            box-shadow: 0 0.65vmin 0 rgba(27,122,64,0.92), 0 1.25vmin 2.4vmin rgba(0,0,0,0.22);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            pointer-events: auto;
+        }
+
+        .secret-level-btn {
+            min-height: clamp(54px, 11vmin, 86px);
+            padding: clamp(8px, 1.7vmin, 14px);
+            border-radius: clamp(16px, 3.2vmin, 28px);
+            background: linear-gradient(180deg, #2ed573 0%, #23a956 100%);
+            font-size: clamp(22px, 5.2vmin, 42px);
+            line-height: 0.95;
+        }
+
+        .secret-level-btn span {
+            display: block;
+            margin-top: 0.35em;
+            font-family: sans-serif;
+            font-size: clamp(9px, 1.7vmin, 12px);
+            line-height: 1.15;
+            font-weight: 900;
+            letter-spacing: 0;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        .secret-level-btn:active,
+        .secret-levels-close:active {
+            transform: translateY(0.55vmin) scale(0.98);
+            box-shadow: 0 0.2vmin 0 rgba(27,122,64,0.9), 0 0.6vmin 1.2vmin rgba(0,0,0,0.2);
+        }
+
+        .secret-levels-close {
+            margin-top: clamp(14px, 3vmin, 26px);
+            padding: clamp(10px, 2vmin, 16px) clamp(26px, 6vmin, 54px);
+            border-radius: 999px;
+            background: linear-gradient(180deg, #ff6b81 0%, #e84152 100%);
+            font-size: clamp(18px, 4vmin, 34px);
+            box-shadow: 0 0.65vmin 0 rgba(135,33,46,0.92), 0 1.25vmin 2.4vmin rgba(0,0,0,0.22);
+        }
+
+        @media (max-width: 640px) {
+            .secret-levels-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 420px) {
+            .secret-levels-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+
         .instruction-box {
             background: rgba(0, 0, 0, 0.2);
             padding: 2vmin 2.4vmin;
@@ -688,6 +809,15 @@
 <div class="level-popup">
     <h2 id="popup-text">LEVEL 1</h2>
 </div>
+<div class="secret-levels-menu" aria-hidden="true">
+    <div class="secret-levels-panel" role="dialog" aria-modal="true" aria-label="Secret Levels Menu">
+        <h1 class="secret-levels-title">LEVELS</h1>
+        <p class="secret-levels-subtitle">Hidden test menu unlocked. Pick a level and jump straight there. Very secret. Extremely classified. It has buttons.</p>
+        <div class="secret-levels-grid" id="secret-levels-grid"></div>
+        <button class="secret-levels-close" type="button">CLOSE</button>
+    </div>
+</div>
+
 
 <div class="ui-container">
     <div class="hud-column">
@@ -756,6 +886,14 @@
     let portraitGameplayZoom = { active: false, elapsed: 0, duration: 2600, from: CAMERA_DEFAULT_ZOOM, to: CAMERA_DEFAULT_ZOOM };
     const PLAYER_BASE_HALF_HEIGHT = 0.6;
     const PLAYER_STAND_CLEARANCE = 0.018;
+    const PLAYER_POLISH_DEFAULT = { collect: 0, stomp: 0, button: 0, landing: 0, door: 0, jump: 0, idle: 0 };
+
+    const SECRET_LEVEL_SEQUENCE = ['up', 'up', 'down', 'down', 'left', 'left', 'right', 'right'];
+    const secretLevelInput = { index: 0, repeats: 0 };
+    let secretSwipeStart = null;
+    let secretWheelDeltaX = 0;
+    let secretWheelDeltaY = 0;
+    let secretLevelsMenuBuilt = false;
 
 
     const AudioFX = (() => {
@@ -875,7 +1013,11 @@
             click() { tone(520, 0.055, 'triangle', 0.12); tone(780, 0.075, 'sine', 0.08, 0.035); },
             start() { tone(392, 0.18, 'sine', 0.10); tone(523.25, 0.2, 'sine', 0.10, 0.08); },
             jump() { glide(220, 720, 0.22, 'triangle', 0.24); tone(980, 0.09, 'sine', 0.10, 0.045); },
+            land() { softNoise(0.08, 0.018, 700); tone(180, 0.055, 'triangle', 0.035, 0.005); },
             collect() { tone(659.25, 0.12, 'sine', 0.16); tone(880, 0.16, 'sine', 0.13, 0.08); tone(1174.66, 0.18, 'triangle', 0.09, 0.16); },
+            button() { tone(392, 0.07, 'triangle', 0.09); tone(587.33, 0.08, 'sine', 0.07, 0.045); },
+            gateOpen() { glide(260, 520, 0.16, 'triangle', 0.075); tone(784, 0.11, 'sine', 0.045, 0.08); },
+            doorCelebrate() { tone(523.25, 0.12, 'sine', 0.07); tone(783.99, 0.14, 'triangle', 0.07, 0.10); tone(1046.5, 0.18, 'sine', 0.045, 0.22); },
             overcome() { tone(329.63, 0.12, 'triangle', 0.10); tone(493.88, 0.15, 'triangle', 0.09, 0.08); tone(659.25, 0.18, 'sine', 0.07, 0.16); },
             lose() { softNoise(0.28, 0.18, 760); glide(260, 120, 0.34, 'triangle', 0.17); tone(196, 0.22, 'sine', 0.12, 0.08); },
             burstLose() { softNoise(0.22, 0.14, 900); tone(220, 0.16, 'triangle', 0.12); tone(146.83, 0.24, 'sine', 0.09, 0.10); },
@@ -927,6 +1069,13 @@
             heart() { tone(392, 0.22, 'sine', 0.09); tone(523.25, 0.25, 'sine', 0.075, 0.12); tone(659.25, 0.3, 'sine', 0.055, 0.26); },
             level() { tone(523.25, 0.12, 'sine', 0.08); tone(659.25, 0.12, 'sine', 0.08, 0.09); tone(783.99, 0.2, 'sine', 0.07, 0.18); },
             win() { tone(523.25, 0.16, 'sine', 0.09); tone(659.25, 0.16, 'sine', 0.09, 0.1); tone(783.99, 0.18, 'sine', 0.08, 0.2); tone(1046.5, 0.28, 'triangle', 0.06, 0.34); },
+            glassCrack() {
+                // Glass-only feedback: a short brittle crack when the exact touched glass brick changes from idle to cracked.
+                softNoise(0.105, 0.055, 5200);
+                tone(1280, 0.045, 'triangle', 0.045, 0.000, -8);
+                tone(1720, 0.035, 'sine', 0.030, 0.018, 12);
+                tone(930, 0.060, 'triangle', 0.025, 0.040, -18);
+            },
             gameOver() { tone(349.23, 0.18, 'sine', 0.07); tone(261.63, 0.24, 'sine', 0.055, 0.16); }
         };
     })();
@@ -1265,7 +1414,14 @@
         mouth.position.set(0.6, -0.1, 0); mouth.rotation.y = Math.PI / 2; mouth.rotation.x = Math.PI;
         group.add(mouth);
         
-        group.userData = { eyes: [lEye, rEye] };
+        group.userData = {
+            body,
+            mouth,
+            eyes: [lEye, rEye],
+            baseBodyPositionY: body.position.y,
+            baseMouthScale: mouth.scale.clone(),
+            polish: { ...PLAYER_POLISH_DEFAULT }
+        };
         
         player = group; player.position.set(0, 2, 0); player.visible = false;
         scene.add(player);
@@ -1296,6 +1452,93 @@
         characterShadow.renderOrder = 5;
         characterShadow.visible = false;
         scene.add(characterShadow);
+    }
+
+
+    function triggerPlayerPolish(kind, amount = 1) {
+        if (!player || !player.userData) return;
+        if (!player.userData.polish) player.userData.polish = { ...PLAYER_POLISH_DEFAULT };
+        player.userData.polish[kind] = Math.max(player.userData.polish[kind] || 0, amount);
+    }
+
+    function resetPlayerVisualPolish() {
+        if (!player || !player.userData) return;
+        player.userData.polish = { ...PLAYER_POLISH_DEFAULT };
+        if (player.userData.body) {
+            player.userData.body.scale.set(1, 1, 1);
+            player.userData.body.position.y = player.userData.baseBodyPositionY || 0;
+            if (player.userData.body.material && player.userData.body.material.emissive) {
+                player.userData.body.material.emissive.setHex(0x000000);
+                player.userData.body.material.emissiveIntensity = 0;
+            }
+        }
+        if (player.userData.eyes) player.userData.eyes.forEach(eye => eye.scale.y = 1);
+        if (player.userData.mouth && player.userData.baseMouthScale) player.userData.mouth.scale.copy(player.userData.baseMouthScale);
+    }
+
+    function updatePlayerVisualPolish(dt, groundedThisFrame) {
+        if (!player || !player.userData || !player.visible) return;
+        const data = player.userData;
+        const polish = data.polish || (data.polish = { ...PLAYER_POLISH_DEFAULT });
+        const body = data.body;
+        const eyes = data.eyes || [];
+        const mouth = data.mouth;
+        const decay = Math.min(0.16 * dt, 0.45);
+        ['collect', 'stomp', 'button', 'landing', 'door', 'jump'].forEach((key) => {
+            polish[key] = Math.max(0, (polish[key] || 0) - decay);
+        });
+
+        if (gameActive && groundedThisFrame && !keys.left && !keys.right && !keys.up && !isDying && !levelTransitioning) {
+            polish.idle = (polish.idle || 0) + dt / 60;
+        } else {
+            polish.idle = 0;
+        }
+
+        const pulse = Math.max(polish.collect || 0, polish.stomp || 0, polish.button || 0, polish.door || 0);
+        const landing = polish.landing || 0;
+        const jump = polish.jump || 0;
+        const idleCycle = polish.idle > 2 ? (polish.idle - 2) % 4 : -1;
+        const idleBlink = idleCycle >= 0 && ((idleCycle > 0.08 && idleCycle < 0.18) || (idleCycle > 0.33 && idleCycle < 0.43));
+        const idleBounce = idleCycle >= 0 ? Math.sin(Math.min(idleCycle, 0.8) * Math.PI * 2.2) * 0.025 : 0;
+
+        if (body) {
+            const pop = Math.sin(pulse * Math.PI) * 0.12;
+            const landSquash = Math.sin(landing * Math.PI) * 0.11;
+            const jumpStretch = Math.sin(jump * Math.PI) * 0.07;
+            const doorGlow = Math.sin((polish.door || 0) * Math.PI) * 0.22;
+            body.scale.x = 1 + pop + landSquash * 0.45;
+            body.scale.z = 1 + pop + landSquash * 0.45;
+            body.scale.y = 1 + pop * 0.45 - landSquash + jumpStretch;
+            body.position.y = (data.baseBodyPositionY || 0) + idleBounce + pop * 0.04;
+            if (body.material && body.material.emissive) {
+                body.material.emissive.setHex(0xffd54a);
+                body.material.emissiveIntensity = Math.max(0, doorGlow + (polish.collect || 0) * 0.08 + (polish.button || 0) * 0.05);
+            }
+        }
+
+        eyes.forEach((eye) => {
+            const expressiveBlink = idleBlink || (polish.collect || 0) > 0.72 || (polish.stomp || 0) > 0.72;
+            eye.scale.y = expressiveBlink ? 0.12 : 1;
+        });
+
+        if (mouth && data.baseMouthScale) {
+            const smilePulse = 1 + Math.sin(pulse * Math.PI) * 0.12 + Math.sin((polish.door || 0) * Math.PI) * 0.18;
+            mouth.scale.set(data.baseMouthScale.x * smilePulse, data.baseMouthScale.y, data.baseMouthScale.z * smilePulse);
+        }
+    }
+
+    function showButtonFeedback(worldPos) {
+        const pos = worldPos.clone();
+        pos.y += 1.15;
+        spawnMicroAward('CLICK!', pos, 'collect');
+        spawnMicroSparkles(pos, 'collect', 6);
+    }
+
+    function showGateFeedback(worldPos) {
+        const pos = worldPos.clone();
+        pos.y += 2.4;
+        spawnMicroAward('OPEN!', pos, 'collect');
+        spawnMicroSparkles(pos, 'collect', 7);
     }
 
     function updateCharacterShadow() {
@@ -1688,6 +1931,9 @@
         velocityY = 0;
         isJumping = false;
         groundedPlatform = null;
+        triggerPlayerPolish('door', 1);
+        AudioFX.doorCelebrate();
+        if (door) spawnMicroSparkles(door.position.clone(), 'collect', 12);
         if (level >= 20) AudioFX.win();
         doorArrivalTransition = {
             elapsed: 0,
@@ -1781,10 +2027,10 @@
             8: 'Button Bridge Adventure',
             9: 'Pendulum Gate Expedition',
             10: 'Final Rich Adventure Tower',
-            11: 'Gate Garden Switchback',
-            12: 'Pop-Up Canyon Timing',
-            13: 'Pop-Up Orchard Steps',
-            14: 'Pendulum Bridge Crossing',
+            11: 'Glass Garden Switchback',
+            12: 'Cracking Orchard Bridge',
+            13: 'Button Garden Run',
+            14: 'Pendulum Picnic Crossing',
             15: 'Raised Stair Workshop',
             16: 'Rope Gate Expedition',
             17: 'Cloud Lift Labyrinth',
@@ -2000,25 +2246,140 @@
             rise(2, 0.7); gatePuzzle(); lift(0.85, 1.1); pendulum(0.55, 0.1); sliderBridgeChain(2, 1.25); stairButtonPuzzle(); ropeBridge(6); movingStair(3); rest(18, 5.1, 0.2);
             while (routeLength < targetLength) { gatePuzzle(); lift(0.95, 1.05); pendulum(0.65, 0.1); rise(2, 0.62); sliderBridgeChain(2, 1.35); popUp(8.0, 5.45, 0.15); crumble(8.4, 5.3, -0.05); stairButtonPuzzle(); curvedBridge(5, 1.2); waveLifts(2); rest(18, 5.1, 0.2); }
         } else if (lvl === 11) {
-            // 4 obstacles: gate, slider, stable stones, lift switchback.
-            gateRoom(1); sliderRoom(1, 1); crumbleRoom(2); switchbackRoom(1);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(11 + fill);
+            // Glass Garden Switchback: authored Level 11 sequence.
+            // Goal: make the first expansion level feel like a readable garden route, not generic filler.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
+            safeLanding(26, 0.0);
+            curvedBridge(6, 1.15);
+            gateRoom(1);
+            sliderBridgePair(0.95);
+            safeLanding(24, 0.05);
+            crumbleRoom(3);
+            raiseRoom(1);
+            ropeBridge(6);
+            liftRoom(2, 1);
+            safeLanding(24, 0.12);
+            pendulumRoom(1, 1);
+            switchbackRoom(1);
+            safeLanding(26, 0.08);
+            gateRoom(1);
+            crumbleRoom(2);
+            sliderRoom(2, 1);
+            safeLanding(26, 0.06);
+            curvedBridge(5, 0.95);
+            liftRoom(1, 1);
+            crumbleRoom(2);
+            gateRoom(1);
+            pendulumRoom(1, 1);
+            safeLanding(30, 0.05);
         } else if (lvl === 12) {
-            // 5 obstacles: pop-up timing, stable stepping-stone chain, gate, lift pair, slider exit.
-            popRoom(2); crumbleRoom(2); gateRoom(2); liftRoom(2, 2); sliderRoom(1, 2);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(12 + fill);
+            // Cracking Orchard Bridge: authored Level 12 sequence.
+            // Goal: make glass timing the identity while preserving safe island rests and simple controls.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
+            safeLanding(28, 0.0);
+            curvedBridge(6, 1.05);
+            crumbleRoom(2);
+            safeLanding(24, 0.08);
+            gateRoom(2);
+            ropeBridge(6);
+            sliderRoom(2, 2);
+            safeLanding(24, 0.05);
+            crumbleRoom(3);
+            raiseRoom(2);
+            liftRoom(2, 2);
+            safeLanding(24, 0.08);
+            pendulumRoom(1, 2);
+            curvedBridge(5, 0.95);
+            crumbleRoom(2);
+            gateRoom(2);
+            safeLanding(26, 0.06);
+            ropeBridge(5);
+            sliderRoom(1, 2);
+            safeLanding(28, 0.05);
+            crumbleRoom(2);
+            liftRoom(1, 2);
+            gateRoom(2);
+            pendulumRoom(1, 2);
+            safeLanding(32, 0.04);
         } else if (lvl === 13) {
-            // 5 obstacles: raised step, popup stairs, curved bridge, gate, stable stepping-stone finish.
-            raiseRoom(2); popRoom(3); curvedBridge(5, 1.35); gateRoom(2); crumbleRoom(2);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(13 + fill);
+            // Button Garden Run: authored Level 13 sequence.
+            // Goal: make button-to-gate cause/effect the identity while keeping every jump readable.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
+            safeLanding(30, 0.0);
+            curvedBridge(5, 0.95);
+            gateRoom(3);
+            safeLanding(24, 0.05);
+            raiseRoom(3);
+            ropeBridge(5);
+            gateRoom(3);
+            sliderRoom(2, 3);
+            safeLanding(24, 0.06);
+            gateRoom(3);
+            crumbleRoom(2);
+            safeLanding(24, 0.08);
+            liftRoom(2, 3);
+            gateRoom(3);
+            pendulumRoom(1, 3);
+            safeLanding(26, 0.05);
+            raiseRoom(3);
+            ropeBridge(5);
+            gateRoom(3);
+            sliderRoom(1, 3);
+            safeLanding(30, 0.04);
         } else if (lvl === 14) {
-            // 6 obstacles: pendulum, slider, gate, rope bridge, lift, stable stones.
-            pendulumRoom(1, 3); sliderRoom(2, 3); gateRoom(3); ropeBridge(6); liftRoom(2, 3); crumbleRoom(2);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(14 + fill);
+            // Pendulum Picnic Crossing: authored Level 14 sequence.
+            // Goal: make pendulum timing the identity with safe picnic-island rests between every rhythm beat.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
+            safeLanding(30, 0.0);
+            curvedBridge(5, 0.85);
+            pendulumRoom(1, 4);
+            safeLanding(26, 0.04);
+            sliderRoom(1, 4);
+            ropeBridge(5);
+            pendulumRoom(2, 4);
+            safeLanding(26, 0.05);
+            gateRoom(4);
+            liftRoom(1, 4);
+            safeLanding(24, 0.08);
+            pendulumRoom(1, 5);
+            crumbleRoom(2);
+            safeLanding(24, 0.08);
+            sliderRoom(2, 4);
+            curvedBridge(5, 0.9);
+            pendulumRoom(2, 5);
+            safeLanding(26, 0.06);
+            gateRoom(4);
+            raiseRoom(4);
+            ropeBridge(5);
+            pendulumRoom(1, 5);
+            safeLanding(32, 0.04);
         } else if (lvl === 15) {
-            // 6 obstacles: stair builder, gate, wave lifts, pop-up, slider, raised step.
-            raiseRoom(3); gateRoom(3); waveLifts(3); popRoom(2); sliderRoom(2, 3); raiseRoom(4);
-            for (let fill = 0; routeLength < targetLength; fill++) extendedAdventureFiller(15 + fill);
+            // Raised Stair Workshop: authored Level 15 sequence.
+            // Goal: make button-raised helper steps the identity; every step is readable, structural, and followed by safe landings.
+            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
+            safeLanding(30, 0.0);
+            curvedBridge(5, 0.8);
+            raiseRoom(5);
+            safeLanding(24, 0.04);
+            gateRoom(5);
+            raiseRoom(5);
+            ropeBridge(5);
+            safeLanding(24, 0.05);
+            raiseRoom(6);
+            liftRoom(1, 5);
+            safeLanding(24, 0.08);
+            raiseRoom(6);
+            sliderRoom(1, 5);
+            safeLanding(24, 0.05);
+            crumbleRoom(2);
+            raiseRoom(7);
+            gateRoom(5);
+            safeLanding(26, 0.06);
+            raiseRoom(7);
+            pendulumRoom(1, 5);
+            ropeBridge(5);
+            raiseRoom(8);
+            safeLanding(34, 0.04);
         } else if (lvl === 16) {
             // 7 obstacles: rope gate expedition with alternating timing rooms.
             ropeGateRoom(4); sliderRoom(2, 4); popRoom(3); gateRoom(4); liftRoom(2, 4); crumbleRoom(3); pendulumRoom(1, 4);
@@ -2301,6 +2662,7 @@
         platforms = []; items = []; enemies = []; buttons = []; gates = [];
         applySkyForLevel(lvl);
         groundedPlatform = null;
+        resetPlayerVisualPolish();
         lowestPlatformSurfaceY = Infinity;
         const levelBlueprint = getLevelBlueprint(lvl);
         const segments = levelBlueprint ? levelBlueprint.platforms.length + 1 : 5 + (lvl * 5);
@@ -2642,6 +3004,7 @@
                     obs.state = 'cracked';
                     obs.timer = 0;
                     obs.touched = true;
+                    AudioFX.glassCrack();
                     if (platform.userData.cracks) platform.userData.cracks.visible = true;
                 }
                 if (obs.state === 'cracked') {
@@ -2711,15 +3074,29 @@
             if (pressed && !btn.active) {
                 btn.active = true;
                 btn.mesh.scale.y = 0.45;
-                if (btn.type === 'raiseStep' && btn.target?.userData?.obstacle) btn.target.userData.obstacle.state = 'raised';
-                if (btn.type === 'gate' && btn.gate) btn.gate.open = true;
-                AudioFX.collect();
+                triggerPlayerPolish('button', 1);
+                AudioFX.button();
+                showButtonFeedback(btn.mesh.position);
+                if (btn.type === 'raiseStep' && btn.target?.userData?.obstacle) {
+                    btn.target.userData.obstacle.state = 'raised';
+                    spawnMicroSparkles(btn.target.position.clone(), 'collect', 7);
+                }
+                if (btn.type === 'gate' && btn.gate) {
+                    btn.gate.open = true;
+                    btn.gate.justOpened = true;
+                    AudioFX.gateOpen();
+                    showGateFeedback(btn.gate.mesh.position);
+                }
             }
         });
 
         gates.forEach(gate => {
             const targetY = gate.open ? gate.openY : gate.closedY;
             gate.mesh.position.y = THREE.MathUtils.lerp(gate.mesh.position.y, targetY, 0.11 * dt);
+            if (gate.justOpened && Math.abs(gate.mesh.position.y - gate.openY) < 0.8) {
+                gate.justOpened = false;
+                spawnMicroSparkles(gate.mesh.position.clone(), 'collect', 6);
+            }
         });
     }
 
@@ -3148,6 +3525,7 @@
         const targetScaleY = 1 + velocityY * 0.15;
         player.scale.y = THREE.MathUtils.lerp(player.scale.y, Math.max(0.95, Math.min(1.05, targetScaleY)), 0.15 * dt);
         player.scale.x = player.scale.z = 1 / Math.sqrt(player.scale.y);
+        const wasGroundedBeforeCollision = !!groundedPlatform;
         
         let groundedThisFrame = false;
         platforms.forEach(p => {
@@ -3175,6 +3553,11 @@
                 lastGroundCenterY = player.position.y;
             }
         });
+        if (groundedThisFrame && !wasGroundedBeforeCollision && !isIntroAnimating) {
+            triggerPlayerPolish('landing', 1);
+            AudioFX.land();
+        }
+        updatePlayerVisualPolish(dt, groundedThisFrame);
         if (!groundedThisFrame && velocityY < -0.005) groundedPlatform = null;
 
         const playerBottomForFallCue = player.position.y - ((PLAYER_BASE_HALF_HEIGHT + PLAYER_STAND_CLEARANCE) * player.scale.y);
@@ -3191,7 +3574,7 @@
             return;
         }
 
-        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; groundedPlatform = null; AudioFX.jump(); }
+        if (keys.up && !isJumping) { velocityY = 0.45; isJumping = true; groundedPlatform = null; triggerPlayerPolish('jump', 1); AudioFX.jump(); }
         
         for (let idx = items.length - 1; idx >= 0; idx--) {
             const it = items[idx];
@@ -3204,6 +3587,7 @@
                 document.getElementById('score-val').innerText = score; 
                 AudioFX.collect();
                 Haptics.collect();
+                triggerPlayerPolish('collect', 1);
                 showCollectFeedback(it.mesh.position);
             }
         }
@@ -3230,6 +3614,7 @@
                     score += 5;
                     document.getElementById('score-val').innerText = score;
                     AudioFX.overcome();
+                    triggerPlayerPolish('stomp', 1);
                     showStompFeedback(en.mesh.position);
                 } else handleDeath('badEmotion'); 
             }
@@ -3283,6 +3668,136 @@
         if (renderer && scene && camera) renderer.render(scene, camera); 
     }
 
+
+    function getSecretLevelRequiredRepeats(sourceType) {
+        return sourceType === 'keyboard' ? 2 : 1;
+    }
+
+    function resetSecretLevelSequence() {
+        secretLevelInput.index = 0;
+        secretLevelInput.repeats = 0;
+    }
+
+    function registerSecretLevelDirection(direction, sourceType = 'gesture') {
+        if (!direction || isSecretLevelsMenuOpen()) return;
+        const expected = SECRET_LEVEL_SEQUENCE[secretLevelInput.index];
+        if (direction === expected) {
+            secretLevelInput.index += 1;
+            if (secretLevelInput.index >= SECRET_LEVEL_SEQUENCE.length) {
+                secretLevelInput.index = 0;
+                secretLevelInput.repeats += 1;
+                if (secretLevelInput.repeats >= getSecretLevelRequiredRepeats(sourceType)) {
+                    resetSecretLevelSequence();
+                    openSecretLevelsMenu();
+                }
+            }
+            return;
+        }
+        const first = SECRET_LEVEL_SEQUENCE[0];
+        secretLevelInput.index = direction === first ? 1 : 0;
+        secretLevelInput.repeats = 0;
+    }
+
+    function isSecretLevelsMenuOpen() {
+        const menu = document.querySelector('.secret-levels-menu');
+        return !!menu && menu.classList.contains('open');
+    }
+
+    function buildSecretLevelsMenu() {
+        if (secretLevelsMenuBuilt) return;
+        const grid = document.getElementById('secret-levels-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        for (let i = 1; i <= 20; i++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'secret-level-btn';
+            const blueprint = LEVEL_BLUEPRINTS[i];
+            const title = blueprint?.name || ('Level ' + i);
+            btn.innerHTML = i + '<span>' + title + '</span>';
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                jumpToSecretLevel(i);
+            });
+            grid.appendChild(btn);
+        }
+        const closeBtn = document.querySelector('.secret-levels-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeSecretLevelsMenu();
+            });
+        }
+        secretLevelsMenuBuilt = true;
+    }
+
+    function openSecretLevelsMenu() {
+        buildSecretLevelsMenu();
+        AudioFX.unlock();
+        AudioFX.click();
+        resetInput();
+        const menu = document.querySelector('.secret-levels-menu');
+        if (!menu) return;
+        menu.classList.add('open');
+        menu.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeSecretLevelsMenu() {
+        const menu = document.querySelector('.secret-levels-menu');
+        if (!menu) return;
+        menu.classList.remove('open');
+        menu.setAttribute('aria-hidden', 'true');
+        resetInput();
+    }
+
+    function jumpToSecretLevel(targetLevel) {
+        const safeLevel = Math.max(1, Math.min(20, targetLevel | 0));
+        closeSecretLevelsMenu();
+        document.querySelector('.start-screen').style.display = 'none';
+        document.querySelector('.game-over-screen').style.display = 'none';
+        init();
+        MusicBank.preload();
+        clearDoorArrivalTransition();
+        groundedPlatform = null;
+        resetInput();
+        score = 0;
+        lives = 3;
+        level = safeLevel;
+        document.getElementById('score-val').innerText = score;
+        document.getElementById('lives-val').innerText = lives;
+        document.getElementById('lvl-val').innerText = level;
+        startLevelSequence(safeLevel, true, true);
+    }
+
+    function getPointerSecretDirection(start, end) {
+        if (!start || !end) return null;
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        const minDistance = 38;
+        if (Math.max(absX, absY) < minDistance) return null;
+        if (absY > absX * 1.15) return dy < 0 ? 'up' : 'down';
+        if (absX > absY * 1.15) return dx < 0 ? 'left' : 'right';
+        return null;
+    }
+
+    function registerSecretWheelDelta(dx, dy) {
+        if (isSecretLevelsMenuOpen()) return;
+        secretWheelDeltaX += dx;
+        secretWheelDeltaY += dy;
+        const absX = Math.abs(secretWheelDeltaX);
+        const absY = Math.abs(secretWheelDeltaY);
+        const threshold = 70;
+        if (Math.max(absX, absY) < threshold) return;
+        let direction = null;
+        if (absY > absX * 1.12) direction = secretWheelDeltaY < 0 ? 'up' : 'down';
+        else if (absX > absY * 1.12) direction = secretWheelDeltaX < 0 ? 'left' : 'right';
+        secretWheelDeltaX = 0;
+        secretWheelDeltaY = 0;
+        if (direction) registerSecretLevelDirection(direction, 'gesture');
+    }
+
     const bind = (sel, k) => { 
         const el = document.querySelector(sel); 
         if (!el) return;
@@ -3296,6 +3811,14 @@
     
     window.addEventListener('keydown', (e) => { 
         AudioFX.unlock();
+        if(!e.repeat) {
+            if(e.code === 'ArrowUp') registerSecretLevelDirection('up', 'keyboard');
+            if(e.code === 'ArrowDown') registerSecretLevelDirection('down', 'keyboard');
+            if(e.code === 'ArrowLeft') registerSecretLevelDirection('left', 'keyboard');
+            if(e.code === 'ArrowRight') registerSecretLevelDirection('right', 'keyboard');
+        }
+        if(e.code === 'Escape' && isSecretLevelsMenuOpen()) { e.preventDefault(); closeSecretLevelsMenu(); return; }
+        if (isSecretLevelsMenuOpen()) { e.preventDefault(); return; }
         if(e.code === 'ArrowLeft' || e.key === 'a') { keys.left = true; unlockCameraZoomAfterMovement(); } 
         if(e.code === 'ArrowRight' || e.key === 'd') { keys.right = true; unlockCameraZoomAfterMovement(); } 
         if(e.code === 'Space' || e.code === 'ArrowUp' || e.key === 'w') { e.preventDefault(); keys.up = true; unlockCameraZoomAfterMovement(); } 
@@ -3330,6 +3853,24 @@
     document.querySelector('.restart-btn').onclick = restartGame;
     document.querySelector('.home-btn').onclick = goHome;
     document.querySelector('.fullscreen-btn').onclick = toggleFullScreen;
+
+    window.addEventListener('pointerdown', (e) => {
+        if (isSecretLevelsMenuOpen()) return;
+        secretSwipeStart = { x: e.clientX, y: e.clientY, time: performance.now() };
+    }, { passive: true });
+
+    window.addEventListener('pointerup', (e) => {
+        if (!secretSwipeStart || isSecretLevelsMenuOpen()) { secretSwipeStart = null; return; }
+        const elapsed = performance.now() - secretSwipeStart.time;
+        const direction = elapsed <= 900 ? getPointerSecretDirection(secretSwipeStart, { x: e.clientX, y: e.clientY }) : null;
+        secretSwipeStart = null;
+        if (direction) registerSecretLevelDirection(direction, 'gesture');
+    }, { passive: true });
+
+    window.addEventListener('wheel', (e) => {
+        registerSecretWheelDelta(e.deltaX, e.deltaY);
+    }, { passive: true });
+
 
     const musicButton = document.querySelector('.music-btn');
     if (musicButton) {
