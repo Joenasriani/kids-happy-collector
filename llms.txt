@@ -4,7 +4,7 @@ Canonical play URL: https://kids-happy-collector.vercel.app/
 Itch.io: https://joenasr.itch.io/happy-collector
 Repository: https://github.com/Joenasriani/kids-happy-collector
 
-Happy Collector is a 20-level 3D browser platformer created for a UAE children’s event project.
+Happy Collector is a 20-level 3D browser platformer developed as part of a multi-game interactive children’s edutainment activation in the UAE.
 
 Core interaction: platform movement → collect Good Habit blocks → avoid or stomp Bad Habit blocks → navigate moving platforms and cracking glass sections → reach the exit → advance to the next level.
 
