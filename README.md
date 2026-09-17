@@ -4,7 +4,7 @@ Play: https://kids-happy-collector.vercel.app/
 
 Itch.io: https://joenasr.itch.io/happy-collector
 
-Happy Collector is a 20-level 3D browser platformer created for the UAE children’s event project. The player controls a yellow cube across floating platforms, collects yellow **Good Habit** blocks, avoids or stomps red **Bad Habit** blocks, uses moving platforms, crosses cracking glass sections, and reaches the level exit.
+Happy Collector is a 20-level 3D browser platformer developed as part of a multi-game interactive children’s edutainment activation in the UAE. The player controls a yellow cube across floating platforms, collects yellow **Good Habit** blocks, avoids or stomps red **Bad Habit** blocks, uses moving platforms, crosses cracking glass sections, and reaches the level exit.
 
 ## Game structure
 
@@ -24,9 +24,9 @@ The current game implements 20 levels. Levels 11–20 have authored level identi
 - on-screen left/right controls — move
 - on-screen jump control — jump
 
-## Event context
+## Activation context
 
-This game belongs to the same `kids-*` set created for the UAE children’s event project.
+This game belongs to the same `kids-*` game set developed for the multi-game interactive children’s edutainment activation in the UAE.
 
 ## Repository structure
 
