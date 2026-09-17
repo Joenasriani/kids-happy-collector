@@ -1,55 +1,40 @@
-# Happy Collector - Good Habits Adventure
+# Happy Collector — Good Habits Adventure
 
-A cheerful 3D HTML5 browser platformer where a smiling yellow cube collects **Good Habit** blocks, avoids or stomps red **Bad Habit** blocks, rides floating island platforms, survives cracking glass bricks, and reaches the glowing door.
+Play: https://kids-happy-collector.vercel.app/
 
-## Current release status
+Itch.io: https://joenasr.itch.io/happy-collector
 
-This repository should track the final browser release candidate prepared for itch.io.
+Happy Collector is a 20-level 3D browser platformer created for the UAE children’s event project. The player controls a yellow cube across floating platforms, collects yellow **Good Habit** blocks, avoids or stomps red **Bad Habit** blocks, uses moving platforms, crosses cracking glass sections, and reaches the level exit.
 
-Current intended build features:
+## Game structure
 
-- 20 playable levels
-- Authored Levels 11-20
-- Local/self-contained Three.js build
-- No external CDN dependency
-- No Google Fonts dependency
-- Music and SFX folders preserved
-- Glass crack SFX
-- Visual/audio feedback polish
-- Short-platform patrol slowdown
-- Hidden developer level menu for testing
-- Future-useful docs in `docs/`
+**platform movement → collect Good Habit blocks → avoid or stomp Bad Habit blocks → navigate level obstacles → reach the exit → advance to the next level**
+
+The current game implements 20 levels. Levels 11–20 have authored level identities, and Level 20 is the final level.
 
 ## Controls
 
 ### Desktop
 
-- `A / D` or `Left / Right Arrow` - Move
-- `Space` or `Up Arrow` - Jump
+- `A / D` or `Left / Right Arrow` — move
+- `Space` or `Up Arrow` — jump
 
 ### Mobile
 
-- Use the on-screen left/right buttons
-- Tap the jump button
+- on-screen left/right controls — move
+- on-screen jump control — jump
 
-## Included assets
+## Event context
 
-- `index.html` - main game file
-- `libs/` - local Three.js and license
-- `music/` - level music tracks
-- `sfx/` - cinematic wind / sound effects
-- `fonts/` - optional local font placement
-- `docs/` - continuation and QA rules for future levels
+This game belongs to the same `kids-*` set created for the UAE children’s event project.
 
-## Important release note
+## Repository structure
 
-The final itch.io-ready ZIP generated in ChatGPT is the source of truth for public upload:
+- `index.html` — playable game
+- `libs/` — local Three.js runtime and license
+- `music/` — music assets
+- `sfx/` — sound-effect assets
+- `fonts/` — local font assets
+- `docs/` — level-expansion and pre-delivery QA documentation
 
-`Happy_Collector_ItchIO_Final_Upload.zip`
-
-If this repository is missing `libs/three.r128.min.js`, upload the ZIP contents manually into the repo root before deploying from GitHub Pages.
-
-## Credits
-
-- Game Dev: ApexInnovate.ae
-- Music: BombInSound, AlexZavesa
+The playable game is intentionally preserved. Public-context and discovery files must not change game logic, controls, scoring, progression, levels, timing, assets, visual behavior, audio behavior, or runtime behavior.
