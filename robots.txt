@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kids-happy-collector.vercel.app/sitemap.xml
