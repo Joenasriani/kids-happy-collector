@@ -1,11 +1,17 @@
-# Happy Collector — Good Habits Adventure
+# Happy Collector
 
 Canonical play URL: https://kids-happy-collector.vercel.app/
 Itch.io: https://joenasr.itch.io/happy-collector
 Repository: https://github.com/Joenasriani/kids-happy-collector
 
-Happy Collector is a 20-level 3D browser platformer developed as part of a multi-game interactive children’s edutainment activation in the UAE.
+Happy Collector is a 20-level Three.js browser platformer developed as part of a multi-game interactive children's edutainment activation in the UAE.
 
-Core interaction: platform movement → collect Good Habit blocks → avoid or stomp Bad Habit blocks → navigate moving platforms and cracking glass sections → reach the exit → advance to the next level.
+The player controls a smiling yellow cube across floating platform routes. Yellow blocks carry positive emotions and qualities such as BRAVERY, JOY, LOVE, HOPE, PEACE, KINDNESS, CALM, PRIDE, TRUST and HAPPINESS. Red enemies carry negative emotions and behaviors such as ANGER, GREED, JEALOUSY, RUDENESS, ENVY, HATE and DESPAIR.
 
-The repository includes the playable game, local Three.js runtime, music, sound effects, fonts, and level/QA documentation.
+Core interaction: move and jump → collect positive blocks (+10) → avoid or stomp negative enemies (+5 for a stomp) → navigate platform challenges → reach the glowing door → advance.
+
+The runtime includes horizontal moving platforms, vertical lifts, pendulum platforms, curved and rope-bridge sequences, button-controlled gates, button-raised steps, cracking glass platforms and enemy patrol sections. Collecting every positive block is not required for progression.
+
+The game has 20 levels. Levels use a deterministic blueprint-generation system; Levels 11–20 contain explicitly authored high-level sequences. Level 20 is the final level.
+
+The repository includes the complete playable game in index.html, a local Three.js runtime, music, sound effects, fonts, and level/QA documentation. The repository currently does not declare a project-wide license.
