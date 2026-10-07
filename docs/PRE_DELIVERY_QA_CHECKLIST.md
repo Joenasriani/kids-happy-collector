@@ -1,4 +1,4 @@
-# Happy Collector - Pre-Delivery QA Checklist
+# Happy Collector : Pre-Delivery QA Checklist
 
 Use this before sending any future ZIP/build.
 
@@ -9,7 +9,7 @@ Use this before sending any future ZIP/build.
 - `/music/` exists and contains the music files.
 - `/sfx/` exists and contains SFX assets.
 - ZIP integrity passes.
-- No unrelated audit JSON/page-kit/debug exports are included in the gameplay ZIP.
+- No unrelated debug or build-export files are included in the gameplay ZIP.
 
 ## External dependencies
 
@@ -53,6 +53,6 @@ Use this before sending any future ZIP/build.
 - Short enemy patrol platforms use slow patrol behavior.
 - Secret LEVELS menu still opens only through the hidden code.
 
-## Truthfulness rule
+## Verification record
 
-Never claim live browser/mobile/WebGL playthrough unless it was actually performed.
+Record whether browser, mobile, and WebGL playthrough checks were performed.
