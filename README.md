@@ -70,6 +70,17 @@ Levels 11–20 have explicitly authored high-level sequences:
 
 Legacy pop-up/falling path bricks are disabled in the current runtime.
 
+## Languages
+
+The game includes an in-game language switcher for:
+
+- English
+- Arabic (RTL)
+- French
+- Simplified Chinese
+
+Localization covers the start instructions, HUD labels, level/game-over messaging, gameplay feedback, and the words rendered on positive collectibles and negative enemies.
+
 ## Implementation
 
 - `index.html` — complete playable game and runtime logic
