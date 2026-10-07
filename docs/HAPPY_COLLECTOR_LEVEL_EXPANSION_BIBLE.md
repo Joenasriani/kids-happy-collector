@@ -1,4 +1,4 @@
-# Happy Collector - Future Level Expansion Bible
+# Happy Collector : Future Level Expansion Bible
 
 Last updated: 2026-06-09
 
@@ -6,9 +6,9 @@ Last updated: 2026-06-09
 
 Use `Happy_Collector_Clean_Self_Contained_Release.zip` as the source for future work.
 
-The game is a cheerful single-file Three.js browser platformer. The player controls a smiling yellow cube across floating green island platforms, collects yellow blocks carrying positive emotions and qualities, avoids or stomps red enemies carrying negative emotions and behaviors, solves platform obstacles, rides moving platforms, and reaches the level door.
+The game is a single-file Three.js browser platformer. The player controls a smiling yellow cube across floating green island platforms, collects yellow blocks carrying positive emotions and qualities, avoids or stomps red enemies carrying negative emotions and behaviors, solves platform obstacles, rides moving platforms, and reaches the level door.
 
-## Locked systems - do not change unless explicitly requested
+## Systems to preserve
 
 - player physics
 - movement speed
@@ -109,23 +109,23 @@ Rules:
 
 Levels 11-20 were rebuilt with authored identities:
 
-- Level 11 - Glass Garden Switchback
-- Level 12 - Cracking Orchard Bridge
-- Level 13 - Button Garden Run
-- Level 14 - Pendulum Picnic Crossing
-- Level 15 - Raised Stair Workshop
-- Level 16 - Bad Habit Patrol Park
-- Level 17 - Cloud Lift Labyrinth
-- Level 18 - Glass Habit Trial
-- Level 19 - Switchback Sky Garden
-- Level 20 - Good Habit Summit
+- Level 11 : Glass Garden Switchback
+- Level 12 : Cracking Orchard Bridge
+- Level 13 : Button Garden Run
+- Level 14 : Pendulum Picnic Crossing
+- Level 15 : Raised Stair Workshop
+- Level 16 : Bad Habit Patrol Park
+- Level 17 : Cloud Lift Labyrinth
+- Level 18 : Glass Habit Trial
+- Level 19 : Switchback Sky Garden
+- Level 20 : Good Habit Summit
 
-Future levels should follow the same pattern:
+For future levels:
 
 - one clear silhouette
 - one gameplay idea
-- one readable aha moment
-- optional reward route, not mandatory punishment
+- one clear mechanic reveal
+- optional reward routes must not be required for completion
 - safe final landing before the level door
 - no filler chains added only to increase length
 
@@ -143,6 +143,6 @@ For each new level:
 8. Check enemy fairness if enemies are used.
 9. Run JavaScript syntax check.
 10. Check ZIP integrity and root `index.html`.
-11. Report honestly what was verified and what was not.
+11. Record which checks were completed.
 
 Do not bulk build multiple levels without auditing each one.
