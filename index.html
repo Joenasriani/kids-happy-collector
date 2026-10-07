@@ -3374,8 +3374,8 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         let fontSize = 136;
-        const fontFamily = "'Arial Rounded MT Bold', 'Trebuchet MS', Arial, sans-serif";
-        const fontWeight = 700;
+        const fontFamily = "'Luckiest Guy', 'Arial Black', sans-serif";
+        const fontWeight = 400;
         do {
             ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
             if (ctx.measureText(text).width <= safeWidth || fontSize <= 68) break;
@@ -4155,7 +4155,17 @@
     });
 
 
-    window.onload = function() { 
+    window.onload = async function() { 
+        // Ensure the bundled display font is ready before any canvas-based block labels are created.
+        // Without this, CanvasRenderingContext2D can silently rasterize the fallback font on first use.
+        if (document.fonts && document.fonts.load) {
+            try {
+                await document.fonts.load("400 136px 'Luckiest Guy'");
+                await document.fonts.ready;
+            } catch (err) {
+                console.warn('Happy Collector font preload failed; browser fallback will be used.', err);
+            }
+        }
         MusicBank.setButtonState(); 
         AudioFX.setButtonState();
         CinematicWind.preload(); 
