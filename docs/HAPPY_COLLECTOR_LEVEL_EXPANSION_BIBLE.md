@@ -6,7 +6,7 @@ Last updated: 2026-06-09
 
 Use `Happy_Collector_Clean_Self_Contained_Release.zip` as the source for future work.
 
-The game is a cheerful single-file Three.js browser platformer. The player controls a smiling yellow cube across floating green island platforms, collects yellow Good Habit blocks, avoids or stomps red Bad Habit blocks, solves simple platform obstacles, rides moving platforms, and reaches a glowing generated door.
+The game is a cheerful single-file Three.js browser platformer. The player controls a smiling yellow cube across floating green island platforms, collects yellow blocks carrying positive emotions and qualities, avoids or stomps red enemies carrying negative emotions and behaviors, solves platform obstacles, rides moving platforms, and reaches the level door.
 
 ## Locked systems - do not change unless explicitly requested
 
@@ -21,7 +21,7 @@ The game is a cheerful single-file Three.js browser platformer. The player contr
 - music system
 - SFX system
 - score system
-- generated glowing door
+- level door and door-arrival transition
 - green floating island visual style
 - yellow smiling cube character
 - no-arm character state
@@ -93,7 +93,7 @@ Rules:
 
 ## Enemy patrol rule
 
-Enemies are red Bad Habit blocks.
+Enemies are moving red blocks carrying negative emotions and behaviors.
 
 Rules:
 
@@ -126,7 +126,7 @@ Future levels should follow the same pattern:
 - one gameplay idea
 - one readable aha moment
 - optional reward route, not mandatory punishment
-- safe final landing before the glowing door
+- safe final landing before the level door
 - no filler chains added only to increase length
 
 ## Future level creation workflow
