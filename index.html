@@ -2276,8 +2276,6 @@
             while (routeLength < targetLength) { gatePuzzle(); lift(0.95, 1.05); pendulum(0.65, 0.1); rise(2, 0.62); sliderBridgeChain(2, 1.35); popUp(8.0, 5.45, 0.15); crumble(8.4, 5.3, -0.05); stairButtonPuzzle(); curvedBridge(5, 1.2); waveLifts(2); rest(18, 5.1, 0.2); }
         } else if (lvl === 11) {
             // Glass Garden Switchback: authored Level 11 sequence.
-            // Goal: make the first expansion level feel like a readable garden route, not generic filler.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
             safeLanding(26, 0.0);
             curvedBridge(6, 1.15);
             gateRoom(1);
@@ -2303,8 +2301,6 @@
             safeLanding(30, 0.05);
         } else if (lvl === 12) {
             // Cracking Orchard Bridge: authored Level 12 sequence.
-            // Goal: make glass timing the identity while preserving safe island rests and simple controls.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
             safeLanding(28, 0.0);
             curvedBridge(6, 1.05);
             crumbleRoom(2);
@@ -2332,8 +2328,6 @@
             safeLanding(32, 0.04);
         } else if (lvl === 13) {
             // Button Garden Run: authored Level 13 sequence.
-            // Goal: make button-to-gate cause/effect the identity while keeping every jump readable.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
             safeLanding(30, 0.0);
             curvedBridge(5, 0.95);
             gateRoom(3);
@@ -2357,8 +2351,6 @@
             safeLanding(30, 0.04);
         } else if (lvl === 14) {
             // Pendulum Picnic Crossing: authored Level 14 sequence.
-            // Goal: make pendulum timing the identity with safe picnic-island rests between every rhythm beat.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
             safeLanding(30, 0.0);
             curvedBridge(5, 0.85);
             pendulumRoom(1, 4);
@@ -2384,8 +2376,6 @@
             safeLanding(32, 0.04);
         } else if (lvl === 15) {
             // Raised Stair Workshop: authored Level 15 sequence.
-            // Goal: make button-raised helper steps the identity; every step is readable, structural, and followed by safe landings.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
             safeLanding(30, 0.0);
             curvedBridge(5, 0.8);
             raiseRoom(5);
@@ -2411,9 +2401,7 @@
             safeLanding(34, 0.04);
         } else if (lvl === 16) {
             // Bad Habit Patrol Park: authored Level 16 sequence.
-            // Goal: make enemy patrol fairness the identity with safe approach islands, clear timing corridors,
             // optional Good Habit rewards, and no blind enemy landings.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, and door logic.
             safeLanding(32, 0.0);
             curvedBridge(5, 0.82);
             safeLanding(30, 0.02); // patrol corridor 1
@@ -2434,9 +2422,7 @@
             safeLanding(34, 0.04); // final fair guarded exit corridor
         } else if (lvl === 17) {
             // Cloud Lift Labyrinth: authored Level 17 sequence.
-            // Goal: make vertical lift timing the identity with clear ride-up moments, safe landings,
             // no blind lift exits, no elevator clipping, and no generic filler chain.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, patrol slowdown,
             // secret LEVELS menu, fall logic, death timing, and door logic.
             safeLanding(32, 0.0);
             curvedBridge(5, 0.78);
@@ -2464,8 +2450,6 @@
             safeLanding(36, 0.04);
         } else if (lvl === 18) {
             // Glass Habit Trial: authored Level 18 sequence.
-            // Goal: make glass-brick commitment the identity with visible safe rest islands between every fragile beat.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, patrol slowdown,
             // secret LEVELS menu, fall logic, death timing, and door logic.
             safeLanding(32, 0.0);
             curvedBridge(5, 0.72);
@@ -2495,9 +2479,7 @@
             safeLanding(38, 0.04);
         } else if (lvl === 19) {
             // Switchback Sky Garden: authored Level 19 sequence.
-            // Goal: make layered left/right switchback rhythm the identity with clear rest islands,
             // readable gates, no generic filler, no pop-up/falling path bricks, and a fair door approach.
-            // Systems unchanged: same movement, physics, camera, UI, audio, enemies, glass behavior, patrol slowdown,
             // secret LEVELS menu, fall logic, death timing, and door logic.
             safeLanding(34, 0.0);
             curvedBridge(5, 0.68);
@@ -2526,10 +2508,7 @@
             safeLanding(40, 0.04);
         } else if (lvl === 20) {
             // Good Habit Summit: authored final Level 20 sequence.
-            // Goal: readable final mix of all approved mechanics with safe rests,
             // no generic filler, no pop-up/falling path bricks, and a celebratory door approach.
-            // Systems unchanged: physics, controls, camera, UI, audio, glass behavior, patrol slowdown,
-            // secret LEVELS menu, fall logic, death timing, and door transition remain untouched.
             safeLanding(36, 0.0);
             curvedBridge(5, 0.66);
             gateRoom(10);
