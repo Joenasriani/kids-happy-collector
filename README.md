@@ -1,5 +1,13 @@
 # Happy Collector — 20-Level Three.js Browser Platformer
 
+<p align="center">
+  <img src="assets/readme/49wel4.png" alt="Happy Collector promotional artwork" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/readme/file_000000007a1072469e9f473974c71db0-2.png" alt="Happy Collector gameplay artwork" width="100%">
+</p>
+
 
 **Play:** https://kids-happy-collector.vercel.app/  
 **Itch.io:** https://joenasr.itch.io/happy-collector
