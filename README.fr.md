@@ -1,4 +1,4 @@
-# Happy Collector — 20-Level Three.js Browser Platformer
+# Happy Collector: 20-Level Three.js Browser Platformer
 
 <p align="center">
   <img src="assets/readme/happy-collector-banner.png" alt="Happy Collector" width="100%">
@@ -44,7 +44,7 @@ Le jeu comprend des plateformes horizontales et verticales mobiles, des platefor
 
 ## Architecture des niveaux
 
-Les 20 niveaux sont produits par le générateur déterministe de plans du runtime à partir de primitives réutilisables de plateformes et d'obstacles. Les niveaux 11–20 contiennent des séquences de haut niveau explicitement conçues dans le code.
+Les 20 niveaux sont construits à partir de définitions réutilisables de plateformes et d'obstacles. Les niveaux 11 à 20 utilisent des séquences définies directement dans le code.
 
 ## Implémentation
 
