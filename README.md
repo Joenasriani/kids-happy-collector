@@ -1,4 +1,4 @@
-# Happy Collector — 20-Level Three.js Browser Platformer
+# Happy Collector: 20-Level Three.js Browser Platformer
 
 <p align="center">
   <img src="assets/readme/happy-collector-banner.png" alt="Happy Collector" width="100%">
@@ -31,29 +31,29 @@ You control a smiling yellow cube along floating platform routes. Yellow blocks 
 - Reaching the door advances to the next level
 - Completing Level 20 ends the run with **MASTER COLLECTOR!**
 
-The runtime's yellow-block labels are **BRAVERY, JOY, LOVE, HOPE, PEACE, KINDNESS, CALM, PRIDE, TRUST, HAPPINESS**. Red-enemy labels are **ANGER, GREED, JEALOUSY, RUDENESS, ENVY, HATE, DESPAIR**.
+Yellow blocks use the labels **BRAVERY, JOY, LOVE, HOPE, PEACE, KINDNESS, CALM, PRIDE, TRUST, HAPPINESS**. Red-enemy labels are **ANGER, GREED, JEALOUSY, RUDENESS, ENVY, HATE, DESPAIR**.
 
 ## Controls
 
 **Desktop**
-- `A / D` or `Left / Right Arrow` — move
-- `W`, `Space`, or `Up Arrow` — jump
-- Mouse wheel — zoom after gameplay movement begins
+- `A / D` or `Left / Right Arrow` : move
+- `W`, `Space`, or `Up Arrow` : jump
+- Mouse wheel : zoom after gameplay movement begins
 
 **Mobile**
-- On-screen left/right controls — move
-- On-screen jump control — jump
-- Two-finger pinch — zoom after gameplay movement begins
+- On-screen left/right controls : move
+- On-screen jump control : jump
+- Two-finger pinch : zoom after gameplay movement begins
 
 ## Gameplay systems
 
-The current runtime includes horizontal and vertical moving platforms, pendulum platforms, curved and rope-bridge sequences, button-controlled gates, button-raised steps, cracking glass platforms, stompable patrolling enemies, changing skies, ambient scenery, level-introduction cinematics, door-arrival transitions, six looping music tracks, synthesized gameplay SFX, cinematic wind audio, visual feedback and supported-device vibration.
+The game includes horizontal and vertical moving platforms, pendulum platforms, curved and rope-bridge sequences, button-controlled gates, button-raised steps, cracking glass platforms, stompable patrolling enemies, changing skies, ambient scenery, level-introduction cinematics, door-arrival transitions, six looping music tracks, synthesized gameplay SFX, cinematic wind audio, visual feedback and supported-device vibration.
 
 Glass platforms crack when stood on, remain solid while occupied, then fall and fade after the player leaves. Legacy pop-up/falling path-platform behavior is disabled.
 
 ## Level architecture
 
-All 20 levels are produced by the runtime's deterministic blueprint generator from reusable platform and obstacle primitives. Levels 11–20 contain explicitly authored high-level sequences:
+The game builds all 20 levels from reusable platform and obstacle definitions. Levels 11 to 20 use these named layouts:
 
 11. Glass Garden Switchback  
 12. Cracking Orchard Bridge  
@@ -68,21 +68,21 @@ All 20 levels are produced by the runtime's deterministic blueprint generator fr
 
 ## Implementation
 
-- `index.html` — complete playable game and runtime logic
-- `libs/three.r128.min.js` — local Three.js r128 runtime
-- `libs/THREE_LICENSE.txt` — bundled Three.js license
-- `music/` — six local music tracks
-- `sfx/` — local cinematic wind audio
-- `fonts/` — local fonts
-- `docs/` — level-expansion rules and pre-delivery QA documentation
+- `index.html` : complete playable game and runtime logic
+- `libs/three.r128.min.js` : local Three.js r128 runtime
+- `libs/THREE_LICENSE.txt` : bundled Three.js license
+- `music/` : six local music tracks
+- `sfx/` : local cinematic wind audio
+- `fonts/` : local fonts
+- `docs/` : level-expansion rules and pre-delivery QA documentation
 
-The playable runtime loads Three.js locally rather than from a CDN. Most gameplay SFX are synthesized at runtime with the Web Audio API.
+Three.js loads from the local `libs/` folder. Most gameplay sound effects are generated with the Web Audio API.
 
 ## Event activation
 
 Happy Collector was developed as one module in a multi-game interactive children's edutainment activation in the UAE.
 
-Event production: [Peach Society](https://peach-society.com/) — Dubai-based event and experiential production company.
+Event production: [Peach Society](https://peach-society.com/), Dubai.
 
 ## Licensing
 
