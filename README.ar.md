@@ -1,4 +1,4 @@
-# Happy Collector — 20-Level Three.js Browser Platformer
+# Happy Collector: 20-Level Three.js Browser Platformer
 
 <p align="center">
   <img src="assets/readme/happy-collector-banner.png" alt="Happy Collector" width="100%">
