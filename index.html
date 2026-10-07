@@ -790,6 +790,39 @@
             position: relative;
             top: 6.8vmin;
         }
+        .language-switcher {
+            position: absolute;
+            top: max(14px, calc(env(safe-area-inset-top) + 10px));
+            right: max(14px, calc(env(safe-area-inset-right) + 10px));
+            z-index: 12;
+            display: flex;
+            align-items: center;
+            gap: 0.7vmin;
+            padding: 0.65vmin;
+            border-radius: 999px;
+            background: rgba(0,0,0,0.16);
+            border: 1px solid rgba(255,255,255,0.26);
+            backdrop-filter: blur(8px);
+        }
+        .language-switcher button {
+            min-width: 44px;
+            min-height: 38px;
+            padding: 0 11px;
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            color: rgba(255,255,255,0.78);
+            font: 800 clamp(12px, 1.8vmin, 16px)/1 sans-serif;
+            cursor: pointer;
+        }
+        .language-switcher button.active {
+            background: rgba(255,255,255,0.94);
+            color: #34425e;
+        }
+        html[dir="rtl"] .language-switcher { right: auto; left: max(14px, calc(env(safe-area-inset-left) + 10px)); }
+        html[dir="rtl"] .instruction-box,
+        html[dir="rtl"] .game-over-screen { direction: rtl; }
+
         .start-screen .intro-credits {
             position: absolute;
             left: 50%;
@@ -803,6 +836,12 @@
 <body>
 
 <div class="start-screen screen-overlay">
+    <div class="language-switcher" aria-label="Language">
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="ar">AR</button>
+        <button type="button" data-lang="fr">FR</button>
+        <button type="button" data-lang="zh">中文</button>
+    </div>
     <div class="title-container" id="intro-title-container">
         <div class="mini-hero" id="intro-mini-hero">
             <div class="mini-eye left"></div>
@@ -813,22 +852,22 @@
     </div>
     
     <div class="instruction-box">
-        <div class="instruction-item">✨ Collect: Yellow blocks = Good Emotions</div>
-        <div class="instruction-item">🚫 Avoid: Red blocks = Bad Emotions</div>
-        <div class="instruction-item">❤️ Warning: 3 lives to beat level 20</div>
+        <div class="instruction-item" data-i18n="collectInstruction">✨ Collect: Yellow blocks = Good Emotions</div>
+        <div class="instruction-item" data-i18n="avoidInstruction">🚫 Avoid: Red blocks = Bad Emotions</div>
+        <div class="instruction-item" data-i18n="livesInstruction">❤️ Warning: 3 lives to beat level 20</div>
     </div>
 
-    <button class="start-btn action-btn">PLAY NOW</button>
+    <button class="start-btn action-btn" data-i18n="playNow">PLAY NOW</button>
     <div class="intro-credits">
-        <div><strong>Game Dev:</strong> ApexInnovate.ae</div>
-        <div><strong>Music:</strong> BombInSound, AlexZavesa</div>
+        <div><strong data-i18n="gameDev">Game Dev:</strong> ApexInnovate.ae</div>
+        <div><strong data-i18n="musicCredit">Music:</strong> BombInSound, AlexZavesa</div>
     </div>
 </div>
 
 <div class="game-over-screen screen-overlay" style="display: none;">
-    <h1 class="over-title">GAME OVER</h1>
+    <h1 class="over-title" data-i18n="gameOver">GAME OVER</h1>
     <p class="final-stats" style="font-size: 3.5vmin;"></p>
-    <button class="restart-btn action-btn">RESTART</button>
+    <button class="restart-btn action-btn" data-i18n="restart">RESTART</button>
 </div>
 
 <div class="level-popup">
@@ -846,7 +885,7 @@
 
 <div class="ui-container">
     <div class="hud-column">
-        <div class="hud-card stat-card">LVL: <span id="lvl-val">1</span></div>
+        <div class="hud-card stat-card"><span data-i18n="levelShort">LVL:</span>&nbsp;<span id="lvl-val">1</span></div>
         <div class="hud-icon-row left-hud-icon-row">
             <div class="icon-btn home-btn">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.5 12 4l8.5 7.5"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></svg>
@@ -858,12 +897,12 @@
     </div>
 
     <div class="score-wrapper">
-        <div class="hud-card score-card">PTS: <span id="score-val">0</span></div>
-        <div class="notification-alert">LAST LIFE:<br>STAY BRAVE!</div>
+        <div class="hud-card score-card"><span data-i18n="pointsShort">PTS:</span>&nbsp;<span id="score-val">0</span></div>
+        <div class="notification-alert"><span data-i18n="lastLife">LAST LIFE:</span><br><span data-i18n="stayBrave">STAY BRAVE!</span></div>
     </div>
 
     <div class="hud-column">
-        <div class="hud-card stat-card">LIVES: <span id="lives-val">3</span></div>
+        <div class="hud-card stat-card"><span data-i18n="livesShort">LIVES:</span>&nbsp;<span id="lives-val">3</span></div>
         <div class="hud-icon-row audio-hud-icon-row">
             <div class="icon-btn music-btn" aria-label="Music on" title="Music on">
                 <svg class="music-symbol music-on-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17.5a3 3 0 1 1-2-2.83V6l10-2v9.5"/><path d="M10 8.2l8-1.6"/><path d="M18 13.5a3 3 0 1 1-2-2.83"/></svg>
@@ -920,6 +959,91 @@
     let secretWheelDeltaY = 0;
     let secretLevelsMenuBuilt = false;
 
+
+    const I18N = {
+        en: {
+            collectInstruction: '✨ Collect: Yellow blocks = Good Emotions',
+            avoidInstruction: '🚫 Avoid: Red blocks = Bad Emotions',
+            livesInstruction: '❤️ Warning: 3 lives to beat level 20',
+            playNow: 'PLAY NOW', gameDev: 'Game Dev:', musicCredit: 'Music:',
+            gameOver: 'GAME OVER', masterCollector: 'MASTER COLLECTOR!', restart: 'RESTART',
+            levelShort: 'LVL:', pointsShort: 'PTS:', livesShort: 'LIVES:',
+            lastLife: 'LAST LIFE:', stayBrave: 'STAY BRAVE!', level: 'LEVEL', score: 'Score',
+            careful: 'Careful!', tryAgain: 'Try Again', click: 'CLICK!', open: 'OPEN!',
+            good: ['BRAVERY','JOY','LOVE','HOPE','PEACE','KINDNESS','CALM','PRIDE','TRUST','HAPPINESS'],
+            bad: ['ANGER','GREED','JEALOUSY','RUDENESS','ENVY','HATE','DESPAIR']
+        },
+        ar: {
+            collectInstruction: '✨ اجمع: المكعبات الصفراء = مشاعر وصفات إيجابية',
+            avoidInstruction: '🚫 تجنّب: المكعبات الحمراء = مشاعر وسلوكيات سلبية',
+            livesInstruction: '❤️ تنبيه: لديك 3 محاولات للوصول إلى المستوى 20',
+            playNow: 'ابدأ اللعب', gameDev: 'تطوير اللعبة:', musicCredit: 'الموسيقى:',
+            gameOver: 'انتهت اللعبة', masterCollector: 'بطل التجميع!', restart: 'إعادة اللعب',
+            levelShort: 'المستوى:', pointsShort: 'النقاط:', livesShort: 'المحاولات:',
+            lastLife: 'المحاولة الأخيرة:', stayBrave: 'كن شجاعاً!', level: 'المستوى', score: 'النقاط',
+            careful: 'انتبه!', tryAgain: 'حاول مجدداً', click: 'تم!', open: 'مفتوح!',
+            good: ['شجاعة','فرح','حب','أمل','سلام','لطف','هدوء','فخر','ثقة','سعادة'],
+            bad: ['غضب','جشع','غيرة','وقاحة','حسد','كراهية','يأس']
+        },
+        fr: {
+            collectInstruction: '✨ Collecte : blocs jaunes = émotions et qualités positives',
+            avoidInstruction: '🚫 Évite : blocs rouges = émotions et comportements négatifs',
+            livesInstruction: '❤️ Attention : 3 vies pour atteindre le niveau 20',
+            playNow: 'JOUER', gameDev: 'Développement :', musicCredit: 'Musique :',
+            gameOver: 'PARTIE TERMINÉE', masterCollector: 'MAÎTRE COLLECTIONNEUR !', restart: 'REJOUER',
+            levelShort: 'NIV.:', pointsShort: 'PTS:', livesShort: 'VIES:',
+            lastLife: 'DERNIÈRE VIE :', stayBrave: 'RESTE COURAGEUX !', level: 'NIVEAU', score: 'Score',
+            careful: 'Attention !', tryAgain: 'Réessaie', click: 'ACTIVÉ !', open: 'OUVERT !',
+            good: ['COURAGE','JOIE','AMOUR','ESPOIR','PAIX','GENTILLESSE','CALME','FIERTÉ','CONFIANCE','BONHEUR'],
+            bad: ['COLÈRE','AVIDITÉ','JALOUSIE','IMPOLITESSE','ENVIE','HAINE','DÉSESPOIR']
+        },
+        zh: {
+            collectInstruction: '✨ 收集：黄色方块 = 积极情绪与品质',
+            avoidInstruction: '🚫 避开：红色方块 = 消极情绪与行为',
+            livesInstruction: '❤️ 提示：3 次机会挑战到第 20 关',
+            playNow: '开始游戏', gameDev: '游戏开发：', musicCredit: '音乐：',
+            gameOver: '游戏结束', masterCollector: '收集大师！', restart: '重新开始',
+            levelShort: '关卡：', pointsShort: '得分：', livesShort: '生命：',
+            lastLife: '最后一次机会：', stayBrave: '勇敢坚持！', level: '第', score: '得分',
+            careful: '小心！', tryAgain: '再试一次', click: '已启动！', open: '已开启！',
+            good: ['勇气','快乐','爱','希望','和平','善良','平静','自豪','信任','幸福'],
+            bad: ['愤怒','贪婪','嫉妒','无礼','妒忌','仇恨','绝望']
+        }
+    };
+    let currentLanguage = 'en';
+
+    function tr(key) {
+        return (I18N[currentLanguage] && I18N[currentLanguage][key]) || I18N.en[key] || key;
+    }
+
+    function applyLanguage(lang) {
+        if (!I18N[lang]) lang = 'en';
+        currentLanguage = lang;
+        document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.querySelectorAll('[data-i18n]').forEach((el) => {
+            const value = tr(el.dataset.i18n);
+            if (typeof value === 'string') el.textContent = value;
+        });
+        document.querySelectorAll('.language-switcher button').forEach((btn) => {
+            const active = btn.dataset.lang === lang;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        const popup = document.getElementById('popup-text');
+        if (popup) popup.textContent = lang === 'zh' ? tr('level') + ' ' + level : tr('level') + ' ' + level;
+    }
+
+    function bindLanguageSwitcher() {
+        document.querySelectorAll('.language-switcher button').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                AudioFX.unlock();
+                AudioFX.click();
+                applyLanguage(btn.dataset.lang);
+            });
+        });
+        applyLanguage('en');
+    }
 
     const AudioFX = (() => {
         let ctx = null;
@@ -1555,14 +1679,14 @@
     function showButtonFeedback(worldPos) {
         const pos = worldPos.clone();
         pos.y += 1.15;
-        spawnMicroAward('CLICK!', pos, 'collect');
+        spawnMicroAward(tr('click'), pos, 'collect');
         spawnMicroSparkles(pos, 'collect', 6);
     }
 
     function showGateFeedback(worldPos) {
         const pos = worldPos.clone();
         pos.y += 2.4;
-        spawnMicroAward('OPEN!', pos, 'collect');
+        spawnMicroAward(tr('open'), pos, 'collect');
         spawnMicroSparkles(pos, 'collect', 7);
     }
 
@@ -2850,8 +2974,8 @@
         let currentX = 0;
         let prevWidth = 35;
         let lastPlatformWidth = 35;
-        const goodEmotions = ["BRAVERY", "JOY", "LOVE", "HOPE", "PEACE", "KINDNESS", "CALM", "PRIDE", "TRUST", "HAPPINESS"];
-        const badEmotions = ["ANGER", "GREED", "JEALOUSY", "RUDENESS", "ENVY", "HATE", "DESPAIR"];
+        const goodEmotions = tr('good');
+        const badEmotions = tr('bad');
         
         let consecutiveEmpty = 0;
 
@@ -2989,7 +3113,7 @@
         };
         if (showPopup) {
             const popup = document.querySelector('.level-popup');
-            document.getElementById('popup-text').innerText = "LEVEL " + level;
+            document.getElementById('popup-text').innerText = tr('level') + " " + level;
             popup.classList.add('active');
             setTimeout(() => {
                 popup.classList.remove('active');
@@ -3504,14 +3628,14 @@
         const pos = worldPos.clone();
         pos.y += 1.2;
         spawnSoftImpactRing(pos);
-        spawnMicroAward('Careful!', pos, 'damage');
+        spawnMicroAward(tr('careful'), pos, 'damage');
         spawnMicroSparkles(pos, 'damage', 6);
     }
 
     function showFallFeedback(worldPos) {
         const pos = worldPos.clone();
         pos.y += 1.2;
-        spawnMicroAward('Try Again', pos, 'fall');
+        spawnMicroAward(tr('tryAgain'), pos, 'fall');
         spawnMicroSparkles(pos, 'fall', 8);
     }
 
@@ -3854,8 +3978,8 @@
         MusicBank.stop();
         if (!win) AudioFX.gameOver();
         const screen = document.querySelector('.game-over-screen'); 
-        screen.querySelector('h1').innerText = win ? "MASTER COLLECTOR!" : "GAME OVER"; 
-        document.querySelector('.final-stats').innerText = "Level " + level + " | Score " + score; 
+        screen.querySelector('h1').innerText = win ? tr('masterCollector') : tr('gameOver'); 
+        document.querySelector('.final-stats').innerText = tr('level') + " " + level + " | " + tr('score') + " " + score; 
         screen.style.display = 'flex'; 
     }
 
@@ -4152,6 +4276,7 @@
 
 
     window.onload = function() { 
+        bindLanguageSwitcher();
         MusicBank.setButtonState(); 
         AudioFX.setButtonState();
         CinematicWind.preload(); 
