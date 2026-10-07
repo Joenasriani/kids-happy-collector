@@ -1,63 +1,70 @@
-# Happy Collector — 20-Level 3D Browser Platformer
+# Happy Collector — 20-Level Three.js Browser Platformer
 
-![Happy Collector gameplay artwork from the official itch.io page](https://img.itch.zone/aW1nLzI3MzkyOTc3LnBuZw%3D%3D/original/49wel4.png)
+![Happy Collector artwork from the official itch.io page](https://img.itch.zone/aW1nLzI3MzkyOTc3LnBuZw%3D%3D/original/49wel4.png)
 
 **Play:** https://kids-happy-collector.vercel.app/  
 **Itch.io:** https://joenasr.itch.io/happy-collector
 
-Happy Collector is a 20-level Three.js browser platformer developed as part of a multi-game interactive children's edutainment activation in the UAE.
+## English
 
-You control a smiling yellow cube across floating island routes. Collect yellow blocks carrying positive emotions and qualities, avoid or stomp red blocks carrying negative emotions and behaviors, navigate increasingly complex platform challenges, and reach the glowing door to advance.
+Happy Collector is a 20-level Three.js browser platformer developed as one module in a multi-game interactive children's edutainment activation in the UAE.
 
-## How it plays
+You control a smiling yellow cube along floating platform routes. Yellow blocks carry positive emotions and qualities; red moving enemies carry negative emotions and behaviors. Collect yellow blocks for points, avoid or stomp red enemies, navigate platform obstacles, and reach the level door to advance.
 
-**move and jump → collect positive blocks → avoid or stomp negative blocks → navigate obstacles → reach the glowing door → advance**
+### How it plays
 
-Collectibles are optional for progression: reaching the door completes the level.
+**move and jump → collect positive blocks → avoid or stomp red enemies → navigate obstacles → reach the door → advance**
 
 - Yellow collectible: **+10 points**
-- Stomp a red enemy from above: **+5 points**
-- Contact with a red enemy or falling from the route costs a life
-- You begin with **3 lives** for the run
-- Level 20 is the final level
+- Stomp a red enemy from above while descending: **+5 points**
+- Contact with a red enemy or falling from the route costs one life
+- You start a run with **3 lives**
+- After losing a life, the current level restarts while the remaining lives persist
+- Collecting every yellow block is **not required** to finish a level
+- Reaching the door advances to the next level
+- Completing Level 20 ends the run with **MASTER COLLECTOR!**
 
-The block labels are drawn from the game's runtime data. Positive examples include **BRAVERY, JOY, LOVE, HOPE, PEACE, KINDNESS, CALM, PRIDE, TRUST, HAPPINESS**. Negative examples include **ANGER, GREED, JEALOUSY, RUDENESS, ENVY, HATE, DESPAIR**.
+The runtime's yellow-block labels are **BRAVERY, JOY, LOVE, HOPE, PEACE, KINDNESS, CALM, PRIDE, TRUST, HAPPINESS**. Red-enemy labels are **ANGER, GREED, JEALOUSY, RUDENESS, ENVY, HATE, DESPAIR**.
 
-## Controls
+### Controls
 
-### Desktop
+**Desktop**
 
 - `A / D` or `Left / Right Arrow` — move
 - `W`, `Space`, or `Up Arrow` — jump
 - Mouse wheel — zoom after gameplay movement begins
 
-### Mobile
+**Mobile**
 
 - On-screen left/right controls — move
 - On-screen jump control — jump
 - Two-finger pinch — zoom after gameplay movement begins
 
-## Gameplay systems
+### Gameplay systems
 
-The game includes:
+The current runtime includes:
 
 - horizontal moving platforms
-- vertical lifts
+- vertical moving platforms/lifts
 - pendulum platforms
-- curved and rope-bridge sequences
+- curved bridge and rope-bridge platform sequences
 - button-controlled gates
 - button-raised steps
-- cracking glass platforms that fall after the player leaves them
+- glass platforms that crack when stood on, remain solid while occupied, then fall and fade after the player leaves
 - patrolling red enemies that can be stomped
-- changing sky environments, clouds and ambient scenery
-- level-introduction cinematics and a glowing-door transition
-- music, synthesized sound effects, feedback particles and supported-device haptics
+- different sky treatments, including night levels with stars
+- clouds and ambient decorative scenery
+- level-introduction cinematics
+- door-arrival transitions
+- six looping music tracks selected by level
+- synthesized gameplay sound effects plus a separate cinematic wind audio asset
+- visual feedback effects and vibration on supported devices
 
-## Level architecture
+Legacy pop-up/falling path-platform behavior is disabled in the current runtime.
 
-The game uses a deterministic blueprint-generation system rather than 20 isolated static maps. Levels are assembled from reusable platform and obstacle primitives.
+### Level architecture
 
-Levels 11–20 have explicitly authored high-level sequences:
+All 20 levels are produced by the runtime's deterministic blueprint generator from reusable platform and obstacle primitives. Levels 11–20 contain explicitly authored high-level sequences:
 
 11. Glass Garden Switchback  
 12. Cracking Orchard Bridge  
@@ -70,90 +77,91 @@ Levels 11–20 have explicitly authored high-level sequences:
 19. Switchback Sky Garden  
 20. Good Habit Summit
 
-Legacy pop-up/falling path bricks are disabled in the current runtime.
-
-
 ---
 
 ## العربية
 
-**Happy Collector** هي لعبة منصات ثلاثية الأبعاد تعمل في المتصفح باستخدام Three.js وتتكوّن من 20 مستوى. تم تطويرها كجزء من تجربة ترفيهية تعليمية تفاعلية متعددة الألعاب للأطفال في الإمارات العربية المتحدة.
+**Happy Collector** هي لعبة منصات ثلاثية الأبعاد من 20 مستوى تعمل في المتصفح باستخدام Three.js. تم تطويرها كوحدة ضمن تجربة تفاعلية تعليمية ترفيهية متعددة الألعاب للأطفال في الإمارات العربية المتحدة.
 
-تتحكم بمكعب أصفر مبتسم عبر مسارات من الجزر والمنصات العائمة. اجمع المكعبات الصفراء التي تحمل مشاعر وصفات إيجابية، وتجنب المكعبات الحمراء التي تمثل مشاعر وسلوكيات سلبية أو اقفز فوقها للتغلب عليها، ثم تجاوز تحديات المنصات والوصول إلى الباب المتوهج للانتقال إلى المستوى التالي.
+تتحكم بمكعب أصفر مبتسم على مسارات من المنصات العائمة. تحمل المكعبات الصفراء مشاعر وصفات إيجابية، بينما يحمل الأعداء الحمر المتحركون مشاعر وسلوكيات سلبية. اجمع المكعبات الصفراء للنقاط، وتجنب الأعداء الحمر أو اقفز فوقهم من الأعلى، وتجاوز العقبات، ثم صِل إلى باب المستوى للانتقال إلى المستوى التالي.
 
-**طريقة اللعب:** الحركة والقفز ← جمع المكعبات الإيجابية ← تجنب الأعداء السلبيين أو القفز فوقهم ← تجاوز العقبات ← الوصول إلى الباب المتوهج ← الانتقال للمستوى التالي.
+- المكعب الأصفر: **+10 نقاط**
+- القضاء على عدو أحمر بالقفز عليه من الأعلى أثناء الهبوط: **+5 نقاط**
+- الاصطدام بعدو أحمر أو السقوط من المسار يفقدك حياة واحدة
+- تبدأ الجولة بـ **3 حيوات**
+- بعد خسارة حياة، يُعاد المستوى الحالي مع الاحتفاظ بعدد الحيوات المتبقية
+- جمع جميع المكعبات الصفراء **ليس شرطاً** لإنهاء المستوى
+- الوصول إلى الباب ينقلك إلى المستوى التالي
+- إنهاء المستوى 20 ينهي الجولة برسالة **MASTER COLLECTOR!**
 
-- جمع مكعب أصفر: **+10 نقاط**
-- القفز فوق عدو أحمر: **+5 نقاط**
-- الاصطدام بعدو أحمر أو السقوط من المسار يفقدك محاولة
-- تبدأ اللعبة بـ **3 محاولات**
-- الوصول إلى الباب يكمل المستوى؛ جمع كل المكعبات الصفراء ليس شرطاً
-- المستوى 20 هو المستوى الأخير
+الكلمات الموجودة على المكعبات الصفراء في اللعبة هي: **BRAVERY, JOY, LOVE, HOPE, PEACE, KINDNESS, CALM, PRIDE, TRUST, HAPPINESS**. أما الأعداء الحمر فهم: **ANGER, GREED, JEALOUSY, RUDENESS, ENVY, HATE, DESPAIR**.
 
-تتضمن اللعبة منصات أفقية متحركة، مصاعد عمودية، منصات بندولية، جسوراً منحنية وحبلية، بوابات تعمل بالأزرار، درجات ترتفع بالأزرار، منصات زجاجية تتشقق وتسقط بعد مغادرتها، وأعداء يقومون بدوريات ويمكن القفز فوقهم.
+**التحكم على الكمبيوتر:** `A / D` أو الأسهم يمين/يسار للحركة؛ `W` أو `Space` أو السهم للأعلى للقفز؛ عجلة الفأرة للتقريب والإبعاد بعد بدء الحركة.  
+**على الهاتف:** أزرار الحركة والقفز على الشاشة؛ والتكبير بإصبعين بعد بدء الحركة.
 
-**التحكم على الكمبيوتر:** A/D أو الأسهم للحركة، وW أو Space أو السهم للأعلى للقفز، وعجلة الفأرة للتقريب والإبعاد أثناء اللعب.  
-**على الهاتف:** أزرار الحركة والقفز على الشاشة، مع التكبير بإصبعين أثناء اللعب.
-
+تشمل اللعبة منصات أفقية وعمودية متحركة، منصات بندولية، مسارات جسور منحنية وحبلية، بوابات تعمل بالأزرار، درجات ترتفع بالأزرار، منصات زجاجية تتشقق عند الوقوف عليها وتبقى صلبة أثناء الوقوف ثم تسقط وتتلاشى بعد مغادرتها، وأعداء حمر يقومون بدوريات ويمكن القضاء عليهم بالقفز من الأعلى.
 
 ---
 
 ## Français
 
-**Happy Collector** est un jeu de plateforme 3D en Three.js jouable dans le navigateur, composé de 20 niveaux. Il a été développé comme l'un des modules d'une activation interactive et ludo-éducative multi-jeux pour enfants aux Émirats arabes unis.
+**Happy Collector** est un jeu de plateforme 3D de 20 niveaux réalisé avec Three.js et jouable dans le navigateur. Il a été développé comme un module d'une activation interactive et ludo-éducative multi-jeux pour enfants aux Émirats arabes unis.
 
-Vous contrôlez un cube jaune souriant à travers des parcours de plateformes flottantes. Collectez les blocs jaunes portant des émotions et qualités positives, évitez les blocs rouges représentant des émotions et comportements négatifs ou sautez dessus pour les éliminer, franchissez les obstacles et atteignez la porte lumineuse pour passer au niveau suivant.
-
-**Boucle de jeu :** se déplacer et sauter → collecter les blocs positifs → éviter ou écraser les ennemis négatifs → franchir les obstacles → atteindre la porte lumineuse → avancer.
+Vous contrôlez un cube jaune souriant sur des parcours de plateformes flottantes. Les blocs jaunes portent des émotions et qualités positives ; les ennemis rouges mobiles portent des émotions et comportements négatifs. Collectez les blocs jaunes, évitez ou écrasez les ennemis rouges, franchissez les obstacles et atteignez la porte du niveau pour avancer.
 
 - Bloc jaune collecté : **+10 points**
-- Ennemi rouge écrasé : **+5 points**
+- Ennemi rouge écrasé par le dessus pendant la descente : **+5 points**
 - Toucher un ennemi rouge ou tomber du parcours coûte une vie
-- La partie commence avec **3 vies**
-- Atteindre la porte termine le niveau ; collecter tous les blocs jaunes n'est pas obligatoire
-- Le niveau 20 est le dernier niveau
+- Une partie commence avec **3 vies**
+- Après la perte d'une vie, le niveau actuel recommence en conservant les vies restantes
+- Il n'est **pas nécessaire** de collecter tous les blocs jaunes pour terminer un niveau
+- Atteindre la porte fait passer au niveau suivant
+- Terminer le niveau 20 affiche **MASTER COLLECTOR!**
 
-Le jeu comprend des plateformes horizontales mobiles, des ascenseurs verticaux, des plateformes pendulaires, des ponts courbes et suspendus, des portes commandées par boutons, des marches relevables, des plateformes en verre qui se fissurent puis tombent après votre départ, et des ennemis en patrouille qui peuvent être écrasés.
+Les libellés jaunes du jeu sont **BRAVERY, JOY, LOVE, HOPE, PEACE, KINDNESS, CALM, PRIDE, TRUST, HAPPINESS**. Les ennemis rouges utilisent **ANGER, GREED, JEALOUSY, RUDENESS, ENVY, HATE, DESPAIR**.
 
-**Ordinateur :** A/D ou flèches gauche/droite pour se déplacer ; W, Espace ou flèche haut pour sauter ; molette pour zoomer pendant le jeu.  
-**Mobile :** commandes gauche/droite et saut à l'écran ; pincement à deux doigts pour zoomer pendant le jeu.
+**Ordinateur :** `A / D` ou flèches gauche/droite pour se déplacer ; `W`, `Espace` ou flèche haut pour sauter ; molette pour zoomer après le début du déplacement.  
+**Mobile :** commandes gauche/droite et saut à l'écran ; pincement à deux doigts pour zoomer après le début du déplacement.
 
+Le jeu comprend des plateformes horizontales et verticales mobiles, des plateformes pendulaires, des séquences de ponts courbes et suspendus, des portes commandées par boutons, des marches relevées par boutons, des plateformes en verre qui se fissurent lorsqu'on se tient dessus, restent solides tant qu'elles sont occupées, puis tombent et disparaissent après leur départ, ainsi que des ennemis rouges en patrouille pouvant être écrasés.
 
 ---
 
 ## 简体中文
 
-**Happy Collector** 是一款使用 Three.js 制作、可直接在浏览器中游玩的 20 关 3D 平台游戏。它最初作为阿联酋儿童多游戏互动寓教于乐活动中的一个游戏模块开发。
+**Happy Collector** 是一款使用 Three.js 制作、可直接在浏览器中游玩的 20 关 3D 平台游戏。它作为阿联酋儿童多游戏互动寓教于乐活动中的一个游戏模块开发。
 
-玩家控制一个微笑的黄色方块，在漂浮的平台路线中前进。收集代表积极情绪与品质的黄色方块，避开代表消极情绪与行为的红色方块，或从上方踩掉它们；通过各种平台机关并到达发光的门，即可进入下一关。
-
-**核心玩法：** 移动与跳跃 → 收集积极方块 → 避开或踩掉红色敌人 → 通过平台障碍 → 到达发光的门 → 进入下一关。
+玩家控制一个微笑的黄色方块，在漂浮的平台路线中前进。黄色方块代表积极情绪与品质；移动的红色敌人代表消极情绪与行为。收集黄色方块获得分数，避开或从上方踩掉红色敌人，通过平台机关并到达关卡终点的门，即可进入下一关。
 
 - 收集黄色方块：**+10 分**
-- 从上方踩掉红色敌人：**+5 分**
-- 碰到红色敌人或跌出路线会失去一次生命
+- 下落时从上方踩掉红色敌人：**+5 分**
+- 碰到红色敌人或跌出路线会失去一条生命
 - 每局开始时有 **3 条生命**
-- 到达发光的门即可完成关卡；不需要收集全部黄色方块
-- 第 20 关是最终关卡
+- 失去一条生命后会重新开始当前关卡，并保留剩余生命
+- 完成关卡**不要求**收集全部黄色方块
+- 到达关卡终点的门即可进入下一关
+- 完成第 20 关后显示 **MASTER COLLECTOR!**
 
-游戏包含水平移动平台、垂直升降平台、摆动平台、弧形桥与绳桥、按钮控制的闸门、按钮升起的台阶、离开后会破裂坠落的玻璃平台，以及可被踩掉的巡逻敌人。
+黄色方块使用的英文词语是 **BRAVERY, JOY, LOVE, HOPE, PEACE, KINDNESS, CALM, PRIDE, TRUST, HAPPINESS**。红色敌人使用 **ANGER, GREED, JEALOUSY, RUDENESS, ENVY, HATE, DESPAIR**。
 
-**电脑：** A/D 或左右方向键移动；W、空格键或上方向键跳跃；游戏中可使用鼠标滚轮缩放。  
-**手机：** 使用屏幕上的左右移动与跳跃按钮；游戏中可双指缩放。
+**电脑：** `A / D` 或左右方向键移动；`W`、空格键或上方向键跳跃；开始移动后可使用鼠标滚轮缩放。  
+**手机：** 使用屏幕上的左右移动与跳跃按钮；开始移动后可双指缩放。
 
+游戏包含水平和垂直移动平台、摆动平台、弧形桥与绳桥平台序列、按钮控制的闸门、按钮升起的台阶、站上去会裂开但在玩家停留期间保持实体并在离开后坠落淡出的玻璃平台，以及可从上方踩掉的巡逻红色敌人。
 
+---
 
 ## Implementation
 
 - `index.html` — complete playable game and runtime logic
-- `libs/three.r128.min.js` — local Three.js runtime
-- `libs/THREE_LICENSE.txt` — Three.js license
-- `music/` — music assets
-- `sfx/` — sound-effect assets
+- `libs/three.r128.min.js` — local Three.js r128 runtime
+- `libs/THREE_LICENSE.txt` — bundled Three.js license
+- `music/` — six local music tracks
+- `sfx/` — local cinematic wind audio
 - `fonts/` — local fonts
 - `docs/` — level-expansion rules and pre-delivery QA documentation
 
-The playable runtime does not depend on a CDN for Three.js.
+The playable runtime loads Three.js locally rather than from a CDN. Most gameplay SFX are synthesized at runtime with the Web Audio API; the cinematic wind is a local audio file.
 
 ## Event activation
 
