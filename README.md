@@ -1,5 +1,7 @@
 # Happy Collector — 20-Level 3D Browser Platformer
 
+![Happy Collector gameplay artwork from the official itch.io page](https://img.itch.zone/aW1nLzI3MzkyOTc3LnBuZw%3D%3D/original/49wel4.png)
+
 **Play:** https://kids-happy-collector.vercel.app/  
 **Itch.io:** https://joenasr.itch.io/happy-collector
 
