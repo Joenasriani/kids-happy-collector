@@ -4,7 +4,7 @@ Last updated: 2026-06-09
 
 ## Current release baseline
 
-Use `Happy_Collector_Clean_Self_Contained_Release.zip` as the source for future work.
+Use the current `main` branch as the source for future work. Check the latest commit before editing. The original 20 levels should remain available when proposing remixes or extensions.
 
 The game is a single-file Three.js browser platformer. The player controls a smiling yellow cube across floating green island platforms, collects yellow blocks carrying positive emotions and qualities, avoids or stomps red enemies carrying negative emotions and behaviors, solves platform obstacles, rides moving platforms, and reaches the level door.
 
@@ -128,6 +128,12 @@ For future levels:
 - optional reward routes must not be required for completion
 - safe final landing before the level door
 - no filler chains added only to increase length
+
+## Community proposals
+
+Contributors can suggest new routes through existing mechanics, alternate versions of current levels, and new obstacle ideas. A proposal is not automatically an approved gameplay change. Discuss new mechanics and changes to the original 20 levels in an issue before implementation.
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for the submission process.
 
 ## Future level creation workflow
 
