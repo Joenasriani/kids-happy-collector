@@ -8,7 +8,9 @@ Use the current `main` branch as the source for future work. Check the latest co
 
 The game is a single-file Three.js browser platformer. The player controls a smiling yellow cube across floating green island platforms, collects yellow blocks carrying positive emotions and qualities, avoids or stomps red enemies carrying negative emotions and behaviors, solves platform obstacles, rides moving platforms, and reaches the level door.
 
-## Systems to preserve
+## Existing systems and regression baseline
+
+The following describes the current game. Contributors may propose changes to these systems. Changes should explain the intended benefit and be tested against existing behavior before integration.
 
 - player physics
 - movement speed
@@ -36,9 +38,9 @@ The game is a single-file Three.js browser platformer. The player controls a smi
 - move right
 - jump
 
-Do not add dash, double jump, climbing, weapons, inventory, Z-axis walking, free 3D movement, rotating gameplay camera, or spiral/tower gameplay.
+The current game does not include dash, double jump, climbing, weapons, inventory, Z-axis walking, free 3D movement, or a rotating gameplay camera. These are not prohibited future ideas; proposals should explain how they affect the game's controls, physics, and level design.
 
-## Permanent gameplay rules
+## Current gameplay safety checks
 
 1. Falling SFX triggers only after the character falls below the lowest platform threshold.
 2. Falling SFX must not trigger during level start drop, normal descent, jumps to lower blocks, or ordinary falling arcs before the threshold.
@@ -57,7 +59,7 @@ Do not add dash, double jump, climbing, weapons, inventory, Z-axis walking, free
 15. Do not use sudden random drop blocks.
 16. Do not use the spiral/tower level idea unless explicitly requested again.
 
-## Approved obstacle/block types
+## Existing obstacle/block types
 
 - static green island platforms
 - slider bridge / horizontal moving block
@@ -131,7 +133,7 @@ For future levels:
 
 ## Community proposals
 
-Contributors can suggest new routes through existing mechanics, alternate versions of current levels, and new obstacle ideas. A proposal is not automatically an approved gameplay change. Discuss new mechanics and changes to the original 20 levels in an issue before implementation.
+Any idea that offers a meaningful improvement, experiment, feature, design, tool, performance gain, accessibility gain, or useful extension is welcome. The existing levels and mechanics provide a baseline, not a ceiling. Contributors can propose changes to current systems or entirely new approaches. Use an issue to explain the benefit, scope, and evaluation plan before large changes.
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for the submission process.
 
@@ -151,4 +153,4 @@ For each new level:
 10. Check ZIP integrity and root `index.html`.
 11. Record which checks were completed.
 
-Do not bulk build multiple levels without auditing each one.
+When adding multiple levels, audit each level and record the results.
