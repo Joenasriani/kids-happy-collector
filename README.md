@@ -78,6 +78,24 @@ The game builds all 20 levels from reusable platform and obstacle definitions. L
 
 Three.js loads from the local `libs/` folder. Most gameplay sound effects are generated with the Web Audio API.
 
+## Run locally
+
+Download or clone this repository. Keep `index.html`, `libs/`, `fonts/`, `music/`, and `sfx/` together.
+
+From the repository folder, start a local HTTP server:
+
+```sh
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000/` in a browser with WebGL support. Python 3 is needed only for this local server, not for the game. No package installation or build step is required. Avoid opening `index.html` directly as a `file://` URL because browser asset-loading restrictions may interfere with local files.
+
+## Testing status
+
+The repository includes a [pre-delivery QA checklist](docs/PRE_DELIVERY_QA_CHECKLIST.md), but that checklist is not proof of completed testing. A full browser playthrough of all 20 levels, device-specific mobile checks, and cross-browser regression results have not been recorded in this repository.
+
+For future changes, record the browser and device tested, the level range, the checks performed, and any failures. Do not mark a check as passed without running it.
+
 ## Event activation
 
 Happy Collector was developed as one module in a multi-game interactive children's edutainment activation in the UAE.
