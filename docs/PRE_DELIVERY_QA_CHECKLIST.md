@@ -55,4 +55,17 @@ Use this before sending any future ZIP/build.
 
 ## Verification record
 
-Record whether browser, mobile, and WebGL playthrough checks were performed.
+The following is a record of what has been established from repository inspection. "Not recorded" does not mean a test failed; it means there is no documented test result.
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Local Three.js file present | Confirmed in repository | `libs/three.r128.min.js` |
+| Font files present | Confirmed in repository | `fonts/` |
+| Music and wind audio files present | Confirmed in repository | `music/`, `sfx/` |
+| Desktop browser playthrough, levels 1 to 20 | Not recorded | No complete run log |
+| Mobile portrait and landscape playthrough | Not recorded | No device test log |
+| Cross-browser WebGL compatibility | Not recorded | No browser matrix |
+| All levels reachable and passable | Not recorded | No complete playthrough results |
+| JavaScript syntax validation on current commit | Not recorded | No test result attached |
+
+For each future test, record the commit, date, browser/version, device, level(s), steps, result and any issue link. Keep source inspection separate from runtime verification.
