@@ -134,6 +134,6 @@ Music by **BombinSound** and **AleXZavesa**. Wind sound effect by **DRAGON-STUDI
 
 ## Licensing
 
-Original Happy Collector source code and documentation are released under the [MIT License](LICENSE). Third-party libraries, fonts, music, sound effects, artwork and branding are not relicensed by MIT. Check the applicable asset licenses and permissions before redistribution.
+Original Happy Collector source code and documentation are released under the [MIT License](LICENSE). Third-party libraries, fonts, music, sound effects, artwork and branding are not relicensed by MIT. See [third-party asset rights](THIRD_PARTY_ASSETS.md) before redistributing the complete game.
 
 The bundled Three.js license is in `libs/THREE_LICENSE.txt`. Font licenses are in `fonts/`. Audio source pages and Pixabay licensing terms are documented in [AUDIO_CREDITS.md](AUDIO_CREDITS.md). Artwork rights should be checked separately.
