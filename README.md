@@ -22,7 +22,7 @@ You control a smiling yellow cube along floating platform routes. Yellow blocks 
 
 Happy Collector is a playable Three.js and WebGL platformer built with JavaScript in one `index.html` file. It uses reusable level blueprints, custom movement and collision logic, patrolling enemies, moving platforms, glass platforms, and button-operated puzzles. No build system is required to inspect or run it.
 
-Want to experiment with the level design? You can [remix an existing level](https://github.com/Joenasriani/kids-happy-collector/issues/7), [design a new puzzle](https://github.com/Joenasriani/kids-happy-collector/issues/8), or [propose an obstacle](https://github.com/Joenasriani/kids-happy-collector/issues/9). JavaScript developers can also help [validate level reachability](https://github.com/Joenasriani/kids-happy-collector/issues/10). Concepts and sketches are welcome before code. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Any idea that can produce a real improvement, useful experiment, new feature, design, tool, performance gain, accessibility gain, or extension is welcome. The current game is the starting point, not the ceiling. You can [remix an existing level](https://github.com/Joenasriani/kids-happy-collector/issues/7), [design a new puzzle](https://github.com/Joenasriani/kids-happy-collector/issues/8), or [propose an obstacle](https://github.com/Joenasriani/kids-happy-collector/issues/9). JavaScript developers can also help [validate level reachability](https://github.com/Joenasriani/kids-happy-collector/issues/10). Concepts and sketches are welcome before code. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## How it plays
 
@@ -112,9 +112,9 @@ Open `http://localhost:8000/` in a browser with WebGL support. Python 3 is neede
 
 ## Contributing
 
-Want to build a different puzzle, remix a level, or extend the game beyond Level 20? Ideas from level designers and developers are welcome.
+Contributions are not limited to the existing mechanics or levels. Game designers, Three.js developers, creative coders, and other contributors can propose new directions, improvements, experiments, or tools. Concepts, sketches, and prototypes are welcome.
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md). It explains how to propose a level, work with the existing blueprint functions, and submit changes. The original 20 levels stay available while alternate layouts and new mechanics are reviewed separately.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md). It explains how to propose a level, work with the existing blueprint functions, and submit changes. Changes to existing levels and mechanics can be proposed and evaluated. Larger experiments can be developed separately before integration.
 
 ## Testing status
 
