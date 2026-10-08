@@ -104,4 +104,6 @@ Event production: [Peach Society](https://peach-society.com/), Dubai.
 
 ## Licensing
 
-The repository currently does **not** declare a project-wide license. The bundled Three.js license applies to Three.js; it should not be interpreted as automatically licensing the Happy Collector game code, artwork, audio, fonts, or other project assets.
+Original Happy Collector source code and documentation are released under the [MIT License](LICENSE). Third-party libraries, fonts, music, sound effects, artwork and branding are not relicensed by MIT. Check the applicable asset licenses and permissions before redistribution.
+
+The bundled Three.js license is in `libs/THREE_LICENSE.txt`. Font licenses are in `fonts/`. The repository does not currently establish redistribution rights for every audio or artwork asset.
