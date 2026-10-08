@@ -14,4 +14,4 @@ The game includes horizontal moving platforms, vertical lifts, pendulum platform
 
 The game has 20 levels. Levels are built from reusable platform and obstacle definitions. Levels 11 to 20 use layouts defined directly in the code. Level 20 is the final level.
 
-The repository includes the complete playable game in index.html, a local Three.js runtime, music, sound effects, fonts, and level/QA documentation. The repository currently does not declare a project-wide license.
+The repository includes the complete playable game in index.html, a local Three.js runtime, music, sound effects, fonts, and level/QA documentation. Original game source code and owned documentation are MIT licensed. Third-party assets and branding are excluded from that grant.
