@@ -53,6 +53,12 @@ Use this before sending any future ZIP/build.
 - Short enemy patrol platforms use slow patrol behavior.
 - Secret LEVELS menu still opens only through the hidden code.
 
+## Contribution checks
+
+For a level remix, new puzzle, or added level, record the affected level numbers, whether the original layouts remain accessible, the intended solution, and any failure or recovery cases. Check that no new obstacle causes unavoidable damage or blocks the exit.
+
+For a new mechanic, also test at least one existing level using related systems to detect regressions.
+
 ## Verification record
 
 The following is a record of what has been established from repository inspection. "Not recorded" does not mean a test failed; it means there is no documented test result.
