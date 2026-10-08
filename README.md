@@ -102,8 +102,12 @@ Happy Collector was developed as one module in a multi-game interactive children
 
 Event production: [Peach Society](https://peach-society.com/), Dubai.
 
+## Audio credits
+
+Music by **BombinSound** and **AleXZavesa**. Wind sound effect by **DRAGON-STUDIO**. The seven audio files are linked to their original Pixabay listings in [AUDIO_CREDITS.md](AUDIO_CREDITS.md). Pixabay's media license is separate from the game's MIT source-code license.
+
 ## Licensing
 
 Original Happy Collector source code and documentation are released under the [MIT License](LICENSE). Third-party libraries, fonts, music, sound effects, artwork and branding are not relicensed by MIT. Check the applicable asset licenses and permissions before redistribution.
 
-The bundled Three.js license is in `libs/THREE_LICENSE.txt`. Font licenses are in `fonts/`. The repository does not currently establish redistribution rights for every audio or artwork asset.
+The bundled Three.js license is in `libs/THREE_LICENSE.txt`. Font licenses are in `fonts/`. Audio source pages and Pixabay licensing terms are documented in [AUDIO_CREDITS.md](AUDIO_CREDITS.md). Artwork rights should be checked separately.
