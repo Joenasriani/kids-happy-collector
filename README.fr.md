@@ -58,4 +58,4 @@ Production de l'événement : [Peach Society](https://peach-society.com/).
 
 ## Licence
 
-Le dépôt ne déclare actuellement aucune licence couvrant l'ensemble du projet. La licence Three.js incluse ne s'applique qu'à Three.js et ne doit pas être interprétée comme une licence automatique du code, des graphismes, de l'audio, des polices ou des autres ressources de Happy Collector.
+Le code source original de Happy Collector et la documentation dont le développeur détient les droits sont publiés sous [licence MIT](LICENSE). Cette licence ne couvre pas automatiquement les bibliothèques tierces, polices, musiques, effets sonores, illustrations ou marques. Vérifiez les droits propres à chaque ressource avant redistribution.
