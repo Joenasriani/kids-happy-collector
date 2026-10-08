@@ -4,6 +4,15 @@ Happy Collector is a Three.js browser platformer with 20 existing levels. Contri
 
 You do not need to write code to suggest a level or puzzle. Start a GitHub issue with the concept and describe how the player would solve it.
 
+## Open challenges
+
+- [Remix an existing level](https://github.com/Joenasriani/kids-happy-collector/issues/7)
+- [Design a button and gate puzzle](https://github.com/Joenasriani/kids-happy-collector/issues/8)
+- [Propose a new obstacle](https://github.com/Joenasriani/kids-happy-collector/issues/9)
+- [Build a level-reachability check](https://github.com/Joenasriani/kids-happy-collector/issues/10)
+
+You can submit a design concept before writing code.
+
 ## Ways to contribute
 
 **Remix an existing level.** Suggest a different route, pacing, puzzle order, or obstacle combination. Keep the original level available. Do not replace an existing level without prior discussion.
