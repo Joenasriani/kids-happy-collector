@@ -90,6 +90,12 @@ python3 -m http.server 8000
 
 Open `http://localhost:8000/` in a browser with WebGL support. Python 3 is needed only for this local server, not for the game. No package installation or build step is required. Avoid opening `index.html` directly as a `file://` URL because browser asset-loading restrictions may interfere with local files.
 
+## Contributing
+
+Want to build a different puzzle, remix a level, or extend the game beyond Level 20? Ideas from level designers and developers are welcome.
+
+Start with [CONTRIBUTING.md](CONTRIBUTING.md). It explains how to propose a level, work with the existing blueprint functions, and submit changes. The original 20 levels stay available while alternate layouts and new mechanics are reviewed separately.
+
 ## Testing status
 
 The repository includes a [pre-delivery QA checklist](docs/PRE_DELIVERY_QA_CHECKLIST.md), but that checklist is not proof of completed testing. A full browser playthrough of all 20 levels, device-specific mobile checks, and cross-browser regression results have not been recorded in this repository.
