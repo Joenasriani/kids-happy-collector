@@ -18,6 +18,12 @@ Happy Collector is a 20-level Three.js browser platformer developed as one modul
 
 You control a smiling yellow cube along floating platform routes. Yellow blocks carry positive emotions and qualities; red moving enemies carry negative emotions and behaviors. Collect yellow blocks for points, avoid or stomp red enemies, navigate platform obstacles, and reach the level door to advance.
 
+## For developers and level designers
+
+Happy Collector is a playable Three.js and WebGL platformer built with JavaScript in one `index.html` file. It uses reusable level blueprints, custom movement and collision logic, patrolling enemies, moving platforms, glass platforms, and button-operated puzzles. No build system is required to inspect or run it.
+
+Want to experiment with the level design? You can [remix an existing level](https://github.com/Joenasriani/kids-happy-collector/issues/7), [design a new puzzle](https://github.com/Joenasriani/kids-happy-collector/issues/8), or [propose an obstacle](https://github.com/Joenasriani/kids-happy-collector/issues/9). JavaScript developers can also help [validate level reachability](https://github.com/Joenasriani/kids-happy-collector/issues/10). Concepts and sketches are welcome before code. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## How it plays
 
 **move and jump → collect positive blocks → avoid or stomp red enemies → navigate obstacles → reach the door → advance**
@@ -77,6 +83,20 @@ The game builds all 20 levels from reusable platform and obstacle definitions. L
 - `docs/` : level-expansion rules and pre-delivery QA documentation
 
 Three.js loads from the local `libs/` folder. Most gameplay sound effects are generated with the Web Audio API.
+
+## Code navigation
+
+The game lives in `index.html`. Search for these functions to find the relevant systems:
+
+| Function | Purpose |
+| --- | --- |
+| `generateLevelBlueprint(lvl)` | Builds reusable platform and obstacle layouts |
+| `getLevelBlueprint(lvl)` | Retrieves the level blueprint |
+| `spawnLevel` | Creates a level's playable scene |
+| `startLevelSequence` | Starts level progression and introduction |
+| `createTextCanvas` | Draws words on collectible and enemy textures |
+
+See the [level expansion guide](docs/HAPPY_COLLECTOR_LEVEL_EXPANSION_BIBLE.md) for gameplay constraints. The functions are internal implementation details, not a public level editor.
 
 ## Run locally
 
